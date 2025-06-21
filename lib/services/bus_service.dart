@@ -46,4 +46,18 @@ class BusService {
       rethrow;
     }
   }
+
+  Future<List<BusSchedule>> getBusSchedule(String busLine) async {
+    try {
+      final response = await _dio.get("horario/linha/numero/$busLine");
+      return (response.data as List)
+          .map((h) => BusSchedule.fromJson(h))
+          .toList();
+    } catch (e, stacktrace) {
+      debugPrint("BusService - Erro ao buscar os horários da linha $busLine");
+      debugPrint(e.toString());
+      debugPrint(stacktrace.toString());
+      rethrow;
+    }
+  }
 }

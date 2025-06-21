@@ -1,5 +1,6 @@
 import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/models/bus_model.dart';
+import 'package:df_bus/pages/line_details/line_details.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:flutter/material.dart';
 
@@ -27,8 +28,14 @@ class _LinesResultWidgetState extends State<LinesResultWidget> {
             child: ListTile(
               onTap: () async {
                 debugPrint('Linha - ${line.numero}');
-                //searchLineController.addLine(line.numero);
-                //setState(() {});
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LineDetailsWidget(
+                      busLine: line.numero,
+                    ),
+                  ),
+                );
                 searchLineController.addLine(line.numero);
               },
               title: Row(

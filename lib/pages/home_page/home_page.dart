@@ -6,6 +6,7 @@ import 'package:df_bus/pages/home_page/widgets/search_line_input_widget.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/widgets/snackbar_message_widget.dart';
 import 'package:flutter/material.dart';
+import './../../main.dart' show routeObserver;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,17 +15,38 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with RouteAware {
   final searchLineController = getIt<SearchLineController>();
   String linetoSeach = "";
   late List<SearchLine> linesSearched = [];
   bool loadingSearch = false;
   List<String> linesSaved = [];
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)!);
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    debugPrint('****Voltou pra Home Page');
+    searchLine();
+    getLinesSaved();
+  }
+
   @override
   void initState() {
     super.initState();
     searchLine();
     getLinesSaved();
+    debugPrint("*******Entrou na Home Page");
   }
 
   void getLinesSaved() async {
@@ -69,7 +91,6 @@ class _HomePageState extends State<HomePage> {
               searchLine();
             }),
           ),
-          SizedBox(height: 16),
           TextButton(
             onPressed: () async {
               await searchLineController.deleteLines();

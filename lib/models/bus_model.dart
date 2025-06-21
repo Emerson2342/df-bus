@@ -143,3 +143,57 @@ class SearchLine {
         tarifa: double.tryParse(json['tarifa']?.toString() ?? "") ?? 0.0);
   }
 }
+
+class BusSchedule {
+  final String numeroLinha;
+  final String sentido;
+  final List<Schedule> horarios;
+
+  BusSchedule({
+    required this.numeroLinha,
+    required this.sentido,
+    required this.horarios,
+  });
+
+  factory BusSchedule.fromJson(Map<String, dynamic> json) {
+    return BusSchedule(
+      numeroLinha: json['numeroLinha']?.toString() ?? "",
+      sentido: json['sentido']?.toString() ?? "",
+      horarios: (json['horarios'] as List<dynamic>? ?? [])
+          .map((h) => Schedule.fromJson(h))
+          .toList(),
+    );
+  }
+}
+
+class Schedule {
+  final String sentido;
+  final String operador;
+  final String diasLabel;
+  final String diasSemana;
+  final String horario;
+  final int hora;
+  final int minuto;
+
+  Schedule({
+    required this.sentido,
+    required this.operador,
+    required this.diasLabel,
+    required this.diasSemana,
+    required this.horario,
+    required this.hora,
+    required this.minuto,
+  });
+
+  factory Schedule.fromJson(Map<String, dynamic> json) {
+    return Schedule(
+      sentido: json['sentido']?.toString() ?? "",
+      operador: json['operador']?.toString() ?? "",
+      diasLabel: json['diasLabel']?.toString() ?? "",
+      diasSemana: json['diasSemana']?.toString() ?? "",
+      horario: json['horario']?.toString() ?? "",
+      hora: int.tryParse(json['hora']?.toString() ?? "") ?? 0,
+      minuto: int.tryParse(json['minuto']?.toString() ?? "") ?? 0,
+    );
+  }
+}

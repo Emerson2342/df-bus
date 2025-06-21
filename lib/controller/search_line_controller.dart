@@ -28,4 +28,9 @@ class SearchLineController {
     final details = await busService.getLineDetails(line);
     return details;
   }
+
+  Future<List<BusSchedule>> getBusSchedule(String line) async {
+    final schedule = await busService.getBusSchedule(line);
+    return schedule;
+  }
 }
