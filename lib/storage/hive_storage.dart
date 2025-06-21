@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:df_bus/services/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -27,7 +25,7 @@ class HiveStorage extends StorageService {
       await linesBox.clear();
 
       for (final line in lines) {
-        linesBox.add(jsonEncode(line));
+        linesBox.add(line);
       }
     } catch (e) {
       debugPrint("HIVE Storage - Erro ao salvar as linhas - $e");
@@ -41,8 +39,8 @@ class HiveStorage extends StorageService {
       var lines = await getLines();
       lines.insert(0, line);
       lines = lines.toSet().toList();
-      if (lines.length > 10) {
-        lines = lines.sublist(0, 10);
+      if (lines.length > 8) {
+        lines = lines.sublist(0, 8);
       }
       await saveLines(lines);
     } catch (e) {

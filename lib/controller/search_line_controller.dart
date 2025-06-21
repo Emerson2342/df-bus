@@ -2,7 +2,6 @@ import 'package:df_bus/models/bus_model.dart';
 import 'package:df_bus/services/bus_service.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/services/storage_service.dart';
-import 'package:dio/dio.dart';
 
 class SearchLineController {
   final storageService = getIt<StorageService>();
@@ -23,5 +22,10 @@ class SearchLineController {
 
   Future<void> deleteLines() async {
     await storageService.clearList();
+  }
+
+  Future<List<DetalheOnibus>> getBusDetails(String line) async {
+    final details = await busService.getLineDetails(line);
+    return details;
   }
 }
