@@ -15,7 +15,7 @@ class MapsWidgetState extends State<MapsWidget> {
       Completer<GoogleMapController>();
 
   static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
+    target: LatLng(-15.793112, -47.884543),
     zoom: 14.4746,
   );
 
@@ -29,7 +29,8 @@ class MapsWidgetState extends State<MapsWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GoogleMap(
-        mapType: MapType.hybrid,
+        mapType: MapType.normal,
+        trafficEnabled: true,
         initialCameraPosition: _kGooglePlex,
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);

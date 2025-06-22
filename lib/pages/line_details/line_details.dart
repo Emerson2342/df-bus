@@ -30,99 +30,82 @@ class _LineDetailsWidgetState extends State<LineDetailsWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Linha ${widget.busLine}",
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          centerTitle: true,
-          iconTheme: const IconThemeData(
-            color: Colors.white,
-          ),
+      appBar: AppBar(
+        title: Text(
+          "Linha ${widget.busLine}",
+          style:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        // floatingActionButton: FloatingActionButton(
-        //   onPressed: () {},
-        //   child: const Icon(Icons.map),
-        // ),
-        body: Expanded(
-          child: MapsWidget(),
-        )
-        /* Column(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: Column(
         children: [
           FutureBuilder(
             future: searchLineController.getBusDetails(widget.busLine),
-            builder: (context, snapshop) {
-              if (snapshop.connectionState == ConnectionState.waiting) {
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
                 return const ProgressIndicatorWidget();
-              } else if (snapshop.hasError) {
+              } else if (snapshot.hasError) {
                 return Text("Ops...Erro ao buscar a linha ${widget.busLine}");
               }
-              final lineDetails = snapshop.data!;
-              return Column(
-                children: [
-                  Column(
-                    children: [
-                      Container(
-                          margin: const EdgeInsets.all(6),
-                          child: HeaderWidget(lineDetails: lineDetails[0]))
-                    ],
-                  )
-                ],
+              final lineDetails = snapshot.data!;
+              return Container(
+                margin: const EdgeInsets.all(6),
+                child: HeaderWidget(lineDetails: lineDetails[0]),
               );
             },
           ),
-          FutureBuilder(
-            future: searchLineController.getBusSchedule(widget.busLine),
-            builder: (context, snapshop) {
-              if (snapshop.connectionState == ConnectionState.waiting) {
-                return const ProgressIndicatorWidget();
-              } else if (snapshop.hasError) {
-                return Text(
-                    "Ops...Erro ao buscar os horários linha ${widget.busLine}");
-              }
-              final lineSchedule = snapshop.data!;
+          Expanded(
+            child: FutureBuilder(
+              future: searchLineController.getBusSchedule(widget.busLine),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const ProgressIndicatorWidget();
+                } else if (snapshot.hasError) {
+                  return Text(
+                      "Ops...Erro ao buscar os horários linha ${widget.busLine}");
+                }
+                final lineSchedule = snapshot.data!;
+                final List<String> sentidos =
+                    lineSchedule.map((s) => s.sentido).toSet().toList();
+                final Map<String, List<BusSchedule>> schedulesBySentido = {};
+                for (final s in lineSchedule) {
+                  schedulesBySentido.putIfAbsent(s.sentido, () => []).add(s);
+                }
 
-              final List<String> sentidos =
-                  lineSchedule.map((s) => s.sentido).toSet().toList();
-
-              final Map<String, List<BusSchedule>> schedulesBySentido = {};
-              for (final s in lineSchedule) {
-                schedulesBySentido.putIfAbsent(s.sentido, () => []).add(s);
-              }
-
-              // return//
-              return DefaultTabController(
-                length: sentidos.length,
-                child: Column(
-                  children: [
-                    TabBar(
-                      tabs: sentidos
-                          .map((sentido) => Tab(text: sentido))
-                          .toList(),
-                    ),
-                    Expanded(
-                      flex: 3,
-                      child: TabBarView(
-                        children: sentidos.map((sentido) {
-                          final schedules = schedulesBySentido[sentido] ?? [];
-                          return ScheduleListView(schedules: schedules);
-                        }).toList(),
+                return DefaultTabController(
+                  length: sentidos.length,
+                  child: Column(
+                    children: [
+                      TabBar(
+                        tabs: sentidos
+                            .map((sentido) => Tab(text: sentido))
+                            .toList(),
                       ),
-                    ),
-                    SizedBox(
-                      height: 200,
-                      width: 150,
-                      child: MapsWidget(),
-                    )
-                  ],
-                ),
-              );
-            },
-          )
+                      Expanded(
+                        flex: 3,
+                        child: TabBarView(
+                          children: sentidos.map((sentido) {
+                            final schedules = schedulesBySentido[sentido] ?? [];
+                            return ScheduleListView(schedules: schedules);
+                          }).toList(),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 350,
+                        width: double.infinity,
+                        child: MapsWidget(),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
         ],
-      ),*/
-        );
+      ),
+    );
   }
 }
