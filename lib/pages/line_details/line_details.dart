@@ -1,6 +1,7 @@
 import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/models/bus_model.dart';
 import 'package:df_bus/pages/line_details/widgets/header_widget.dart';
+import 'package:df_bus/pages/line_details/widgets/maps_widget.dart';
 import 'package:df_bus/pages/line_details/widgets/schedule_list.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/widgets/progress_indicator_widget.dart';
@@ -29,23 +30,28 @@ class _LineDetailsWidgetState extends State<LineDetailsWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Linha ${widget.busLine}",
-          style:
-              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        appBar: AppBar(
+          title: Text(
+            "Linha ${widget.busLine}",
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          centerTitle: true,
+          iconTheme: const IconThemeData(
+            color: Colors.white,
+          ),
         ),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        centerTitle: true,
-        iconTheme: const IconThemeData(
-          color: Colors.white,
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.map),
-      ),
-      body: Column(
+        // floatingActionButton: FloatingActionButton(
+        //   onPressed: () {},
+        //   child: const Icon(Icons.map),
+        // ),
+        body: SizedBox(
+          height: 200,
+          width: 150,
+          child: MapsWidget(),
+        )
+        /* Column(
         children: [
           FutureBuilder(
             future: searchLineController.getBusDetails(widget.busLine),
@@ -89,32 +95,36 @@ class _LineDetailsWidgetState extends State<LineDetailsWidget> {
               }
 
               // return//
-              return Expanded(
-                child: DefaultTabController(
-                  length: sentidos.length,
-                  child: Column(
-                    children: [
-                      TabBar(
-                        tabs: sentidos
-                            .map((sentido) => Tab(text: sentido))
-                            .toList(),
+              return DefaultTabController(
+                length: sentidos.length,
+                child: Column(
+                  children: [
+                    TabBar(
+                      tabs: sentidos
+                          .map((sentido) => Tab(text: sentido))
+                          .toList(),
+                    ),
+                    Expanded(
+                      flex: 3,
+                      child: TabBarView(
+                        children: sentidos.map((sentido) {
+                          final schedules = schedulesBySentido[sentido] ?? [];
+                          return ScheduleListView(schedules: schedules);
+                        }).toList(),
                       ),
-                      Expanded(
-                        child: TabBarView(
-                          children: sentidos.map((sentido) {
-                            final schedules = schedulesBySentido[sentido] ?? [];
-                            return ScheduleListView(schedules: schedules);
-                          }).toList(),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                    SizedBox(
+                      height: 200,
+                      width: 150,
+                      child: MapsWidget(),
+                    )
+                  ],
                 ),
               );
             },
           )
         ],
-      ),
-    );
+      ),*/
+        );
   }
 }
