@@ -46,9 +46,7 @@ class _LineDetailsWidgetState extends State<LineDetailsWidget> {
         //   onPressed: () {},
         //   child: const Icon(Icons.map),
         // ),
-        body: SizedBox(
-          height: 200,
-          width: 150,
+        body: Expanded(
           child: MapsWidget(),
         )
         /* Column(
