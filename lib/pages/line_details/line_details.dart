@@ -85,7 +85,9 @@ class _LineDetailsWidgetState extends State<LineDetailsWidget> {
             Expanded(
               // height: 350,
               //width: double.infinity,
-              child: MapsWidget(),
+              child: MapsWidget(
+                busLine: widget.busLine,
+              ),
             ),
           ],
         ),

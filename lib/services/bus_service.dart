@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:df_bus/models/bus_route.dart';
 import 'package:dio/io.dart';
 import 'package:df_bus/models/bus_model.dart';
 import 'package:dio/dio.dart';
@@ -55,6 +56,18 @@ class BusService {
           .toList();
     } catch (e, stacktrace) {
       debugPrint("BusService - Erro ao buscar os horários da linha $busLine");
+      debugPrint(e.toString());
+      debugPrint(stacktrace.toString());
+      rethrow;
+    }
+  }
+
+  Future<FeatureBusRoute> getBusRoute(String busLine) async {
+    try {
+      final response = await _dio.get("percurso/linha/$busLine");
+      return FeatureBusRoute.fromJson(response.data);
+    } catch (e, stacktrace) {
+      debugPrint("BusService - Erro ao buscar a rota da linha $busLine");
       debugPrint(e.toString());
       debugPrint(stacktrace.toString());
       rethrow;

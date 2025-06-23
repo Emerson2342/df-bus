@@ -1,12 +1,17 @@
 import 'dart:async';
 
+import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/helpers/position_widget.dart';
+import 'package:df_bus/models/bus_route.dart';
+import 'package:df_bus/services/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapsWidget extends StatefulWidget {
-  const MapsWidget({super.key});
+  const MapsWidget({super.key, required this.busLine});
+
+  final String busLine;
 
   @override
   State<MapsWidget> createState() => MapsWidgetState();
@@ -15,6 +20,9 @@ class MapsWidget extends StatefulWidget {
 class MapsWidgetState extends State<MapsWidget> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
+  final searchLineController = getIt<SearchLineController>();
+
+  FeatureBusRoute? _busRoute;
 
   Position? _currentPosition;
   CameraPosition _initialCameraPosition =
@@ -24,6 +32,15 @@ class MapsWidgetState extends State<MapsWidget> {
   void initState() {
     super.initState();
     _getCurrentLocation();
+    _getBusroute();
+  }
+
+  Future<void> _getBusroute() async {
+    final busRoute = await searchLineController.getBusRoute(widget.busLine);
+    setState(() {
+      _busRoute = busRoute;
+    });
+    debugPrint("*********${busRoute.type}");
   }
 
   Future<void> _getCurrentLocation() async {
