@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: HomePage(),
+      home: SafeArea(top: false, child: HomePage()),
     );
   }
 }

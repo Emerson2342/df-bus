@@ -2,7 +2,7 @@ import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/models/bus_model.dart';
 import 'package:df_bus/pages/line_details/widgets/header_widget.dart';
 import 'package:df_bus/pages/line_details/widgets/maps_widget.dart';
-import 'package:df_bus/pages/line_details/widgets/schedule_list.dart';
+import 'package:df_bus/pages/line_details/widgets/schedule_details_bottom_sheet.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/widgets/progress_indicator_widget.dart';
 import 'package:flutter/material.dart';
@@ -18,14 +18,20 @@ class LineDetailsWidget extends StatefulWidget {
 
 class _LineDetailsWidgetState extends State<LineDetailsWidget> {
   final searchLineController = getIt<SearchLineController>();
+  List<BusSchedule> busSchedule = [];
 
   @override
   void initState() {
     super.initState();
-    _loadLineDetails();
+    _loadBusSchedule();
   }
 
-  void _loadLineDetails() async {}
+  _loadBusSchedule() async {
+    var busSc = await searchLineController.getBusSchedule(widget.busLine);
+    setState(() {
+      busSchedule = busSc;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,71 +46,49 @@ class _LineDetailsWidgetState extends State<LineDetailsWidget> {
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Column(
-        children: [
-          FutureBuilder(
-            future: searchLineController.getBusDetails(widget.busLine),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const ProgressIndicatorWidget();
-              } else if (snapshot.hasError) {
-                return Text("Ops...Erro ao buscar a linha ${widget.busLine}");
-              }
-              final lineDetails = snapshot.data!;
-              return Container(
-                margin: const EdgeInsets.all(6),
-                child: HeaderWidget(lineDetails: lineDetails[0]),
-              );
-            },
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 100),
+        child: FloatingActionButton(
+          backgroundColor: Colors.white70,
+          onPressed: () {
+            showModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  return ScheduleDetails(busLineSchedule: busSchedule);
+                });
+          },
+          child: Icon(
+            Icons.schedule,
+            color: Colors.black,
           ),
-          Expanded(
-            child: FutureBuilder(
-              future: searchLineController.getBusSchedule(widget.busLine),
+        ),
+      ),
+      body: SafeArea(
+        top: true,
+        child: Column(
+          children: [
+            FutureBuilder(
+              future: searchLineController.getBusDetails(widget.busLine),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const ProgressIndicatorWidget();
                 } else if (snapshot.hasError) {
-                  return Text(
-                      "Ops...Erro ao buscar os horários linha ${widget.busLine}");
+                  return Text("Ops...Erro ao buscar a linha ${widget.busLine}");
                 }
-                final lineSchedule = snapshot.data!;
-                final List<String> sentidos =
-                    lineSchedule.map((s) => s.sentido).toSet().toList();
-                final Map<String, List<BusSchedule>> schedulesBySentido = {};
-                for (final s in lineSchedule) {
-                  schedulesBySentido.putIfAbsent(s.sentido, () => []).add(s);
-                }
-
-                return DefaultTabController(
-                  length: sentidos.length,
-                  child: Column(
-                    children: [
-                      TabBar(
-                        tabs: sentidos
-                            .map((sentido) => Tab(text: sentido))
-                            .toList(),
-                      ),
-                      Expanded(
-                        flex: 3,
-                        child: TabBarView(
-                          children: sentidos.map((sentido) {
-                            final schedules = schedulesBySentido[sentido] ?? [];
-                            return ScheduleListView(schedules: schedules);
-                          }).toList(),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 350,
-                        width: double.infinity,
-                        child: MapsWidget(),
-                      ),
-                    ],
-                  ),
+                final lineDetails = snapshot.data!;
+                return Container(
+                  margin: const EdgeInsets.all(6),
+                  child: HeaderWidget(lineDetails: lineDetails[0]),
                 );
               },
             ),
-          ),
-        ],
+            Expanded(
+              // height: 350,
+              //width: double.infinity,
+              child: MapsWidget(),
+            ),
+          ],
+        ),
       ),
     );
   }
