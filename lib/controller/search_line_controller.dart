@@ -1,3 +1,4 @@
+import 'package:df_bus/models/bus_location.dart';
 import 'package:df_bus/models/bus_model.dart';
 import 'package:df_bus/models/bus_route.dart';
 import 'package:df_bus/services/bus_service.dart';
@@ -38,5 +39,10 @@ class SearchLineController {
   Future<FeatureBusRoute> getBusRoute(String routeCod) async {
     final busRoute = await busService.getBusRoute(routeCod);
     return busRoute;
+  }
+
+  Future<FeatureBusLocation> getBusLocation(String line) async {
+    final busLocation = await busService.getBusLocation(line);
+    return busLocation;
   }
 }

@@ -90,6 +90,7 @@ class _LineDetailsWidgetState extends State<LineDetailsWidget> {
                 Expanded(
                   child: MapsWidget(
                     busRoute: busRoutes,
+                    busLine: widget.busLine,
                   ),
                 ),
               ],

@@ -83,3 +83,29 @@ class PropertyRoute {
     return PropertyRoute(sentido: "", seqLinha: 0, codLinha: "");
   }
 }
+
+class PropertyLocation {
+  final String numero;
+  final int horario;
+  final String linha;
+  final String operadora;
+  final int idOperadora;
+
+  PropertyLocation({
+    required this.numero,
+    required this.horario,
+    required this.linha,
+    required this.operadora,
+    required this.idOperadora,
+  });
+
+  factory PropertyLocation.fromJson(Map<String, dynamic> json) {
+    return PropertyLocation(
+      numero: json['numero']?.toString() ?? "",
+      horario: int.tryParse(json['horario']?.toString() ?? "") ?? 0,
+      linha: json['linha']?.toString() ?? "",
+      operadora: json['operadora']?.toString() ?? "",
+      idOperadora: int.tryParse(json['idOperadora']?.toString() ?? "") ?? 0,
+    );
+  }
+}

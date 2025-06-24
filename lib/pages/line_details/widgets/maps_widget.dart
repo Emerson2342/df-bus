@@ -7,11 +7,15 @@ import 'package:df_bus/services/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'dart:math' as math;
+
+import 'package:intl/intl.dart';
 
 class MapsWidget extends StatefulWidget {
-  const MapsWidget({super.key, required this.busRoute});
+  const MapsWidget({super.key, required this.busRoute, required this.busLine});
 
   final List<int> busRoute;
+  final String busLine;
 
   @override
   State<MapsWidget> createState() => MapsWidgetState();
@@ -23,27 +27,11 @@ class MapsWidgetState extends State<MapsWidget> {
   final searchLineController = getIt<SearchLineController>();
 
   final List<FeatureBusRoute> _busRoute = [];
-
   Set<Marker> markes = {};
 
   Set<Polyline> _polylines = {};
 
-  List<List<LatLng>> pointsOnMap = [
-    [
-      const LatLng(-15.832316, -47.921930),
-      const LatLng(-15.831514, -47.920686),
-      const LatLng(-15.830901, -47.919866),
-      const LatLng(-15.830242, -47.918991),
-      const LatLng(-15.828163, -47.916076),
-    ],
-    [
-      const LatLng(-15.831439, -47.921952),
-      const LatLng(-15.831335, -47.921834),
-      const LatLng(-15.831181, -47.921587),
-      const LatLng(-15.830252, -47.920327),
-      const LatLng(-15.829725, -47.919651),
-    ]
-  ];
+  List<List<LatLng>> pointsOnMap = [];
 
   Position? _currentPosition;
   CameraPosition _initialCameraPosition =
@@ -52,39 +40,91 @@ class MapsWidgetState extends State<MapsWidget> {
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation();
-    _getBusroute();
-    initMarkers();
+    _init();
+    Timer.periodic(const Duration(seconds: 5), (timer) async {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      await _getBusLocation();
+    });
   }
 
-  void initMarkers() async {
-    final newMarkers = <Marker>{};
+  @override
+  void dispose() {
+    _busRoute.clear();
+    pointsOnMap.clear();
+    _polylines.clear();
+    markes.clear();
+    super.dispose();
+  }
+
+  Future<void> _init() async {
+    await _getCurrentLocation();
+    await _getBusroute();
+
+    _initMarkers();
+    setState(() {});
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (_polylines.isNotEmpty) {
+        await setInitialCamera(mapController, _polylines);
+      }
+    });
+  }
+
+  void _initMarkers() {
     final newPolylines = <Polyline>{};
     for (int i = 0; i < pointsOnMap.length; i++) {
-      for (int j = 0; j < pointsOnMap[i].length; j++) {
-        newMarkers.add(
-          Marker(
-            markerId: MarkerId('$i-$j'),
-            position: pointsOnMap[i][j],
-            infoWindow: const InfoWindow(title: "Title", snippet: "Snippet"),
-            icon: BitmapDescriptor.defaultMarker,
-          ),
-        );
-      }
       newPolylines.add(
         Polyline(
           polylineId: PolylineId('polyline-$i'),
           points: pointsOnMap[i],
           color: i == 0
-              ? const Color.fromARGB(255, 41, 3, 255)
-              : const Color.fromARGB(255, 222, 82, 12),
-          // width: 3,
+              ? const Color.fromARGB(255, 82, 55, 232)
+              : const Color.fromARGB(255, 45, 156, 65),
+          width: 3,
         ),
       );
     }
+    if (!context.mounted) return;
+    // setState(() {
+    _polylines = newPolylines;
+    // });
+  }
+
+  Future<void> _getBusLocation() async {
+    final newMarkers = <Marker>{};
+    final geoLocation =
+        await searchLineController.getBusLocation(widget.busLine);
+    for (int index = 0; index < geoLocation.features.length; index++) {
+      final item = geoLocation.features[index];
+      final lon = item.geometry.coordinates[0];
+      final lat = item.geometry.coordinates[1];
+      final busNumber = NumberFormat.decimalPattern('pt_BR')
+          .format(double.tryParse(item.properties.numero));
+      final lastUpdate =
+          DateTime.fromMillisecondsSinceEpoch(item.properties.horario);
+      final diff = DateTime.now().difference(lastUpdate);
+
+      final seconds = diff.inSeconds % 60;
+      final textUpdate = diff.inMinutes == 0
+          ? 'Última atualização: $seconds segundos atrás'
+          : 'Última atualização: ${diff.inMinutes} min e $seconds segundos atrás';
+      newMarkers.add(
+        Marker(
+          markerId: MarkerId("marker -$index"),
+          position: LatLng(lat, lon),
+          infoWindow: InfoWindow(
+              title: "Linha: ${item.properties.linha} - Ônibus: $busNumber",
+              snippet: textUpdate),
+          icon: BitmapDescriptor.defaultMarker,
+        ),
+      );
+    }
+    if (!mounted) return;
     setState(() {
       markes = newMarkers;
-      _polylines = newPolylines;
     });
   }
 
@@ -119,12 +159,11 @@ class MapsWidgetState extends State<MapsWidget> {
     final controller = await mapController.future;
 
     controller.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
+    setState(() {});
   }
 
   Future<void> _getBusroute() async {
-    for (var item in widget.busRoute) {
-      debugPrint("*********Código da rota $item");
-    }
+    double sinh(double x) => (math.exp(x) - math.exp(-x)) / 2;
     for (final route in widget.busRoute) {
       final busRoute = await searchLineController.getBusRoute(route.toString());
 
@@ -132,12 +171,24 @@ class MapsWidgetState extends State<MapsWidget> {
     }
     if (!mounted) return;
 
-    setState(() {});
+    // setState(() {});
     debugPrint("*********Quantidade de rotas ${_busRoute.length}");
-    for (final r in _busRoute) {
-      debugPrint("*********${r.features[0].geometry.coordinates[0]}");
+
+    for (final feature in _busRoute) {
+      for (final f in feature.features) {
+        final List<LatLng> singleRoute = f.geometry.coordinates.map((coord) {
+          final x = coord[0];
+          final y = coord[1];
+
+          final lon = x * 180 / 20037508.34;
+          final lat =
+              (math.atan(sinh(y / 20037508.34 * math.pi)) * 180) / math.pi;
+
+          return LatLng(lat, lon);
+        }).toList();
+        pointsOnMap.add(singleRoute);
+      }
     }
-    await setInitialCamera(mapController, _polylines);
   }
 
   Future<void> _getCurrentLocation() async {
@@ -153,9 +204,9 @@ class MapsWidgetState extends State<MapsWidget> {
         );
       });
 
-      setState(() {
-        _currentPosition = position;
-      });
+      // setState(() {
+      _currentPosition = position;
+      //  });
     } catch (e) {
       debugPrint('Erro ao obter localização: $e');
     }
@@ -177,7 +228,7 @@ class MapsWidgetState extends State<MapsWidget> {
               polylines: _polylines,
               myLocationEnabled: true,
               mapType: MapType.normal,
-              trafficEnabled: true,
+              markers: markes,
               initialCameraPosition: _initialCameraPosition,
               onMapCreated: (GoogleMapController controller) {
                 mapController.complete(controller);
@@ -186,16 +237,6 @@ class MapsWidgetState extends State<MapsWidget> {
           ),
         ],
       ),
-      // floatingActionButton: FloatingActionButton.extended(
-      //   onPressed: _goToTheLake,
-      //   label: const Text('To the lake!'),
-      //   icon: const Icon(Icons.directions_boat),
-      // ),
     );
   }
-
-  // Future<void> _goToTheLake() async {
-  //   final GoogleMapController controller = await _controller.future;
-  //   await controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
-  // }
 }

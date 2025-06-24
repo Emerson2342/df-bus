@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:df_bus/models/bus_location.dart';
 import 'package:df_bus/models/bus_route.dart';
 import 'package:dio/io.dart';
 import 'package:df_bus/models/bus_model.dart';
@@ -68,6 +69,19 @@ class BusService {
       return FeatureBusRoute.fromJson(response.data);
     } catch (e, stacktrace) {
       debugPrint("BusService - Erro ao buscar a rota da linha $routeCod");
+      debugPrint(e.toString());
+      debugPrint(stacktrace.toString());
+      rethrow;
+    }
+  }
+
+  Future<FeatureBusLocation> getBusLocation(String busLine) async {
+    try {
+      final response = await _dio.get("gps/linha/$busLine/geo/recent");
+      return FeatureBusLocation.fromJson(response.data);
+    } catch (e, stacktrace) {
+      debugPrint(
+          "BusService - Erro ao buscar a geolocalização da linha $busLine");
       debugPrint(e.toString());
       debugPrint(stacktrace.toString());
       rethrow;
