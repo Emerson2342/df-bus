@@ -62,12 +62,12 @@ class BusService {
     }
   }
 
-  Future<FeatureBusRoute> getBusRoute(String busLine) async {
+  Future<FeatureBusRoute> getBusRoute(String routeCod) async {
     try {
-      final response = await _dio.get("percurso/linha/$busLine");
+      final response = await _dio.get("percurso/linha/$routeCod");
       return FeatureBusRoute.fromJson(response.data);
     } catch (e, stacktrace) {
-      debugPrint("BusService - Erro ao buscar a rota da linha $busLine");
+      debugPrint("BusService - Erro ao buscar a rota da linha $routeCod");
       debugPrint(e.toString());
       debugPrint(stacktrace.toString());
       rethrow;

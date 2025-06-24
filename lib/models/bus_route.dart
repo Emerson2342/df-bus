@@ -30,7 +30,9 @@ class FeatureRoute {
             ? Geometry.fromJson(json['geometry'])
             : Geometry.empty(),
         type: json['type']?.toString() ?? "",
-        properties: json['properties']);
+        properties: json['properties'] != null
+            ? PropertyRoute.fromJson(json['properties'])
+            : PropertyRoute.empty());
   }
   factory FeatureRoute.empty() {
     return FeatureRoute(
@@ -63,7 +65,7 @@ class Geometry {
 
 class PropertyRoute {
   final String sentido;
-  final String seqLinha;
+  final int seqLinha;
   final String codLinha;
 
   PropertyRoute(
@@ -72,12 +74,12 @@ class PropertyRoute {
   factory PropertyRoute.fromJson(Map<String, dynamic> json) {
     return PropertyRoute(
       sentido: json['sentido']?.toString() ?? "",
-      seqLinha: json['seqLinha']?.toString() ?? "",
+      seqLinha: int.tryParse(json['seqLinha']?.toString() ?? "") ?? 0,
       codLinha: json['codLinha']?.toString() ?? "",
     );
   }
 
   factory PropertyRoute.empty() {
-    return PropertyRoute(sentido: "", seqLinha: "", codLinha: "");
+    return PropertyRoute(sentido: "", seqLinha: 0, codLinha: "");
   }
 }

@@ -19,6 +19,7 @@ class LineDetailsWidget extends StatefulWidget {
 class _LineDetailsWidgetState extends State<LineDetailsWidget> {
   final searchLineController = getIt<SearchLineController>();
   List<BusSchedule> busSchedule = [];
+  List<int> busRoutes = [];
 
   @override
   void initState() {
@@ -65,31 +66,35 @@ class _LineDetailsWidgetState extends State<LineDetailsWidget> {
       ),
       body: SafeArea(
         top: true,
-        child: Column(
-          children: [
-            FutureBuilder(
-              future: searchLineController.getBusDetails(widget.busLine),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const ProgressIndicatorWidget();
-                } else if (snapshot.hasError) {
-                  return Text("Ops...Erro ao buscar a linha ${widget.busLine}");
-                }
-                final lineDetails = snapshot.data!;
-                return Container(
+        child: FutureBuilder(
+          future: searchLineController.getBusDetails(widget.busLine),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const ProgressIndicatorWidget();
+            } else if (snapshot.hasError) {
+              return Text("Ops...Erro ao buscar a linha ${widget.busLine}");
+            }
+            final lineDetails = snapshot.data!;
+            for (var item in lineDetails) {
+              busRoutes.add(item.sequencial);
+            }
+            for (var item in busRoutes) {
+              debugPrint("*********Código da rota Main $item");
+            }
+            return Column(
+              children: [
+                Container(
                   margin: const EdgeInsets.all(6),
                   child: HeaderWidget(lineDetails: lineDetails[0]),
-                );
-              },
-            ),
-            Expanded(
-              // height: 350,
-              //width: double.infinity,
-              child: MapsWidget(
-                busLine: widget.busLine,
-              ),
-            ),
-          ],
+                ),
+                Expanded(
+                  child: MapsWidget(
+                    busRoute: busRoutes,
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
