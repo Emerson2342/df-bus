@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:df_bus/models/bus_location.dart';
 import 'package:df_bus/models/bus_route.dart';
+import 'package:df_bus/models/search_lines.dart';
 import 'package:dio/io.dart';
 import 'package:df_bus/models/bus_model.dart';
 import 'package:dio/dio.dart';
@@ -82,6 +83,20 @@ class BusService {
     } catch (e, stacktrace) {
       debugPrint(
           "BusService - Erro ao buscar a geolocalização da linha $busLine");
+      debugPrint(e.toString());
+      debugPrint(stacktrace.toString());
+      rethrow;
+    }
+  }
+
+  Future<List<Referencia>> searchByRef(String ref) async {
+    try {
+      final response = await _dio.get("/referencia/find/$ref/30?q=$ref");
+      return (response.data as List)
+          .map((r) => Referencia.fromJson(r))
+          .toList();
+    } catch (e, stacktrace) {
+      debugPrint("BusService - Erro ao pesquisar $ref");
       debugPrint(e.toString());
       debugPrint(stacktrace.toString());
       rethrow;

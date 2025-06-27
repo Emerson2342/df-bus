@@ -1,11 +1,10 @@
 import 'dart:async';
 
 import 'package:df_bus/controller/search_line_controller.dart';
-import 'package:df_bus/helpers/position_widget.dart';
 import 'package:df_bus/models/bus_route.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+// import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:math' as math;
 
@@ -32,22 +31,25 @@ class MapsWidgetState extends State<MapsWidget> {
   Set<Polyline> _polylines = {};
 
   List<List<LatLng>> pointsOnMap = [];
+  late Timer _timer;
+  BitmapDescriptor customIcon = BitmapDescriptor.defaultMarker;
 
-  Position? _currentPosition;
-  CameraPosition _initialCameraPosition =
+  //Position? _currentPosition;
+  final CameraPosition _initialCameraPosition =
       CameraPosition(target: LatLng(-15.793112, -47.884543), zoom: 15);
 
   @override
   void initState() {
-    super.initState();
+    _loadCustomIcon();
     _init();
-    Timer.periodic(const Duration(seconds: 5), (timer) async {
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) async {
       if (!mounted) {
         timer.cancel();
         return;
       }
       await _getBusLocation();
     });
+    super.initState();
   }
 
   @override
@@ -56,15 +58,27 @@ class MapsWidgetState extends State<MapsWidget> {
     pointsOnMap.clear();
     _polylines.clear();
     markes.clear();
+    _timer.cancel();
     super.dispose();
   }
 
-  Future<void> _init() async {
-    await _getCurrentLocation();
-    await _getBusroute();
+  void _loadCustomIcon() {
+    BitmapDescriptor.asset(ImageConfiguration(), "assets/images/bus.png")
+        .then((icon) {
+      setState(() {
+        customIcon = icon;
+      });
+    });
+  }
 
+  Future<void> _init() async {
+    await _getBusLocation();
+    //await _getCurrentLocation();
+    await _getBusroute();
     _initMarkers();
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (_polylines.isNotEmpty) {
@@ -87,13 +101,14 @@ class MapsWidgetState extends State<MapsWidget> {
         ),
       );
     }
-    if (!context.mounted) return;
+    if (!mounted) return;
     // setState(() {
     _polylines = newPolylines;
     // });
   }
 
   Future<void> _getBusLocation() async {
+    debugPrint("***************Chamou a localização dos ônibus");
     final newMarkers = <Marker>{};
     final geoLocation =
         await searchLineController.getBusLocation(widget.busLine);
@@ -118,7 +133,7 @@ class MapsWidgetState extends State<MapsWidget> {
           infoWindow: InfoWindow(
               title: "Linha: ${item.properties.linha} - Ônibus: $busNumber",
               snippet: textUpdate),
-          icon: BitmapDescriptor.defaultMarker,
+          icon: customIcon,
         ),
       );
     }
@@ -163,13 +178,13 @@ class MapsWidgetState extends State<MapsWidget> {
   }
 
   Future<void> _getBusroute() async {
+    if (!mounted) return;
     double sinh(double x) => (math.exp(x) - math.exp(-x)) / 2;
     for (final route in widget.busRoute) {
       final busRoute = await searchLineController.getBusRoute(route.toString());
 
       _busRoute.add(busRoute);
     }
-    if (!mounted) return;
 
     // setState(() {});
     debugPrint("*********Quantidade de rotas ${_busRoute.length}");
@@ -191,38 +206,32 @@ class MapsWidgetState extends State<MapsWidget> {
     }
   }
 
-  Future<void> _getCurrentLocation() async {
-    try {
-      final position = await determinePosition();
+  // Future<void> _getCurrentLocation() async {
+  //   try {
+  //     final position = await determinePosition();
 
-      debugPrint(
-          '*******Lat: ${position.latitude}, Long: ${position.longitude}');
-      setState(() {
-        _initialCameraPosition = CameraPosition(
-          target: LatLng(position.latitude, position.longitude),
-          zoom: 14.4746,
-        );
-      });
+  //     debugPrint(
+  //         '*******Lat: ${position.latitude}, Long: ${position.longitude}');
+  //     setState(() {
+  //       _initialCameraPosition = CameraPosition(
+  //         target: LatLng(position.latitude, position.longitude),
+  //         zoom: 14.4746,
+  //       );
+  //     });
 
-      // setState(() {
-      _currentPosition = position;
-      //  });
-    } catch (e) {
-      debugPrint('Erro ao obter localização: $e');
-    }
-  }
+  //     // setState(() {
+  //     // _currentPosition = position;
+  //     //  });
+  //   } catch (e) {
+  //     debugPrint('Erro ao obter localização: $e');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
-          if (_currentPosition != null)
-            Text(
-              'Lat: ${_currentPosition!.latitude}, Long: ${_currentPosition!.longitude}',
-            )
-          else
-            const CircularProgressIndicator(),
           Expanded(
             child: GoogleMap(
               polylines: _polylines,

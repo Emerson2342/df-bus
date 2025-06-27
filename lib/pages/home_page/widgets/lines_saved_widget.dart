@@ -1,4 +1,6 @@
+import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/pages/line_details/line_details.dart';
+import 'package:df_bus/services/service_locator.dart';
 import 'package:flutter/material.dart';
 
 class LinesSaved extends StatelessWidget {
@@ -11,6 +13,7 @@ class LinesSaved extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final searchLineController = getIt<SearchLineController>();
     return Wrap(
       spacing: 3,
       runSpacing: 3,
@@ -32,6 +35,7 @@ class LinesSaved extends StatelessWidget {
                   builder: (context) => LineDetailsWidget(busLine: lineSaved),
                 ),
               );
+              await searchLineController.addLine(lineSaved);
             },
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -39,6 +43,9 @@ class LinesSaved extends StatelessWidget {
                 const Icon(
                   Icons.directions_bus,
                   color: Colors.white,
+                ),
+                SizedBox(
+                  width: 7,
                 ),
                 Text(
                   lineSaved,
