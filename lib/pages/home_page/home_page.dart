@@ -1,10 +1,8 @@
 import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/models/bus_model.dart';
-import 'package:df_bus/pages/home_page/widgets/lines_result_widget.dart';
 import 'package:df_bus/pages/home_page/widgets/lines_saved_widget.dart';
 import 'package:df_bus/pages/home_page/widgets/search_line_input_widget.dart';
 import 'package:df_bus/services/service_locator.dart';
-import 'package:df_bus/widgets/snackbar_message_widget.dart';
 import 'package:flutter/material.dart';
 import './../../main.dart' show routeObserver;
 
@@ -37,14 +35,12 @@ class _HomePageState extends State<HomePage> with RouteAware {
   @override
   void didPopNext() {
     debugPrint('****Voltou pra Home Page');
-    searchLine();
     getLinesSaved();
   }
 
   @override
   void initState() {
     super.initState();
-    searchLine();
     getLinesSaved();
     debugPrint("*******Entrou na Home Page");
   }
@@ -53,18 +49,6 @@ class _HomePageState extends State<HomePage> with RouteAware {
     final lines = await searchLineController.init();
     linesSaved = lines;
     setState(() {});
-  }
-
-  void searchLine() async {
-    loadingSearch = true;
-    final list = await searchLineController.searchLines(linetoSeach);
-    linesSearched = list;
-    if (list.isEmpty) {
-      if (!mounted) return;
-      messageSnackbar(context, "Nenhuma linha encontrada");
-    }
-    setState(() {});
-    loadingSearch = false;
   }
 
   @override
@@ -91,23 +75,8 @@ class _HomePageState extends State<HomePage> with RouteAware {
           const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.all(15.0),
-            child: SearchLineInputWidget(onAddLine: (line) {
-              debugPrint("Buscou a linha $line");
-              setState(() {
-                linetoSeach = line;
-              });
-              searchLine();
-            }),
+            child: SearchLineInputWidget(),
           ),
-          // const SizedBox(height: 16),
-          // if (loadingSearch)
-          //   Expanded(
-          //     child: const Center(
-          //       child: CircularProgressIndicator(),
-          //     ),
-          //   )
-          // else
-          //   LinesResultWidget(linesResult: linesSearched)
         ],
       ),
     );

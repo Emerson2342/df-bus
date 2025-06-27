@@ -22,10 +22,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'DF Bus',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Color(0xff380b54),
-          primary: Color(0xff380b54),
-          secondary: Color(0xff7016a8),
+        scaffoldBackgroundColor: Color(0xff072e5b),
+        colorScheme: ColorScheme.dark(
+          primary: Color(0xff011627),
+          secondary: Color(0xff00bfff),
         ),
         useMaterial3: true,
       ),

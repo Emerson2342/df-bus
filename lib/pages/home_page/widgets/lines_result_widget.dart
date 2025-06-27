@@ -18,50 +18,48 @@ class _LinesResultWidgetState extends State<LinesResultWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView.builder(
-        padding: const EdgeInsets.all(5),
-        itemCount: widget.linesResult.length,
-        itemBuilder: (context, index) {
-          final line = widget.linesResult[index];
-          return Card(
-            child: ListTile(
-              onTap: () async {
-                debugPrint('Linha - ${line.numero}');
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LineDetailsWidget(
-                      busLine: line.numero,
+    return ListView.builder(
+      padding: const EdgeInsets.all(5),
+      itemCount: widget.linesResult.length,
+      itemBuilder: (context, index) {
+        final line = widget.linesResult[index];
+        return Card(
+          child: ListTile(
+            onTap: () async {
+              debugPrint('Linha - ${line.numero}');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LineDetailsWidget(
+                    busLine: line.numero,
+                  ),
+                ),
+              );
+              searchLineController.addLine(line.numero);
+            },
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  line.numero,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                    child: Text(
+                      line.descricao,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
                     ),
                   ),
-                );
-                searchLineController.addLine(line.numero);
-              },
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    line.numero,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                      child: Text(
-                        line.descricao,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                      ),
-                    ),
-                  ),
-                  Text('R\$ ${line.tarifa.toStringAsFixed(2)}'),
-                ],
-              ),
+                ),
+                Text('R\$ ${line.tarifa.toStringAsFixed(2)}'),
+              ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

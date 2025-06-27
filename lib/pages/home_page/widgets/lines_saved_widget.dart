@@ -32,7 +32,7 @@ class LinesSaved extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    backgroundColor: Theme.of(context).colorScheme.secondary),
+                    backgroundColor: Colors.deepOrangeAccent),
                 onPressed: () async {
                   Navigator.push(
                     context,
@@ -48,14 +48,14 @@ class LinesSaved extends StatelessWidget {
                   children: [
                     const Icon(
                       Icons.directions_bus,
-                      color: Colors.white,
+                      // color: Colors.Bla,
                     ),
                     SizedBox(
                       width: 7,
                     ),
                     Text(
                       lineSaved,
-                      style: const TextStyle(color: Colors.white),
+                      // style: const TextStyle(color: Colors.white),
                     ),
                   ],
                 ),
