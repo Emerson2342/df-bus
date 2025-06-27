@@ -1,6 +1,7 @@
 import 'package:df_bus/models/bus_location.dart';
 import 'package:df_bus/models/bus_model.dart';
 import 'package:df_bus/models/bus_route.dart';
+import 'package:df_bus/models/search_lines.dart';
 import 'package:df_bus/services/bus_service.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/services/storage_service.dart';
@@ -44,5 +45,10 @@ class SearchLineController {
   Future<FeatureBusLocation> getBusLocation(String line) async {
     final busLocation = await busService.getBusLocation(line);
     return busLocation;
+  }
+
+  Future<List<QuerySearch>> findByQuery(String query) async {
+    final queryResult = await busService.findQuery(query);
+    return queryResult;
   }
 }

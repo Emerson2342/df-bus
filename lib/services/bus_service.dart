@@ -89,14 +89,14 @@ class BusService {
     }
   }
 
-  Future<List<Referencia>> searchByRef(String ref) async {
+  Future<List<QuerySearch>> findQuery(String query) async {
     try {
-      final response = await _dio.get("/referencia/find/$ref/30?q=$ref");
+      final response = await _dio.get("/referencia/find/$query/30?q=$query");
       return (response.data as List)
-          .map((r) => Referencia.fromJson(r))
+          .map((q) => QuerySearch.fromJson(q))
           .toList();
     } catch (e, stacktrace) {
-      debugPrint("BusService - Erro ao pesquisar $ref");
+      debugPrint("BusService - Erro ao pesquisar $query");
       debugPrint(e.toString());
       debugPrint(stacktrace.toString());
       rethrow;

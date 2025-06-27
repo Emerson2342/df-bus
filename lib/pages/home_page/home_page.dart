@@ -81,6 +81,14 @@ class _HomePageState extends State<HomePage> with RouteAware {
       ),
       body: Column(
         children: [
+          LinesSaved(linesSaved: linesSaved),
+          TextButton(
+            onPressed: () async {
+              await searchLineController.deleteLines();
+            },
+            child: Text("Limpar Lista"),
+          ),
+          const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.all(15.0),
             child: SearchLineInputWidget(onAddLine: (line) {
@@ -91,23 +99,15 @@ class _HomePageState extends State<HomePage> with RouteAware {
               searchLine();
             }),
           ),
-          TextButton(
-            onPressed: () async {
-              await searchLineController.deleteLines();
-            },
-            child: Text("Limpar Lista"),
-          ),
-          SizedBox(height: 16),
-          LinesSaved(linesSaved: linesSaved),
-          const SizedBox(height: 16),
-          if (loadingSearch)
-            Expanded(
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
-            )
-          else
-            LinesResultWidget(linesResult: linesSearched)
+          // const SizedBox(height: 16),
+          // if (loadingSearch)
+          //   Expanded(
+          //     child: const Center(
+          //       child: CircularProgressIndicator(),
+          //     ),
+          //   )
+          // else
+          //   LinesResultWidget(linesResult: linesSearched)
         ],
       ),
     );
