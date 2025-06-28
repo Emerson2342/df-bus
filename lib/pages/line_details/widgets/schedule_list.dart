@@ -21,20 +21,28 @@ class ScheduleListView extends StatelessWidget {
     return ListView(padding: const EdgeInsets.all(8), children: [
       Padding(
         padding: const EdgeInsets.only(top: 10.0, left: 5, right: 5),
-        child: Flexible(
-          child: Text(
-            "Origem: ${busDirection.origem}",
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                "Origem: ${busDirection.origem}",
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+          ],
         ),
       ),
       Padding(
         padding: const EdgeInsets.only(bottom: 10.0, left: 5, right: 5),
-        child: Flexible(
-          child: Text(
-            "Destino: ${busDirection.destino}",
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+        child: Row(
+          children: [
+            Flexible(
+              child: Text(
+                "Destino: ${busDirection.destino}",
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+          ],
         ),
       ),
       ...porDia.keys.map((diaLabel) {
