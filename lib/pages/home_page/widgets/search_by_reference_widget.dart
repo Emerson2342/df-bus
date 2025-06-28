@@ -4,6 +4,7 @@ import 'package:df_bus/models/bus_model.dart';
 import 'package:df_bus/models/search_lines.dart';
 import 'package:df_bus/pages/home_page/widgets/lines_result_widget.dart';
 import 'package:df_bus/services/service_locator.dart';
+import 'package:df_bus/widgets/snackbar_message_widget.dart';
 import 'package:flutter/material.dart';
 
 class SearchByRefWidget extends StatefulWidget {
@@ -58,6 +59,10 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
       loadingSearch = false;
       showQueryResults = true;
     });
+    if (result.isEmpty) {
+      if (!mounted) return;
+      messageSnackbar(context, "Nenhum resultado encontrado!");
+    }
     debugPrint(
         "***************** tamanho da queryResult ${queryResults.length.toString()}");
   }
@@ -152,6 +157,10 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
                     isFetchingRef = false;
                     showLinesResult = true;
                   });
+                  if (list.isEmpty) {
+                    if (!context.mounted) return;
+                    messageSnackbar(context, "Nenhum resultado encontrado!");
+                  }
                 },
           child: const Text(
             "Pesquisar",

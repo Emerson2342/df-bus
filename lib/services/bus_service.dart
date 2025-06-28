@@ -121,4 +121,19 @@ class BusService {
       rethrow;
     }
   }
+
+  Future<List<BusDirection>> getBusDirection(String busLine) async {
+    try {
+      final response = await _dio.get("itinerario/linha/numero/$busLine");
+      return (response.data as List)
+          .map((r) => BusDirection.fromJson(r))
+          .toList();
+    } catch (e, stacktrace) {
+      debugPrint(
+          "BusService - Erro ao pesquisar o itinerário da linha $busLine");
+      debugPrint(e.toString());
+      debugPrint(stacktrace.toString());
+      rethrow;
+    }
+  }
 }

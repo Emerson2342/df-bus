@@ -6,9 +6,9 @@ void messageSnackbar(BuildContext context, String message) {
       backgroundColor: Theme.of(context).colorScheme.primary,
       content: Text(
         message,
-        style: TextStyle(fontWeight: FontWeight.bold),
+        style: Theme.of(context).textTheme.titleMedium,
       ),
-      duration: Duration(seconds: 2),
+      duration: Duration(seconds: 5),
     ),
   );
 }

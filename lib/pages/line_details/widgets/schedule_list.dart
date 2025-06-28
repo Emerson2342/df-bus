@@ -1,10 +1,13 @@
 import 'package:df_bus/models/bus_model.dart';
+import 'package:df_bus/models/bus_route.dart';
 import 'package:flutter/material.dart';
 
 class ScheduleListView extends StatelessWidget {
   final List<BusSchedule> schedules;
+  final BusDirection busDirection;
 
-  const ScheduleListView({required this.schedules, super.key});
+  const ScheduleListView(
+      {required this.schedules, super.key, required this.busDirection});
 
   @override
   Widget build(BuildContext context) {
@@ -15,9 +18,26 @@ class ScheduleListView extends StatelessWidget {
       porDia.putIfAbsent(h.diasLabel, () => []).add(h);
     }
 
-    return ListView(
-      padding: const EdgeInsets.all(8),
-      children: porDia.keys.map((diaLabel) {
+    return ListView(padding: const EdgeInsets.all(8), children: [
+      Padding(
+        padding: const EdgeInsets.only(top: 10.0, left: 5, right: 5),
+        child: Flexible(
+          child: Text(
+            "Origem: ${busDirection.origem}",
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.only(bottom: 10.0, left: 5, right: 5),
+        child: Flexible(
+          child: Text(
+            "Destino: ${busDirection.destino}",
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        ),
+      ),
+      ...porDia.keys.map((diaLabel) {
         final horariosDoDia = porDia[diaLabel]!;
 
         final manha = horariosDoDia.where((h) => h.hora < 12).toList();
@@ -26,17 +46,23 @@ class ScheduleListView extends StatelessWidget {
         final noite = horariosDoDia.where((h) => h.hora >= 18).toList();
 
         return Card(
-          margin: const EdgeInsets.symmetric(vertical: 8),
+          margin: const EdgeInsets.symmetric(vertical: 3),
           color: Theme.of(context).colorScheme.primary,
+          shape: RoundedRectangleBorder(
+              side: BorderSide(color: Theme.of(context).colorScheme.tertiary),
+              borderRadius: BorderRadius.circular(12)),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  _labelDoDia(diaLabel),
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
+                Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    _labelDoDia(diaLabel),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
                 ),
                 if (manha.isNotEmpty) ...[
                   const SizedBox(height: 8),
@@ -60,8 +86,8 @@ class ScheduleListView extends StatelessWidget {
             ),
           ),
         );
-      }).toList(),
-    );
+      })
+    ]);
   }
 
   Widget _horariosRow(List<Schedule> horarios, BuildContext context) {
@@ -79,8 +105,12 @@ class ScheduleListView extends StatelessWidget {
             '${h.hora.toString().padLeft(2, '0')}:${h.minuto.toString().padLeft(2, '0')}';
         return Chip(
           label: Text(text),
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          labelStyle: const TextStyle(fontWeight: FontWeight.w500),
+          shape: RoundedRectangleBorder(
+              side: BorderSide(color: Colors.transparent),
+              borderRadius: BorderRadius.circular(5)),
+          backgroundColor: Theme.of(context).colorScheme.tertiary,
+          labelStyle:
+              const TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
         );
       }).toList(),
     );

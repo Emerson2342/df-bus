@@ -57,4 +57,9 @@ class SearchLineController {
     final lines = await busService.searchByRef(fromItem, toItem);
     return lines;
   }
+
+  Future<List<BusDirection>> getBusDirection(String busLine) async {
+    final busDirection = await busService.getBusDirection(busLine);
+    return busDirection;
+  }
 }

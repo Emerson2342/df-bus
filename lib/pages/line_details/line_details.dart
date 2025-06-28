@@ -1,5 +1,6 @@
 import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/models/bus_model.dart';
+import 'package:df_bus/models/bus_route.dart';
 import 'package:df_bus/pages/line_details/widgets/header_widget.dart';
 import 'package:df_bus/pages/line_details/widgets/maps_widget.dart';
 import 'package:df_bus/pages/line_details/widgets/schedule_details_bottom_sheet.dart';
@@ -20,17 +21,26 @@ class _LineDetailsWidgetState extends State<LineDetailsWidget> {
   final searchLineController = getIt<SearchLineController>();
   List<BusSchedule> busSchedule = [];
   List<int> busRoutes = [];
+  List<BusDirection> busDirections = [];
 
   @override
   void initState() {
     super.initState();
     _loadBusSchedule();
+    _loadBusDirection();
   }
 
   _loadBusSchedule() async {
     var busSc = await searchLineController.getBusSchedule(widget.busLine);
     setState(() {
       busSchedule = busSc;
+    });
+  }
+
+  _loadBusDirection() async {
+    var busDir = await searchLineController.getBusDirection(widget.busLine);
+    setState(() {
+      busDirections = busDir;
     });
   }
 
@@ -55,7 +65,10 @@ class _LineDetailsWidgetState extends State<LineDetailsWidget> {
             showModalBottomSheet(
                 context: context,
                 builder: (context) {
-                  return ScheduleDetails(busLineSchedule: busSchedule);
+                  return ScheduleDetails(
+                    busLineSchedule: busSchedule,
+                    busDirections: busDirections,
+                  );
                 });
           },
           child: Icon(

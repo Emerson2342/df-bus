@@ -109,3 +109,46 @@ class PropertyLocation {
     );
   }
 }
+
+class BusDirection {
+  final String origem;
+  final String destino;
+  final String sentido;
+  final double extensao;
+  final List<Itinerario> itinerario;
+
+  BusDirection({
+    required this.origem,
+    required this.destino,
+    required this.sentido,
+    required this.extensao,
+    required this.itinerario,
+  });
+
+  factory BusDirection.fromJson(Map<String, dynamic> json) {
+    return BusDirection(
+        origem: json['origem'] ?? '',
+        destino: json['destino'] ?? '',
+        sentido: json['sentido'] ?? '',
+        extensao: double.tryParse(json['extensao']?.toString() ?? "0") ?? 0.0,
+        itinerario: ((json['itinerario'] ?? []) as List)
+            .map((i) => Itinerario.fromJson(i))
+            .toList());
+  }
+}
+
+class Itinerario {
+  final int sequencial;
+  final String via;
+  final String localidade;
+
+  Itinerario(
+      {required this.sequencial, required this.via, required this.localidade});
+
+  factory Itinerario.fromJson(Map<String, dynamic> json) {
+    return Itinerario(
+        sequencial: int.tryParse(json['sequencial']?.toString() ?? "") ?? 0,
+        via: json['via'] ?? "",
+        localidade: json['localidade'] ?? "");
+  }
+}
