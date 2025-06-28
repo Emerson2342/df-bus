@@ -72,9 +72,8 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
                 controller: _fromController,
                 //enabled: enableFrom,
 
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Origem',
-                  border: OutlineInputBorder(),
                 ),
                 onChanged: (_) => _findByQuery(_fromController, true),
               ),
@@ -98,9 +97,8 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
               child: TextField(
                 controller: _toController,
                 onChanged: (_) => _findByQuery(_toController, false),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Destino',
-                  border: OutlineInputBorder(),
                 ),
               ),
             ),
@@ -154,13 +152,11 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
           ),
         ),
         if (loadingSearch && isFetching)
-          Container(
-            color: Colors.amber,
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height * 0.37,
-              child: Center(child: CircularProgressIndicator()),
-            ),
-          ),
+          Center(
+              child: CircularProgressIndicator(
+            color: Colors.white,
+            semanticsLabel: "Carregando lista...",
+          )),
         if (showQueryResults)
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.37,

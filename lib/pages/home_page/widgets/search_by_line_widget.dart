@@ -63,7 +63,6 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
                 controller: _textController,
                 decoration: InputDecoration(
                   labelText: 'Digite a linha',
-                  border: OutlineInputBorder(),
                 ),
                 onSubmitted: (_) async => _onSubmit(),
               ),

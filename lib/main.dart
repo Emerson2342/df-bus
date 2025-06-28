@@ -23,6 +23,11 @@ class MyApp extends StatelessWidget {
       title: 'DF Bus',
       theme: ThemeData(
         fontFamily: 'QuickSand',
+        inputDecorationTheme: InputDecorationTheme(
+            // border: OutlineInputBorder(),
+            focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.orange)),
+            floatingLabelStyle: TextStyle(color: Colors.white)),
         scaffoldBackgroundColor: Color(0xff072e5b),
         colorScheme: ColorScheme.dark(
           primary: Color(0xff011627),
