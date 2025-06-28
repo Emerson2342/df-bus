@@ -117,8 +117,7 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
         ),
         SizedBox(height: 9),
         ElevatedButton(
-          style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.secondary),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
           onPressed: fromItem == null || toItem == null
               ? null
               : () async {
