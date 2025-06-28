@@ -66,12 +66,12 @@ class _HomePageState extends State<HomePage> with RouteAware {
       body: Column(
         children: [
           LinesSaved(linesSaved: linesSaved),
-          TextButton(
-            onPressed: () async {
-              await searchLineController.deleteLines();
-            },
-            child: Text("Limpar Lista"),
-          ),
+          // TextButton(
+          //   onPressed: () async {
+          //     await searchLineController.deleteLines();
+          //   },
+          //   child: Text("Limpar Lista"),
+          // ),
           const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.all(15.0),

@@ -19,11 +19,11 @@ class _LinesResultWidgetState extends State<LinesResultWidget> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: const EdgeInsets.all(5),
       itemCount: widget.linesResult.length,
       itemBuilder: (context, index) {
         final line = widget.linesResult[index];
         return Card(
+          color: Theme.of(context).colorScheme.primary,
           child: ListTile(
             onTap: () async {
               debugPrint('Linha - ${line.numero}');

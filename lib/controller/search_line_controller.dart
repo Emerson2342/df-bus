@@ -51,4 +51,10 @@ class SearchLineController {
     final queryResult = await busService.findQuery(query);
     return queryResult;
   }
+
+  Future<List<DetalheOnibus>> searchByRef(
+      QuerySearch fromItem, QuerySearch toItem) async {
+    final lines = await busService.searchByRef(fromItem, toItem);
+    return lines;
+  }
 }

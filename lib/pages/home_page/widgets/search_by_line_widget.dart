@@ -72,7 +72,6 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
             IconButton(
               icon: Icon(
                 Icons.search,
-                color: Theme.of(context).colorScheme.primary,
                 size: 35,
               ),
               onPressed: _onSubmit,
@@ -82,12 +81,12 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
         SizedBox(height: 16),
         if (loadingSearch)
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.3,
+            height: MediaQuery.of(context).size.height * 0.35,
             child: Center(child: CircularProgressIndicator()),
           )
         else if (linesSearched.isNotEmpty)
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.45,
+            height: MediaQuery.of(context).size.height * 0.5,
             child: LinesResultWidget(linesResult: linesSearched),
           )
       ],

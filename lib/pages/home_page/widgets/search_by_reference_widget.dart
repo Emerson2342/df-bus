@@ -1,7 +1,7 @@
-import 'dart:async';
-
 import 'package:df_bus/controller/search_line_controller.dart';
+import 'package:df_bus/models/bus_model.dart';
 import 'package:df_bus/models/search_lines.dart';
+import 'package:df_bus/pages/home_page/widgets/lines_result_widget.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:flutter/material.dart';
 
@@ -17,8 +17,12 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
   final TextEditingController _fromController = TextEditingController();
   final TextEditingController _toController = TextEditingController();
   List<QuerySearch> queryResults = [];
+  List<SearchLine> linesResult = [];
   bool loadingSearch = false;
   bool isFetching = false;
+  bool isFetchingRef = false;
+  bool showLinesResult = false;
+  bool showQueryResults = false;
   bool enableFrom = true;
   bool enableTo = true;
   QuerySearch? fromItem;
@@ -29,6 +33,8 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
     setState(() {
       isFetching = true;
       loadingSearch = true;
+      showQueryResults = false;
+      showLinesResult = false;
     });
     if (isFromText) {
       enableFrom = true;
@@ -49,6 +55,7 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
       queryResults = result;
       isFetching = false;
       loadingSearch = false;
+      showQueryResults = true;
     });
     debugPrint(
         "***************** tamanho da queryResult ${queryResults.length.toString()}");
@@ -77,6 +84,7 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
                   _fromController.text = "";
                   setState(() {
                     queryResults = [];
+                    linesResult = [];
                     fromItem = null;
                   });
                 },
@@ -101,6 +109,7 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
                 _toController.text = "";
                 setState(() {
                   queryResults = [];
+                  linesResult = [];
                   toItem = null;
                 });
               },
@@ -108,8 +117,38 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
             )
           ],
         ),
+        SizedBox(height: 9),
         ElevatedButton(
-          onPressed: () {},
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.secondary),
+          onPressed: fromItem == null || toItem == null
+              ? null
+              : () async {
+                  // debugPrint();
+                  setState(() {
+                    loadingSearch = true;
+                    isFetchingRef = true;
+                    showLinesResult = false;
+                    showQueryResults = false;
+                    linesResult = [];
+                  });
+
+                  final list = await searchLineController.searchByRef(
+                      fromItem!, toItem!);
+
+                  for (final item in list) {
+                    SearchLine s = SearchLine(
+                        numero: item.numero,
+                        descricao: item.descricao,
+                        tarifa: item.faixaTarifaria.tarifa);
+                    linesResult.add(s);
+                  }
+                  setState(() {
+                    loadingSearch = false;
+                    isFetchingRef = false;
+                    showLinesResult = true;
+                  });
+                },
           child: Text(
             "Pesquisar",
           ),
@@ -118,19 +157,19 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
           Container(
             color: Colors.amber,
             child: SizedBox(
-              height: MediaQuery.of(context).size.height * 0.3,
+              height: MediaQuery.of(context).size.height * 0.37,
               child: Center(child: CircularProgressIndicator()),
             ),
           ),
-        Container(
-          color: Colors.red,
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height * 0.3,
+        if (showQueryResults)
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.37,
             child: ListView.builder(
                 itemCount: queryResults.length,
                 itemBuilder: (context, index) {
                   final item = queryResults[index];
                   return Card(
+                    color: Theme.of(context).colorScheme.primary,
                     child: ListTile(
                       onTap: () {
                         if (enableFrom) {
@@ -162,7 +201,16 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
                   );
                 }),
           ),
-        ),
+        if (loadingSearch && isFetchingRef)
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.37,
+            child: Center(child: CircularProgressIndicator()),
+          ),
+        if (showLinesResult)
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.37,
+            child: LinesResultWidget(linesResult: linesResult),
+          )
       ],
     );
   }

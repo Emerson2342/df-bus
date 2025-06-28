@@ -27,8 +27,12 @@ class _SearchLineInputWidgetState extends State<SearchLineInputWidget> {
             taps: options,
             width: MediaQuery.of(context).size.width - 100,
             height: 40,
+            inActiveTextStyle: TextStyle(color: Colors.white),
+            activeTextStyle: TextStyle(
+                fontFamily: 'QuickSand',
+                fontWeight: FontWeight.bold,
+                fontSize: 17),
             duration: Duration(milliseconds: 100),
-            activeColor: Theme.of(context).colorScheme.secondary,
             initialIndex: 0,
             onChange: (currentIndex, targetIndex) {
               setState(() {

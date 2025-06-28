@@ -27,7 +27,7 @@ class ScheduleListView extends StatelessWidget {
 
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 8),
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.primary,
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(

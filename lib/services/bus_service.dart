@@ -102,4 +102,23 @@ class BusService {
       rethrow;
     }
   }
+
+  Future<List<DetalheOnibus>> searchByRef(
+      QuerySearch fromItem, QuerySearch toItem) async {
+    try {
+      final response = await _dio.get(
+          "linha/${fromItem.tipo}/${fromItem.sequencialRef}/${toItem.tipo}/${toItem.sequencialRef}");
+
+      debugPrint(response.requestOptions.uri.toString());
+
+      return (response.data as List)
+          .map((r) => DetalheOnibus.fromJson(r))
+          .toList();
+    } catch (e, stacktrace) {
+      debugPrint("BusService - Erro ao pesquisar linhas por referência");
+      debugPrint(e.toString());
+      debugPrint(stacktrace.toString());
+      rethrow;
+    }
+  }
 }

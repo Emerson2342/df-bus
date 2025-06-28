@@ -4,6 +4,7 @@ import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/models/bus_route.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 // import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:math' as math;
@@ -33,6 +34,7 @@ class MapsWidgetState extends State<MapsWidget> {
   List<List<LatLng>> pointsOnMap = [];
   late Timer _timer;
   BitmapDescriptor customIcon = BitmapDescriptor.defaultMarker;
+  String? _mapStyle;
 
   //Position? _currentPosition;
   final CameraPosition _initialCameraPosition =
@@ -40,6 +42,12 @@ class MapsWidgetState extends State<MapsWidget> {
 
   @override
   void initState() {
+    // _setMapStyle();
+    rootBundle.loadString('assets/maps/map_style_dark.json').then((string) {
+      setState(() {
+        _mapStyle = string;
+      });
+    });
     _loadCustomIcon();
     _init();
     _timer = Timer.periodic(const Duration(seconds: 5), (timer) async {
@@ -242,6 +250,7 @@ class MapsWidgetState extends State<MapsWidget> {
               onMapCreated: (GoogleMapController controller) {
                 mapController.complete(controller);
               },
+              style: _mapStyle,
             ),
           ),
         ],

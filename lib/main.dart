@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'DF Bus',
       theme: ThemeData(
+        fontFamily: 'QuickSand',
         scaffoldBackgroundColor: Color(0xff072e5b),
         colorScheme: ColorScheme.dark(
           primary: Color(0xff011627),
