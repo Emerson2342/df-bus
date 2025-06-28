@@ -26,7 +26,7 @@ class _SearchLineInputWidgetState extends State<SearchLineInputWidget> {
           child: AnimatedHorizontalToggle(
             taps: options,
             width: MediaQuery.of(context).size.width - 100,
-            height: 40,
+            height: MediaQuery.of(context).size.height * 0.05,
             inActiveTextStyle: TextStyle(color: Colors.white),
             activeTextStyle: TextStyle(
                 fontFamily: 'QuickSand',
@@ -41,7 +41,7 @@ class _SearchLineInputWidgetState extends State<SearchLineInputWidget> {
             },
           ),
         ),
-        SizedBox(height: 15),
+        // SizedBox(height: 15),
         IndexedStack(
           index: selectedIndex,
           children: [SearchByLineWidget(), SearchByRefWidget()],

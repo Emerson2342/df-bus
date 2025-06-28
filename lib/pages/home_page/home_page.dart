@@ -55,8 +55,8 @@ class _HomePageState extends State<HomePage> with RouteAware {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Inicial",
+        title: const Text(
+          "DF BUS",
           style: TextStyle(
               color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24),
         ),
@@ -65,18 +65,17 @@ class _HomePageState extends State<HomePage> with RouteAware {
       ),
       body: Column(
         children: [
-          LinesSaved(linesSaved: linesSaved),
+          Padding(
+            padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
+            child: LinesSaved(linesSaved: linesSaved),
+          ),
           // TextButton(
           //   onPressed: () async {
           //     await searchLineController.deleteLines();
           //   },
           //   child: Text("Limpar Lista"),
           // ),
-          const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: SearchLineInputWidget(),
-          ),
+          SearchLineInputWidget(),
         ],
       ),
     );

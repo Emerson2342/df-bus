@@ -8,6 +8,10 @@
         android:label="df_bus"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!-- Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713 -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-4117477719356991~9943888299"/>
         <meta-data
               android:name="com.google.android.geo.API_KEY"
               android:value="AIzaSyCNZrDec5fRFyv2a6FT16gI56KxlwJ9NMU" />

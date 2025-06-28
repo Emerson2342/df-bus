@@ -1,3 +1,4 @@
+import 'package:df_bus/ads/ads_widget.dart';
 import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/models/bus_model.dart';
 import 'package:df_bus/models/search_lines.dart';
@@ -65,57 +66,63 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _fromController,
-                //enabled: enableFrom,
+        Padding(
+          padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _fromController,
+                  //enabled: enableFrom,
 
-                decoration: const InputDecoration(
-                  labelText: 'Origem',
+                  decoration: const InputDecoration(
+                    labelText: 'Origem',
+                  ),
+                  onChanged: (_) => _findByQuery(_fromController, true),
                 ),
-                onChanged: (_) => _findByQuery(_fromController, true),
               ),
-            ),
-            IconButton(
+              IconButton(
+                  onPressed: () {
+                    _fromController.text = "";
+                    setState(() {
+                      queryResults = [];
+                      linesResult = [];
+                      fromItem = null;
+                    });
+                  },
+                  icon: Icon(Icons.clear))
+            ],
+          ),
+        ),
+        //const SizedBox(height: 15),
+        Padding(
+          padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _toController,
+                  onChanged: (_) => _findByQuery(_toController, false),
+                  decoration: const InputDecoration(
+                    labelText: 'Destino',
+                  ),
+                ),
+              ),
+              IconButton(
                 onPressed: () {
-                  _fromController.text = "";
+                  _toController.text = "";
                   setState(() {
                     queryResults = [];
                     linesResult = [];
-                    fromItem = null;
+                    toItem = null;
                   });
                 },
-                icon: Icon(Icons.clear))
-          ],
+                icon: Icon(Icons.clear),
+              )
+            ],
+          ),
         ),
-        SizedBox(height: 15),
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _toController,
-                onChanged: (_) => _findByQuery(_toController, false),
-                decoration: const InputDecoration(
-                  labelText: 'Destino',
-                ),
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                _toController.text = "";
-                setState(() {
-                  queryResults = [];
-                  linesResult = [];
-                  toItem = null;
-                });
-              },
-              icon: Icon(Icons.clear),
-            )
-          ],
-        ),
-        SizedBox(height: 9),
+        SizedBox(height: MediaQuery.of(context).size.height * 0.01),
         ElevatedButton(
           style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
           onPressed: fromItem == null || toItem == null
@@ -146,16 +153,17 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
                     showLinesResult = true;
                   });
                 },
-          child: Text(
+          child: const Text(
             "Pesquisar",
           ),
         ),
         if (loadingSearch && isFetching)
-          Center(
-              child: CircularProgressIndicator(
-            color: Colors.white,
-            semanticsLabel: "Carregando lista...",
-          )),
+          const Center(
+            child: CircularProgressIndicator(
+              color: Colors.white,
+              semanticsLabel: "Carregando lista...",
+            ),
+          ),
         if (showQueryResults)
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.37,
@@ -164,7 +172,7 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
                 itemBuilder: (context, index) {
                   final item = queryResults[index];
                   return Card(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: Theme.of(context).colorScheme.tertiary,
                     child: ListTile(
                       onTap: () {
                         if (enableFrom) {
@@ -199,13 +207,17 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
         if (loadingSearch && isFetchingRef)
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.37,
-            child: Center(child: CircularProgressIndicator()),
+            child: const Center(
+                child: CircularProgressIndicator(
+              color: Colors.white,
+            )),
           ),
         if (showLinesResult)
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.37,
             child: LinesResultWidget(linesResult: linesResult),
-          )
+          ),
+        AdsBannerWidget()
       ],
     );
   }

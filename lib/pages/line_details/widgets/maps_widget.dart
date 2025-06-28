@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:df_bus/ads/ads_widget.dart';
 import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/models/bus_route.dart';
 import 'package:df_bus/services/service_locator.dart';
@@ -253,6 +254,7 @@ class MapsWidgetState extends State<MapsWidget> {
               style: _mapStyle,
             ),
           ),
+          AdsBannerWidget(),
         ],
       ),
     );

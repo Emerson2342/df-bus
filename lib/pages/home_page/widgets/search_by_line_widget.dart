@@ -1,3 +1,4 @@
+import 'package:df_bus/ads/ads_widget.dart';
 import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/models/bus_model.dart';
 import 'package:df_bus/pages/home_page/widgets/lines_result_widget.dart';
@@ -56,38 +57,42 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _textController,
-                decoration: InputDecoration(
-                  labelText: 'Digite a linha',
+        Padding(
+          padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _textController,
+                  decoration: InputDecoration(
+                    labelText: 'Digite a linha',
+                  ),
+                  onSubmitted: (_) async => _onSubmit(),
                 ),
-                onSubmitted: (_) async => _onSubmit(),
               ),
-            ),
-            SizedBox(width: 8),
-            IconButton(
-              icon: Icon(
-                Icons.search,
-                size: 35,
-              ),
-              onPressed: _onSubmit,
-            )
-          ],
+              // SizedBox(width: 8),
+              IconButton(
+                icon: Icon(
+                  Icons.search,
+                  size: 35,
+                ),
+                onPressed: _onSubmit,
+              )
+            ],
+          ),
         ),
         SizedBox(height: 16),
         if (loadingSearch)
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.35,
+            height: MediaQuery.of(context).size.height * 0.48,
             child: Center(child: CircularProgressIndicator()),
           )
         else if (linesSearched.isNotEmpty)
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.5,
+            height: MediaQuery.of(context).size.height * 0.48,
             child: LinesResultWidget(linesResult: linesSearched),
-          )
+          ),
+        AdsBannerWidget()
       ],
     );
   }

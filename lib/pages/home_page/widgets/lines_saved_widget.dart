@@ -16,12 +16,11 @@ class LinesSaved extends StatelessWidget {
     final searchLineController = getIt<SearchLineController>();
     return Column(
       children: [
-        const SizedBox(height: 7),
         Text(
           "Últimas Buscas",
           style: Theme.of(context).textTheme.titleLarge,
         ),
-        Wrap(spacing: 3, runSpacing: 3, children: [
+        Wrap(spacing: 5, runSpacing: 5, children: [
           ...linesSaved.map((lineSaved) {
             return SizedBox(
               width: (MediaQuery.of(context).size.width - 8 * 3) / 4,
@@ -32,7 +31,7 @@ class LinesSaved extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    backgroundColor: Colors.deepOrangeAccent),
+                    backgroundColor: Colors.amber),
                 onPressed: () async {
                   Navigator.push(
                     context,
@@ -48,7 +47,7 @@ class LinesSaved extends StatelessWidget {
                   children: [
                     const Icon(
                       Icons.directions_bus,
-                      // color: Colors.Bla,
+                      // color: Colors.white,
                     ),
                     SizedBox(
                       width: 7,
@@ -61,7 +60,7 @@ class LinesSaved extends StatelessWidget {
                 ),
               ),
             );
-          }).toList(),
+          }),
         ]),
       ],
     );

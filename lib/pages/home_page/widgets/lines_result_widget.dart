@@ -23,7 +23,7 @@ class _LinesResultWidgetState extends State<LinesResultWidget> {
       itemBuilder: (context, index) {
         final line = widget.linesResult[index];
         return Card(
-          color: Theme.of(context).colorScheme.primary,
+          color: Theme.of(context).colorScheme.tertiary,
           child: ListTile(
             onTap: () async {
               debugPrint('Linha - ${line.numero}');
