@@ -4,6 +4,7 @@ import 'package:df_bus/models/bus_model.dart';
 import 'package:df_bus/pages/home_page/widgets/lines_result_widget.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/widgets/snackbar_message_widget.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 
 class SearchByLineWidget extends StatefulWidget {
@@ -23,6 +24,7 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
   @override
   void initState() {
     _onSubmit();
+    FirebaseAnalytics.instance.logScreenView(screenName: 'search_line_screen');
     super.initState();
   }
 

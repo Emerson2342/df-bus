@@ -6,7 +6,9 @@ import 'package:df_bus/pages/line_details/widgets/maps_widget.dart';
 import 'package:df_bus/pages/line_details/widgets/schedule_details_bottom_sheet.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/widgets/progress_indicator_widget.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class LineDetailsWidget extends StatefulWidget {
   const LineDetailsWidget({super.key, required this.busLine});
@@ -28,6 +30,23 @@ class _LineDetailsWidgetState extends State<LineDetailsWidget> {
     super.initState();
     _loadBusSchedule();
     _loadBusDirection();
+    registerLineDetails();
+  }
+
+  void registerLineDetails() {
+    final now = DateTime.now();
+
+    final dayWeek = DateFormat('EEEE').format(now);
+    final timeFormatted = DateFormat('HH:mm').format(now);
+
+    FirebaseAnalytics.instance.logEvent(
+      name: 'line_details_screen',
+      parameters: {
+        'linha': widget.busLine,
+        'dia': dayWeek,
+        'hora': timeFormatted,
+      },
+    );
   }
 
   _loadBusSchedule() async {

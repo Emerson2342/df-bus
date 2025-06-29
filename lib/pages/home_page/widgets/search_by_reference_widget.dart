@@ -5,7 +5,9 @@ import 'package:df_bus/models/search_lines.dart';
 import 'package:df_bus/pages/home_page/widgets/lines_result_widget.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/widgets/snackbar_message_widget.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class SearchByRefWidget extends StatefulWidget {
   const SearchByRefWidget({super.key});
@@ -29,6 +31,11 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
   bool enableTo = true;
   QuerySearch? fromItem;
   QuerySearch? toItem;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   void _findByQuery(
       TextEditingController textController, bool isFromText) async {
@@ -65,6 +72,23 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
     }
     debugPrint(
         "***************** tamanho da queryResult ${queryResults.length.toString()}");
+  }
+
+  void registerLineDetails(String from, String to) {
+    final now = DateTime.now();
+
+    final dayWeek = DateFormat('EEEE').format(now);
+    final timeFormatted = DateFormat('HH:mm').format(now);
+
+    FirebaseAnalytics.instance.logEvent(
+      name: 'search_by_reference_screen',
+      parameters: {
+        'origem': from,
+        'destino': to,
+        'dia': dayWeek,
+        'hora': timeFormatted,
+      },
+    );
   }
 
   @override
@@ -144,7 +168,7 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
 
                   final list = await searchLineController.searchByRef(
                       fromItem!, toItem!);
-
+                  registerLineDetails(fromItem!.descricao, toItem!.descricao);
                   for (final item in list) {
                     SearchLine s = SearchLine(
                         numero: item.numero,
