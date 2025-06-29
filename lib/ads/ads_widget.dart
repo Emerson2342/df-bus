@@ -12,7 +12,6 @@ class AdsBannerWidget extends StatefulWidget {
 
 class _AdsBannerWidgetState extends State<AdsBannerWidget> {
   BannerAd? _bannerAd;
-  bool _isLoaded = false;
 
   final adUnitId = Platform.isAndroid
       ? 'ca-app-pub-3940256099942544/9214589741'
@@ -42,9 +41,6 @@ class _AdsBannerWidgetState extends State<AdsBannerWidget> {
         // Called when an ad is successfully received.
         onAdLoaded: (ad) {
           debugPrint('$ad loaded.');
-          setState(() {
-            _isLoaded = true;
-          });
         },
         // Called when an ad request failed.
         onAdFailedToLoad: (ad, error) {

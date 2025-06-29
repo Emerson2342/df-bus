@@ -1,4 +1,3 @@
-import 'package:animated_toggle/animated_toggle.dart';
 import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/pages/home_page/widgets/search_by_line_widget.dart';
 import 'package:df_bus/pages/home_page/widgets/search_by_reference_widget.dart';
@@ -12,43 +11,52 @@ class SearchLineInputWidget extends StatefulWidget {
   State<SearchLineInputWidget> createState() => _SearchLineInputWidgetState();
 }
 
+enum SearchType { linha, referencia }
+
 class _SearchLineInputWidgetState extends State<SearchLineInputWidget> {
   final searchLineController = getIt<SearchLineController>();
+  SearchType _type = SearchType.linha;
 
-  int selectedIndex = 0;
-  List<String> options = ['Linha', 'Referência'];
+  // List<String> options = ['Linha', 'Referência'];
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Center(
-          child: AnimatedHorizontalToggle(
-            taps: options,
-            width: MediaQuery.of(context).size.width - 100,
-            height: MediaQuery.of(context).size.height * 0.05,
-            inActiveTextStyle: TextStyle(color: Colors.white),
-            activeTextStyle: TextStyle(
-                fontFamily: 'QuickSand',
-                fontWeight: FontWeight.bold,
-                fontSize: 17),
-            duration: Duration(milliseconds: 100),
-            initialIndex: 0,
-            onChange: (currentIndex, targetIndex) {
-              setState(() {
-                selectedIndex = currentIndex;
-              });
-            },
-          ),
+        Row(
+          children: [
+            searchTypeOptions(context, "Linha"),
+            searchTypeOptions(context, "Referência")
+          ],
         ),
-        // SizedBox(height: 15),
         IndexedStack(
-          index: selectedIndex,
+          index: _type.index,
           children: [SearchByLineWidget(), SearchByRefWidget()],
         )
-        // if (selectedIndex == 0) SearchByLineWidget(),
-        // if (selectedIndex == 1) SearchByRefWidget()
       ],
+    );
+  }
+
+  Expanded searchTypeOptions(BuildContext context, String title) {
+    return Expanded(
+      child: ListTile(
+        title: Text(
+          title,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        leading: Radio<SearchType>(
+          value: title == "Linha" ? SearchType.linha : SearchType.referencia,
+          groupValue: _type,
+          activeColor: Colors.amber,
+          onChanged: (SearchType? value) {
+            setState(
+              () {
+                if (value != null) _type = value;
+              },
+            );
+          },
+        ),
+      ),
     );
   }
 }
