@@ -14,11 +14,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with RouteAware {
+  final GlobalKey<LinesSavedState> _linesSavedKey = GlobalKey();
   final searchLineController = getIt<SearchLineController>();
   String linetoSeach = "";
   late List<SearchLine> linesSearched = [];
   bool loadingSearch = false;
   List<String> linesSaved = [];
+  double linesSavedWidget = 0;
+  double searchWidget = 0;
 
   @override
   void didChangeDependencies() {
@@ -47,8 +50,23 @@ class _HomePageState extends State<HomePage> with RouteAware {
 
   void getLinesSaved() async {
     final lines = await searchLineController.init();
+    if (lines.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _linesSavedKey.currentState?.getLinesSaved();
+      });
+    }
     linesSaved = lines;
+    if (!mounted) return;
+    if (lines.length > 4) {
+      linesSavedWidget = MediaQuery.of(context).size.height * 0.16;
+      searchWidget = MediaQuery.of(context).size.height * 0.73;
+    } else {
+      linesSavedWidget = MediaQuery.of(context).size.height * 0.11;
+      searchWidget = MediaQuery.of(context).size.height * 0.78;
+    }
     setState(() {});
+    debugPrint(
+        "**************flex linhas $linesSavedWidget - flex search $searchWidget");
   }
 
   @override
@@ -64,18 +82,15 @@ class _HomePageState extends State<HomePage> with RouteAware {
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
-            child: LinesSaved(linesSaved: linesSaved),
-          ),
-          // TextButton(
-          //   onPressed: () async {
-          //     await searchLineController.deleteLines();
-          //   },
-          //   child: Text("Limpar Lista"),
+          SizedBox(
+              height: linesSavedWidget,
+              child: LinesSaved(
+                key: _linesSavedKey,
+              )),
           // ),
-          SearchLineInputWidget(),
+          SizedBox(height: searchWidget, child: SearchLineInputWidget()),
         ],
       ),
     );

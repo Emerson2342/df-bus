@@ -4,7 +4,6 @@ import 'package:df_bus/models/bus_model.dart';
 import 'package:df_bus/pages/home_page/widgets/lines_result_widget.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/widgets/snackbar_message_widget.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 
 class SearchByLineWidget extends StatefulWidget {
@@ -20,11 +19,12 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
 
   bool loadingSearch = false;
   List<SearchLine> linesSearched = [];
+  List<String> linesSaved = [];
+  double listHeight = 0.0;
 
   @override
   void initState() {
     _onSubmit();
-    FirebaseAnalytics.instance.logScreenView(screenName: 'search_line_screen');
     super.initState();
   }
 
@@ -35,6 +35,17 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
       _textController.clear();
       FocusScope.of(context).unfocus();
     }
+    final lines = await searchLineController.init();
+    if (!mounted) return;
+
+    if (lines.length < 5) {
+      listHeight = MediaQuery.of(context).size.height * 0.54;
+    } else {
+      listHeight = MediaQuery.of(context).size.height * 0.49;
+    }
+
+    setState(() {});
+
     var list = await searchLineController.searchLines(text);
 
     if (list.isEmpty) {
@@ -58,6 +69,7 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 15.0, right: 15.0),
@@ -86,12 +98,15 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
         SizedBox(height: 16),
         if (loadingSearch)
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.48,
-            child: Center(child: CircularProgressIndicator()),
+            height: listHeight,
+            child: Center(
+                child: CircularProgressIndicator(
+              color: Colors.white,
+            )),
           )
         else if (linesSearched.isNotEmpty)
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.48,
+            height: listHeight,
             child: LinesResultWidget(linesResult: linesSearched),
           ),
         AdsBannerWidget()

@@ -50,6 +50,19 @@ class HiveStorage extends StorageService {
   }
 
   @override
+  Future<void> removeLine(String line) async {
+    try {
+      var oldLines = await getLines();
+      oldLines.remove(line);
+
+      await saveLines(oldLines);
+    } catch (e) {
+      debugPrint("HIVE Storage - Erro ao remover a linha $line - $e");
+      rethrow;
+    }
+  }
+
+  @override
   Future<void> clearList() async {
     try {
       final linesBox = await Hive.openBox<String>(linesBoxName);

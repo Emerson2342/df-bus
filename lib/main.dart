@@ -34,10 +34,12 @@ class MyApp extends StatelessWidget {
         inputDecorationTheme: InputDecorationTheme(
             // border: OutlineInputBorder(),
             focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.orange)),
-            floatingLabelStyle: TextStyle(color: Colors.white)),
+                borderSide: BorderSide(color: Colors.amber)),
+            floatingLabelStyle: TextStyle(color: Colors.amber)),
         scaffoldBackgroundColor: Color(0xff011627),
+        //scaffoldBackgroundColor: Colors.white,
         colorScheme: ColorScheme.dark(
+            //seedColor: Color(0xff010f1b),
             primary: Color(0xff010f1b),
             secondary: Color(0xff00bfff),
             tertiary: Color(0xff24415c)),

@@ -22,6 +22,7 @@ class _SearchLineInputWidgetState extends State<SearchLineInputWidget> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Row(
           children: [

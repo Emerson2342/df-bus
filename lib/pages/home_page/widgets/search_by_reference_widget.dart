@@ -5,9 +5,7 @@ import 'package:df_bus/models/search_lines.dart';
 import 'package:df_bus/pages/home_page/widgets/lines_result_widget.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/widgets/snackbar_message_widget.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class SearchByRefWidget extends StatefulWidget {
   const SearchByRefWidget({super.key});
@@ -31,6 +29,7 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
   bool enableTo = true;
   QuerySearch? fromItem;
   QuerySearch? toItem;
+  double listHeight = 0;
 
   @override
   void initState() {
@@ -45,6 +44,17 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
       showQueryResults = false;
       showLinesResult = false;
     });
+    final lines = await searchLineController.init();
+    if (!mounted) return;
+
+    if (lines.length < 5) {
+      listHeight = MediaQuery.of(context).size.height * 0.43;
+    } else if (lines.length > 4) {
+      listHeight = MediaQuery.of(context).size.height * 0.38;
+    }
+
+    setState(() {});
+
     if (isFromText) {
       enableFrom = true;
       enableTo = false;
@@ -72,23 +82,6 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
     }
     debugPrint(
         "***************** tamanho da queryResult ${queryResults.length.toString()}");
-  }
-
-  void registerLineDetails(String from, String to) {
-    final now = DateTime.now();
-
-    final dayWeek = DateFormat('EEEE').format(now);
-    final timeFormatted = DateFormat('HH:mm').format(now);
-
-    FirebaseAnalytics.instance.logEvent(
-      name: 'search_by_reference_screen',
-      parameters: {
-        'origem': from,
-        'destino': to,
-        'dia': dayWeek,
-        'hora': timeFormatted,
-      },
-    );
   }
 
   @override
@@ -168,7 +161,6 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
 
                   final list = await searchLineController.searchByRef(
                       fromItem!, toItem!);
-                  registerLineDetails(fromItem!.descricao, toItem!.descricao);
                   for (final item in list) {
                     SearchLine s = SearchLine(
                         numero: item.numero,
@@ -199,13 +191,18 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
           ),
         if (showQueryResults)
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.37,
+            height: listHeight,
             child: ListView.builder(
                 itemCount: queryResults.length,
                 itemBuilder: (context, index) {
                   final item = queryResults[index];
                   return Card(
-                    color: Theme.of(context).colorScheme.tertiary,
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                      side: BorderSide(color: Colors.grey, width: 0.5),
+                    ),
+                    elevation: 5,
                     child: ListTile(
                       onTap: () {
                         if (enableFrom) {
@@ -229,9 +226,16 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
                             child: Text(
                               item.descricao,
                               overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold),
                             ),
                           )
                         ],
+                      ),
+                      trailing: Icon(
+                        Icons.check,
+                        color: Colors.black,
                       ),
                     ),
                   );
@@ -239,7 +243,7 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
           ),
         if (loadingSearch && isFetchingRef)
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.37,
+            height: listHeight,
             child: const Center(
                 child: CircularProgressIndicator(
               color: Colors.white,
@@ -247,7 +251,7 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
           ),
         if (showLinesResult)
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.37,
+            height: listHeight,
             child: LinesResultWidget(linesResult: linesResult),
           ),
         AdsBannerWidget()

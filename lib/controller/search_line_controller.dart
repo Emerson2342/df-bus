@@ -23,6 +23,10 @@ class SearchLineController {
     await storageService.addLine(line);
   }
 
+  Future<void> removeLine(String line) async {
+    await storageService.removeLine(line);
+  }
+
   Future<void> deleteLines() async {
     await storageService.clearList();
   }

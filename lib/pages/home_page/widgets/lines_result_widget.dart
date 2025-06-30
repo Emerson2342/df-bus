@@ -24,6 +24,12 @@ class _LinesResultWidgetState extends State<LinesResultWidget> {
         final line = widget.linesResult[index];
         return Card(
           color: Theme.of(context).colorScheme.tertiary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+            side: BorderSide(width: 0.5),
+          ),
+          //   color: Color(0xffffffff),
+          elevation: 3,
           child: ListTile(
             onTap: () async {
               debugPrint('Linha - ${line.numero}');
@@ -54,9 +60,12 @@ class _LinesResultWidgetState extends State<LinesResultWidget> {
                     ),
                   ),
                 ),
-                Text('R\$ ${line.tarifa.toStringAsFixed(2)}'),
+                Text(
+                  'R\$ ${line.tarifa.toStringAsFixed(2)}',
+                ),
               ],
             ),
+            trailing: Icon(Icons.arrow_forward),
           ),
         );
       },
