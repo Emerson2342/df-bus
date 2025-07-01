@@ -20,7 +20,6 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
   bool loadingSearch = false;
   List<SearchLine> linesSearched = [];
   List<String> linesSaved = [];
-  double listHeight = 0.0;
 
   @override
   void initState() {
@@ -34,14 +33,6 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
     if (text.isNotEmpty) {
       _textController.clear();
       FocusScope.of(context).unfocus();
-    }
-    final lines = await searchLineController.init();
-    if (!mounted) return;
-
-    if (lines.length < 5) {
-      listHeight = MediaQuery.of(context).size.height * 0.54;
-    } else {
-      listHeight = MediaQuery.of(context).size.height * 0.49;
     }
 
     setState(() {});
@@ -76,12 +67,15 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
           child: Row(
             children: [
               Expanded(
-                child: TextField(
-                  controller: _textController,
-                  decoration: InputDecoration(
-                    labelText: 'Digite a linha',
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 15.0),
+                  child: TextField(
+                    controller: _textController,
+                    decoration: InputDecoration(
+                      labelText: 'Digite a linha',
+                    ),
+                    onSubmitted: (_) async => _onSubmit(),
                   ),
-                  onSubmitted: (_) async => _onSubmit(),
                 ),
               ),
               // SizedBox(width: 8),
@@ -95,18 +89,18 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
             ],
           ),
         ),
-        SizedBox(height: 16),
+        // SizedBox(height: 7),
         if (loadingSearch)
           SizedBox(
-            height: listHeight,
+            height: MediaQuery.of(context).size.height * 0.45,
             child: Center(
                 child: CircularProgressIndicator(
               color: Colors.white,
             )),
-          )
-        else if (linesSearched.isNotEmpty)
+          ),
+        if (linesSearched.isNotEmpty)
           SizedBox(
-            height: listHeight,
+            height: MediaQuery.of(context).size.height * 0.45,
             child: LinesResultWidget(linesResult: linesSearched),
           ),
         AdsBannerWidget()

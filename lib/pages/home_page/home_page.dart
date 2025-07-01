@@ -20,8 +20,6 @@ class _HomePageState extends State<HomePage> with RouteAware {
   late List<SearchLine> linesSearched = [];
   bool loadingSearch = false;
   List<String> linesSaved = [];
-  double linesSavedWidget = 0;
-  double searchWidget = 0;
 
   @override
   void didChangeDependencies() {
@@ -57,16 +55,8 @@ class _HomePageState extends State<HomePage> with RouteAware {
     }
     linesSaved = lines;
     if (!mounted) return;
-    if (lines.length > 4) {
-      linesSavedWidget = MediaQuery.of(context).size.height * 0.16;
-      searchWidget = MediaQuery.of(context).size.height * 0.73;
-    } else {
-      linesSavedWidget = MediaQuery.of(context).size.height * 0.11;
-      searchWidget = MediaQuery.of(context).size.height * 0.78;
-    }
+
     setState(() {});
-    debugPrint(
-        "**************flex linhas $linesSavedWidget - flex search $searchWidget");
   }
 
   @override
@@ -85,12 +75,14 @@ class _HomePageState extends State<HomePage> with RouteAware {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           SizedBox(
-              height: linesSavedWidget,
+              height: MediaQuery.of(context).size.height * 0.16,
               child: LinesSaved(
                 key: _linesSavedKey,
               )),
           // ),
-          SizedBox(height: searchWidget, child: SearchLineInputWidget()),
+          SizedBox(
+              height: MediaQuery.of(context).size.height * 0.72,
+              child: SearchLineInputWidget()),
         ],
       ),
     );

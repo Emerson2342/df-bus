@@ -5,7 +5,6 @@ import 'package:df_bus/pages/line_details/widgets/header_widget.dart';
 import 'package:df_bus/pages/line_details/widgets/maps_widget.dart';
 import 'package:df_bus/pages/line_details/widgets/schedule_details_bottom_sheet.dart';
 import 'package:df_bus/services/service_locator.dart';
-import 'package:df_bus/widgets/progress_indicator_widget.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -96,41 +95,42 @@ class _LineDetailsWidgetState extends State<LineDetailsWidget> {
           ),
         ),
       ),
-      body: SafeArea(
-        top: true,
-        child: FutureBuilder(
-          future: searchLineController.getBusDetails(widget.busLine),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const ProgressIndicatorWidget();
-            } else if (snapshot.hasError) {
-              return Text("Ops...Erro ao buscar a linha ${widget.busLine}");
-            }
-            final lineDetails = snapshot.data!;
-            for (var item in lineDetails) {
-              busRoutes.add(item.sequencial);
-            }
-            for (var item in busRoutes) {
-              debugPrint("*********Código da rota Main $item");
-            }
-            return Stack(
-              children: [
-                Positioned.fill(
-                  child: MapsWidget(
-                    busRoute: busRoutes,
-                    busLine: widget.busLine,
-                  ),
-                ),
-                Positioned(
-                  top: 16,
-                  left: 16,
-                  right: 16,
-                  child: HeaderWidget(lineDetails: lineDetails[0]),
-                ),
-              ],
+      body: FutureBuilder(
+        future: searchLineController.getBusDetails(widget.busLine),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: const CircularProgressIndicator(
+                color: Colors.white,
+              ),
             );
-          },
-        ),
+          } else if (snapshot.hasError) {
+            return Text("Ops...Erro ao buscar a linha ${widget.busLine}");
+          }
+          final lineDetails = snapshot.data!;
+          for (var item in lineDetails) {
+            busRoutes.add(item.sequencial);
+          }
+          for (var item in busRoutes) {
+            debugPrint("*********Código da rota Main $item");
+          }
+          return Stack(
+            children: [
+              Positioned.fill(
+                child: MapsWidget(
+                  busRoute: busRoutes,
+                  busLine: widget.busLine,
+                ),
+              ),
+              Positioned(
+                top: 16,
+                left: 16,
+                right: 16,
+                child: HeaderWidget(lineDetails: lineDetails[0]),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

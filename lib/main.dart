@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
             tertiary: Color(0xff24415c)),
         useMaterial3: true,
       ),
-      home: SafeArea(top: false, child: HomePage()),
+      home: HomePage(),
     );
   }
 }

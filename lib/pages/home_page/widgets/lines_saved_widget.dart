@@ -29,6 +29,7 @@ class LinesSavedState extends State<LinesSaved> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
           "Últimas Buscas",

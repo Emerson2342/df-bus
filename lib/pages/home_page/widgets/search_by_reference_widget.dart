@@ -29,7 +29,6 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
   bool enableTo = true;
   QuerySearch? fromItem;
   QuerySearch? toItem;
-  double listHeight = 0;
 
   @override
   void initState() {
@@ -44,14 +43,6 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
       showQueryResults = false;
       showLinesResult = false;
     });
-    final lines = await searchLineController.init();
-    if (!mounted) return;
-
-    if (lines.length < 5) {
-      listHeight = MediaQuery.of(context).size.height * 0.43;
-    } else if (lines.length > 4) {
-      listHeight = MediaQuery.of(context).size.height * 0.38;
-    }
 
     setState(() {});
 
@@ -191,7 +182,7 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
           ),
         if (showQueryResults)
           SizedBox(
-            height: listHeight,
+            height: MediaQuery.of(context).size.height * 0.35,
             child: ListView.builder(
                 itemCount: queryResults.length,
                 itemBuilder: (context, index) {
@@ -243,7 +234,7 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
           ),
         if (loadingSearch && isFetchingRef)
           SizedBox(
-            height: listHeight,
+            height: MediaQuery.of(context).size.height * 0.35,
             child: const Center(
                 child: CircularProgressIndicator(
               color: Colors.white,
@@ -251,7 +242,7 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
           ),
         if (showLinesResult)
           SizedBox(
-            height: listHeight,
+            height: MediaQuery.of(context).size.height * 0.35,
             child: LinesResultWidget(linesResult: linesResult),
           ),
         AdsBannerWidget()
