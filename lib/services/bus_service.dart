@@ -6,24 +6,49 @@ import 'package:dio/io.dart';
 import 'package:df_bus/models/bus_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class BusService {
-  final Dio _dio = Dio(
-    BaseOptions(baseUrl: "https://www.sistemas.dftrans.df.gov.br/"),
-  )..httpClientAdapter = IOHttpClientAdapter(
-      createHttpClient: () {
-        final client = HttpClient();
-        client.badCertificateCallback = (
-          X509Certificate cert,
-          String host,
-          int port,
-        ) =>
-            true;
-        return client;
-      },
-    );
+  // final Dio _dio = Dio(
+  //   BaseOptions(baseUrl: "https://www.sistemas.dftrans.df.gov.br/"),
+  // )..httpClientAdapter = IOHttpClientAdapter(
+  //     createHttpClient: () {
+  //       final client = HttpClient();
+  //       client.badCertificateCallback = (
+  //         X509Certificate cert,
+  //         String host,
+  //         int port,
+  //       ) =>
+  //           true;
+  //       return client;
+  //     },
+  //   );
+  // final Dio _dio =
+  //     Dio(BaseOptions(baseUrl: "https://www.sistemas.dftrans.df.gov.br/"));
+
+  late final Dio _dio;
+  bool _initialized = false;
+
+  Future<void> _initializeDioOnce() async {
+    if (_initialized) return;
+
+    final context = SecurityContext(withTrustedRoots: true);
+
+    final certBytes = await rootBundle.load('assets/certs/dftrans.crt');
+    context.setTrustedCertificatesBytes(certBytes.buffer.asUint8List());
+
+    final httpClient = HttpClient(context: context);
+    final adapter = IOHttpClientAdapter();
+    adapter.createHttpClient = () => httpClient;
+
+    _dio = Dio(BaseOptions(baseUrl: "https://www.sistemas.dftrans.df.gov.br/"));
+    _dio.httpClientAdapter = adapter;
+
+    _initialized = true;
+  }
 
   Future<List<SearchLine>> searchLines(String linetoSeach) async {
+    await _initializeDioOnce();
     try {
       final response = await _dio.get("linha/find/$linetoSeach/20/short");
       return (response.data as List)
@@ -39,6 +64,7 @@ class BusService {
   }
 
   Future<List<DetalheOnibus>> getLineDetails(String busLine) async {
+    await _initializeDioOnce();
     try {
       final response = await _dio.get("linha/numero/$busLine");
       return (response.data as List)
@@ -51,6 +77,7 @@ class BusService {
   }
 
   Future<List<BusSchedule>> getBusSchedule(String busLine) async {
+    await _initializeDioOnce();
     try {
       final response = await _dio.get("horario/linha/numero/$busLine");
       return (response.data as List)
@@ -65,6 +92,7 @@ class BusService {
   }
 
   Future<FeatureBusRoute> getBusRoute(String routeCod) async {
+    await _initializeDioOnce();
     try {
       final response = await _dio.get("percurso/linha/$routeCod");
       return FeatureBusRoute.fromJson(response.data);
@@ -77,6 +105,7 @@ class BusService {
   }
 
   Future<FeatureBusLocation> getBusLocation(String busLine) async {
+    await _initializeDioOnce();
     try {
       final response = await _dio.get("gps/linha/$busLine/geo/recent");
       return FeatureBusLocation.fromJson(response.data);
@@ -90,6 +119,7 @@ class BusService {
   }
 
   Future<List<QuerySearch>> findQuery(String query) async {
+    await _initializeDioOnce();
     try {
       final response = await _dio.get("/referencia/find/$query/30?q=$query");
       return (response.data as List)
@@ -105,6 +135,7 @@ class BusService {
 
   Future<List<DetalheOnibus>> searchByRef(
       QuerySearch fromItem, QuerySearch toItem) async {
+    await _initializeDioOnce();
     try {
       final response = await _dio.get(
           "linha/${fromItem.tipo}/${fromItem.sequencialRef}/${toItem.tipo}/${toItem.sequencialRef}");
@@ -123,6 +154,7 @@ class BusService {
   }
 
   Future<List<BusDirection>> getBusDirection(String busLine) async {
+    await _initializeDioOnce();
     try {
       final response = await _dio.get("itinerario/linha/numero/$busLine");
       return (response.data as List)

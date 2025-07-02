@@ -36,11 +36,11 @@ class MyApp extends StatelessWidget {
             focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.amber)),
             floatingLabelStyle: TextStyle(color: Colors.amber)),
-        scaffoldBackgroundColor: Color.fromARGB(255, 2, 39, 69),
+        scaffoldBackgroundColor: Color(0xff022948),
         //scaffoldBackgroundColor: Colors.white,
         colorScheme: ColorScheme.dark(
             //seedColor: Color(0xff010f1b),
-            primary: Color(0xff010f1b),
+            primary: Color(0xff011f38),
             secondary: Color(0xff00bfff),
             tertiary: Color(0xff24415c)),
         useMaterial3: true,

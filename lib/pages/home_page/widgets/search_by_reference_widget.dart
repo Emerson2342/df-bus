@@ -245,6 +245,15 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
             height: MediaQuery.of(context).size.height * 0.35,
             child: LinesResultWidget(linesResult: linesResult),
           ),
+        if (!loadingSearch &&
+            !isFetching &&
+            !showQueryResults &&
+            !loadingSearch &&
+            !isFetchingRef &&
+            !showLinesResult)
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.35,
+          ),
         AdsBannerWidget()
       ],
     );

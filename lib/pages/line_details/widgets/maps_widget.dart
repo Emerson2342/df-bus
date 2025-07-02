@@ -256,23 +256,25 @@ class MapsWidgetState extends State<MapsWidget> {
                 ),
               ),
               if (loadingBusRoute)
-                const Positioned(
+                Positioned(
                   top: 10,
                   left: 10,
                   right: 0,
                   child: Text(
                     "Carregando a rota do ônibus...",
-                    style: TextStyle(color: Colors.amber),
+                    style: TextStyle(
+                        color: Colors.amber, fontWeight: FontWeight.bold),
                   ),
                 ),
               if (loadingBusLocation)
-                const Positioned(
+                Positioned(
                   top: 30,
                   left: 10,
                   right: 0,
                   child: Text(
                     "Carregando a localização dos ônibus...",
-                    style: TextStyle(color: Colors.amber),
+                    style: TextStyle(
+                        color: Colors.amber, fontWeight: FontWeight.bold),
                   ),
                 ),
             ]),
