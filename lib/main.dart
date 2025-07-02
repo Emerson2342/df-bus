@@ -16,6 +16,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await Future.delayed(Duration(seconds: 2));
   runApp(const MyApp());
 }
 

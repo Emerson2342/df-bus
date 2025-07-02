@@ -11,6 +11,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:math' as math;
 
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class MapsWidget extends StatefulWidget {
   const MapsWidget({super.key, required this.busRoute, required this.busLine});
@@ -81,6 +82,7 @@ class MapsWidgetState extends State<MapsWidget> {
   }
 
   Future<void> _init() async {
+    await _requestLocationPermission();
     await _getBusLocation();
     await _getBusroute();
     _initMarkers();
@@ -93,6 +95,20 @@ class MapsWidgetState extends State<MapsWidget> {
         await setInitialCamera(mapController, _polylines);
       }
     });
+  }
+
+  Future<void> _requestLocationPermission() async {
+    var status = await Permission.location.status;
+
+    if (status.isDenied || status.isRestricted || status.isPermanentlyDenied) {
+      status = await Permission.location.request();
+    }
+
+    if (status.isGranted) {
+      setState(() {});
+    } else {
+      openAppSettings();
+    }
   }
 
   void _initMarkers() {
@@ -229,6 +245,7 @@ class MapsWidgetState extends State<MapsWidget> {
                 child: GoogleMap(
                   polylines: _polylines,
                   myLocationEnabled: true,
+                  myLocationButtonEnabled: true,
                   mapType: MapType.normal,
                   markers: markes,
                   initialCameraPosition: _initialCameraPosition,
@@ -240,17 +257,23 @@ class MapsWidgetState extends State<MapsWidget> {
               ),
               if (loadingBusRoute)
                 const Positioned(
-                  top: 0,
-                  left: 0,
+                  top: 10,
+                  left: 10,
                   right: 0,
-                  child: Text("Carregando a rota do ônibus..."),
+                  child: Text(
+                    "Carregando a rota do ônibus...",
+                    style: TextStyle(color: Colors.amber),
+                  ),
                 ),
               if (loadingBusLocation)
                 const Positioned(
-                  top: 20,
-                  left: 0,
+                  top: 30,
+                  left: 10,
                   right: 0,
-                  child: Text("Carregando a localização dos ônibus..."),
+                  child: Text(
+                    "Carregando a localização dos ônibus...",
+                    style: TextStyle(color: Colors.amber),
+                  ),
                 ),
             ]),
           ),
