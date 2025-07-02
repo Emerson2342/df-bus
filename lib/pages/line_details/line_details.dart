@@ -114,19 +114,14 @@ class _LineDetailsWidgetState extends State<LineDetailsWidget> {
           for (var item in busRoutes) {
             debugPrint("*********Código da rota Main $item");
           }
-          return Stack(
+          return Column(
             children: [
-              Positioned.fill(
+              HeaderWidget(lineDetails: lineDetails[0]),
+              Expanded(
                 child: MapsWidget(
                   busRoute: busRoutes,
                   busLine: widget.busLine,
                 ),
-              ),
-              Positioned(
-                top: 16,
-                left: 16,
-                right: 16,
-                child: HeaderWidget(lineDetails: lineDetails[0]),
               ),
             ],
           );

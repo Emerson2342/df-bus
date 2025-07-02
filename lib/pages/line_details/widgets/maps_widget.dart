@@ -29,13 +29,13 @@ class MapsWidgetState extends State<MapsWidget> {
 
   final List<FeatureBusRoute> _busRoute = [];
   Set<Marker> markes = {};
-
   Set<Polyline> _polylines = {};
-
   List<List<LatLng>> pointsOnMap = [];
   late Timer _timer;
   BitmapDescriptor customIcon = BitmapDescriptor.defaultMarker;
   String? _mapStyle;
+  bool loadingBusRoute = true;
+  bool loadingBusLocation = true;
 
   //Position? _currentPosition;
   final CameraPosition _initialCameraPosition =
@@ -82,7 +82,6 @@ class MapsWidgetState extends State<MapsWidget> {
 
   Future<void> _init() async {
     await _getBusLocation();
-    //await _getCurrentLocation();
     await _getBusroute();
     _initMarkers();
     if (mounted) {
@@ -149,6 +148,7 @@ class MapsWidgetState extends State<MapsWidget> {
     if (!mounted) return;
     setState(() {
       markes = newMarkers;
+      loadingBusLocation = false;
     });
   }
 
@@ -213,28 +213,10 @@ class MapsWidgetState extends State<MapsWidget> {
         pointsOnMap.add(singleRoute);
       }
     }
+    setState(() {
+      loadingBusRoute = false;
+    });
   }
-
-  // Future<void> _getCurrentLocation() async {
-  //   try {
-  //     final position = await determinePosition();
-
-  //     debugPrint(
-  //         '*******Lat: ${position.latitude}, Long: ${position.longitude}');
-  //     setState(() {
-  //       _initialCameraPosition = CameraPosition(
-  //         target: LatLng(position.latitude, position.longitude),
-  //         zoom: 14.4746,
-  //       );
-  //     });
-
-  //     // setState(() {
-  //     // _currentPosition = position;
-  //     //  });
-  //   } catch (e) {
-  //     debugPrint('Erro ao obter localização: $e');
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -242,17 +224,35 @@ class MapsWidgetState extends State<MapsWidget> {
       body: Column(
         children: [
           Expanded(
-            child: GoogleMap(
-              polylines: _polylines,
-              myLocationEnabled: true,
-              mapType: MapType.normal,
-              markers: markes,
-              initialCameraPosition: _initialCameraPosition,
-              onMapCreated: (GoogleMapController controller) {
-                mapController.complete(controller);
-              },
-              style: _mapStyle,
-            ),
+            child: Stack(children: [
+              Positioned.fill(
+                child: GoogleMap(
+                  polylines: _polylines,
+                  myLocationEnabled: true,
+                  mapType: MapType.normal,
+                  markers: markes,
+                  initialCameraPosition: _initialCameraPosition,
+                  onMapCreated: (GoogleMapController controller) {
+                    mapController.complete(controller);
+                  },
+                  style: _mapStyle,
+                ),
+              ),
+              if (loadingBusRoute)
+                const Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: Text("Carregando a rota do ônibus..."),
+                ),
+              if (loadingBusLocation)
+                const Positioned(
+                  top: 20,
+                  left: 0,
+                  right: 0,
+                  child: Text("Carregando a localização dos ônibus..."),
+                ),
+            ]),
           ),
           AdsBannerWidget(),
         ],

@@ -114,7 +114,7 @@ class ScheduleListView extends StatelessWidget {
         return Chip(
           label: Text(text),
           shape: RoundedRectangleBorder(
-              side: BorderSide(color: Colors.transparent),
+              side: const BorderSide(color: Colors.transparent),
               borderRadius: BorderRadius.circular(5)),
           backgroundColor: Theme.of(context).colorScheme.tertiary,
           labelStyle:

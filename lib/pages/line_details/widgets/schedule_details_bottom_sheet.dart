@@ -28,7 +28,7 @@ class ScheduleDetails extends StatelessWidget {
               border: Border.all(
                 color: Colors.white,
               ),
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(23),
                 topRight: Radius.circular(23),
               ),
@@ -44,8 +44,8 @@ class ScheduleDetails extends StatelessWidget {
                 ),
                 Expanded(
                   flex: 3,
-                  child: TabBarView(
-                    children: sentidos.map((sentido) {
+                  child: TabBarView(children: [
+                    ...sentidos.map((sentido) {
                       final schedules = schedulesBySentido[sentido] ?? [];
                       final busDirection =
                           busDirections.firstWhere((d) => d.sentido == sentido);
@@ -53,8 +53,8 @@ class ScheduleDetails extends StatelessWidget {
                         schedules: schedules,
                         busDirection: busDirection,
                       );
-                    }).toList(),
-                  ),
+                    }),
+                  ]),
                 ),
               ],
             ),
