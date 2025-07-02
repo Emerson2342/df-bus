@@ -26,7 +26,6 @@ class _LinesResultWidgetState extends State<LinesResultWidget> {
           color: Theme.of(context).colorScheme.tertiary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5),
-            side: BorderSide(width: 0.5),
           ),
           //   color: Color(0xffffffff),
           elevation: 3,
