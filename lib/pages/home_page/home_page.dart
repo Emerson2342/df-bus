@@ -75,13 +75,13 @@ class _HomePageState extends State<HomePage> with RouteAware {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           SizedBox(
-              height: MediaQuery.of(context).size.height * 0.16,
+              height: MediaQuery.of(context).size.height * 0.15,
               child: LinesSaved(
                 key: _linesSavedKey,
               )),
           // ),
           SizedBox(
-              height: MediaQuery.of(context).size.height * 0.72,
+              height: MediaQuery.of(context).size.height * 0.73,
               child: SearchLineInputWidget()),
         ],
       ),

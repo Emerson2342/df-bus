@@ -30,6 +30,7 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
   void _onSubmit() async {
     loadingSearch = true;
     final text = _textController.text.trim();
+    linesSearched = [];
     if (text.isNotEmpty) {
       _textController.clear();
       FocusScope.of(context).unfocus();
@@ -92,7 +93,7 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
         // SizedBox(height: 7),
         if (loadingSearch)
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.45,
+            height: MediaQuery.of(context).size.height * 0.49,
             child: Center(
                 child: CircularProgressIndicator(
               color: Colors.white,
@@ -100,7 +101,7 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
           ),
         if (linesSearched.isNotEmpty)
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.45,
+            height: MediaQuery.of(context).size.height * 0.49,
             child: LinesResultWidget(linesResult: linesSearched),
           ),
         AdsBannerWidget()

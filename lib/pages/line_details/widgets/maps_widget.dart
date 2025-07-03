@@ -37,6 +37,7 @@ class MapsWidgetState extends State<MapsWidget> {
   String? _mapStyle;
   bool loadingBusRoute = true;
   bool loadingBusLocation = true;
+  bool _isRequestingPermission = false;
 
   //Position? _currentPosition;
   final CameraPosition _initialCameraPosition =
@@ -98,16 +99,25 @@ class MapsWidgetState extends State<MapsWidget> {
   }
 
   Future<void> _requestLocationPermission() async {
-    var status = await Permission.location.status;
+    if (_isRequestingPermission) return;
+    _isRequestingPermission = true;
 
-    if (status.isDenied || status.isRestricted || status.isPermanentlyDenied) {
-      status = await Permission.location.request();
-    }
+    try {
+      var status = await Permission.location.status;
 
-    if (status.isGranted) {
-      setState(() {});
-    } else {
-      openAppSettings();
+      if (status.isDenied ||
+          status.isRestricted ||
+          status.isPermanentlyDenied) {
+        status = await Permission.location.request();
+      }
+
+      if (status.isGranted) {
+        setState(() {});
+      } else {
+        openAppSettings();
+      }
+    } finally {
+      _isRequestingPermission = false;
     }
   }
 
@@ -118,9 +128,7 @@ class MapsWidgetState extends State<MapsWidget> {
         Polyline(
           polylineId: PolylineId('polyline-$i'),
           points: pointsOnMap[i],
-          color: i == 0
-              ? const Color.fromARGB(255, 82, 55, 232)
-              : const Color.fromARGB(255, 45, 156, 65),
+          color: i == 0 ? Colors.amber : const Color.fromARGB(255, 45, 156, 65),
           width: 3,
         ),
       );

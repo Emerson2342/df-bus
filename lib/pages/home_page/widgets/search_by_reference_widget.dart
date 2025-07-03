@@ -182,7 +182,7 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
           ),
         if (showQueryResults)
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.35,
+            height: MediaQuery.of(context).size.height * 0.38,
             child: ListView.builder(
                 itemCount: queryResults.length,
                 itemBuilder: (context, index) {
@@ -234,7 +234,7 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
           ),
         if (loadingSearch && isFetchingRef)
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.35,
+            height: MediaQuery.of(context).size.height * 0.38,
             child: const Center(
                 child: CircularProgressIndicator(
               color: Colors.white,
@@ -242,7 +242,7 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
           ),
         if (showLinesResult)
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.35,
+            height: MediaQuery.of(context).size.height * 0.38,
             child: LinesResultWidget(linesResult: linesResult),
           ),
         if (!loadingSearch &&
@@ -252,7 +252,7 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
             !isFetchingRef &&
             !showLinesResult)
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.35,
+            height: MediaQuery.of(context).size.height * 0.38,
           ),
         AdsBannerWidget()
       ],

@@ -56,13 +56,16 @@ class _AdsBannerWidgetState extends State<AdsBannerWidget> {
   Widget build(BuildContext context) {
     return Center(
       child: _bannerAd != null
-          ? Align(
-              alignment: Alignment.bottomCenter,
-              child: SafeArea(
-                child: SizedBox(
-                  width: _bannerAd!.size.width.toDouble(),
-                  height: _bannerAd!.size.height.toDouble(),
-                  child: AdWidget(ad: _bannerAd!),
+          ? Visibility(
+              visible: true,
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: SafeArea(
+                  child: SizedBox(
+                    width: _bannerAd!.size.width.toDouble(),
+                    height: _bannerAd!.size.height.toDouble(),
+                    child: AdWidget(ad: _bannerAd!),
+                  ),
                 ),
               ),
             )
