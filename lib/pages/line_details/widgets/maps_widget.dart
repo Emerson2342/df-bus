@@ -37,7 +37,7 @@ class MapsWidgetState extends State<MapsWidget> {
   String? _mapStyle;
   bool loadingBusRoute = true;
   bool loadingBusLocation = true;
-  bool _isRequestingPermission = false;
+  static bool _isRequestingPermission = false;
 
   //Position? _currentPosition;
   final CameraPosition _initialCameraPosition =
@@ -84,8 +84,8 @@ class MapsWidgetState extends State<MapsWidget> {
 
   Future<void> _init() async {
     await _requestLocationPermission();
-    await _getBusLocation();
     await _getBusroute();
+    await _getBusLocation();
     _initMarkers();
     if (mounted) {
       setState(() {});
@@ -109,9 +109,10 @@ class MapsWidgetState extends State<MapsWidget> {
           status.isRestricted ||
           status.isPermanentlyDenied) {
         status = await Permission.location.request();
+        _isRequestingPermission = false;
       }
 
-      if (status.isGranted) {
+      if (mounted && status.isGranted) {
         setState(() {});
       } else {
         openAppSettings();
@@ -123,13 +124,27 @@ class MapsWidgetState extends State<MapsWidget> {
 
   void _initMarkers() {
     final newPolylines = <Polyline>{};
+
+    final isCircular = pointsOnMap.length == 1;
+    final isIdaVolta = pointsOnMap.length == 2;
+
     for (int i = 0; i < pointsOnMap.length; i++) {
+      Color? color;
+
+      if (isCircular) {
+        color = Colors.amber;
+      } else if (isIdaVolta) {
+        color = i == 0 ? Colors.amber : const Color.fromARGB(255, 45, 156, 65);
+      } else {
+        color = Colors.blueGrey;
+      }
+
       newPolylines.add(
         Polyline(
           polylineId: PolylineId('polyline-$i'),
           points: pointsOnMap[i],
-          color: i == 0 ? Colors.amber : const Color.fromARGB(255, 45, 156, 65),
-          width: 3,
+          color: color,
+          width: 2,
         ),
       );
     }
@@ -237,6 +252,7 @@ class MapsWidgetState extends State<MapsWidget> {
         pointsOnMap.add(singleRoute);
       }
     }
+    if (!mounted) return;
     setState(() {
       loadingBusRoute = false;
     });
