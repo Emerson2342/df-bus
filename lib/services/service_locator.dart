@@ -2,6 +2,7 @@ import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/services/bus_service.dart';
 import 'package:df_bus/services/storage_service.dart';
 import 'package:df_bus/storage/hive_storage.dart';
+import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:get_it/get_it.dart';
 
 final getIt = GetIt.instance;
@@ -11,4 +12,5 @@ void setupGetIt() {
   getIt.registerLazySingleton<BusService>(() => BusService());
   getIt.registerLazySingleton<SearchLineController>(
       () => SearchLineController());
+  getIt.registerLazySingleton<ThemeNotifier>(() => ThemeNotifier());
 }

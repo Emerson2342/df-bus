@@ -1,6 +1,7 @@
 import 'package:df_bus/firebase_options.dart';
 import 'package:df_bus/pages/home_page/home_page.dart';
 import 'package:df_bus/services/service_locator.dart';
+import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -25,27 +26,70 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorObservers: [routeObserver],
-      debugShowCheckedModeBanner: false,
-      title: 'DF Bus',
-      theme: ThemeData(
-        fontFamily: 'QuickSand',
-        inputDecorationTheme: InputDecorationTheme(
-            // border: OutlineInputBorder(),
-            focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.amber)),
-            floatingLabelStyle: TextStyle(color: Colors.amber)),
-        scaffoldBackgroundColor: Color(0xff022948),
-        //scaffoldBackgroundColor: Colors.white,
-        colorScheme: ColorScheme.dark(
-            //seedColor: Color(0xff010f1b),
-            primary: Color(0xff011f38),
-            secondary: Color(0xff00bfff),
-            tertiary: Color(0xff24415c)),
-        useMaterial3: true,
-      ),
-      home: HomePage(),
-    );
+    final themeNotifier = getIt<ThemeNotifier>();
+    return ValueListenableBuilder<bool>(
+        valueListenable: themeNotifier,
+        builder: (context, isDarkMode, _) {
+          return MaterialApp(
+            navigatorObservers: [routeObserver],
+            debugShowCheckedModeBanner: false,
+            title: 'DF Bus',
+            theme: customLightTheme(),
+            darkTheme: customDarkTheme(),
+            themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            home: HomePage(),
+          );
+        });
   }
 }
+
+ThemeData customLightTheme() {
+  return ThemeData(
+    fontFamily: 'QuickSand',
+    inputDecorationTheme: InputDecorationTheme(
+      focusedBorder: UnderlineInputBorder(
+        borderSide: BorderSide(color: Color(0xff011f38)),
+      ),
+      floatingLabelStyle: TextStyle(color: Color(0xff011f38)),
+    ),
+    scaffoldBackgroundColor: Color(0xFFF7F7F7),
+    //scaffoldBackgroundColor: Colors.white,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Color(0xff010f1b),
+      primary: Color(0xff011f38),
+      secondary: Color(0xff011f38),
+      tertiary: Colors.white,
+    ),
+    useMaterial3: true,
+  );
+}
+
+ThemeData customDarkTheme() {
+  return ThemeData(
+    fontFamily: 'QuickSand',
+    inputDecorationTheme: InputDecorationTheme(
+      focusedBorder: UnderlineInputBorder(
+        borderSide: BorderSide(color: Colors.amber),
+      ),
+      floatingLabelStyle: TextStyle(color: Colors.amber),
+    ),
+    scaffoldBackgroundColor: Color(0xff022948),
+    //scaffoldBackgroundColor: Colors.white,
+    colorScheme: ColorScheme.dark(
+      //seedColor: Color(0xff010f1b),
+      primary: Color(0xff011f38),
+      secondary: Colors.amber,
+      tertiary: Color(0xff24415c),
+    ),
+    useMaterial3: true,
+  );
+}
+
+/*scaffoldBackgroundColor: Color(0xff022948),
+        //scaffoldBackgroundColor: Colors.white,
+        colorScheme: ColorScheme.dark(
+          //seedColor: Color(0xff010f1b),
+          primary: Color(0xff011f38),
+          secondary: Color(0xff00bfff),
+          tertiary: Color(0xff24415c),
+          */

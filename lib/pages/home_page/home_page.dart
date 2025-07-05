@@ -1,8 +1,8 @@
 import 'package:df_bus/controller/search_line_controller.dart';
-import 'package:df_bus/models/bus_model.dart';
 import 'package:df_bus/pages/home_page/widgets/lines_saved_widget.dart';
 import 'package:df_bus/pages/home_page/widgets/search_line_input_widget.dart';
 import 'package:df_bus/services/service_locator.dart';
+import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:flutter/material.dart';
 import './../../main.dart' show routeObserver;
 
@@ -16,10 +16,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with RouteAware {
   final GlobalKey<LinesSavedState> _linesSavedKey = GlobalKey();
   final searchLineController = getIt<SearchLineController>();
+  final themeNotifier = getIt<ThemeNotifier>();
   String linetoSeach = "";
-  late List<SearchLine> linesSearched = [];
+  //late List<SearchLine> linesSearched = [];
   bool loadingSearch = false;
-  List<String> linesSaved = [];
+  //List<String> linesSaved = [];
 
   @override
   void didChangeDependencies() {
@@ -53,10 +54,6 @@ class _HomePageState extends State<HomePage> with RouteAware {
         _linesSavedKey.currentState?.getLinesSaved();
       });
     }
-    linesSaved = lines;
-    if (!mounted) return;
-
-    setState(() {});
   }
 
   @override
@@ -71,14 +68,17 @@ class _HomePageState extends State<HomePage> with RouteAware {
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.primary,
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.dark_mode),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.dark_mode),
-          )
+          ValueListenableBuilder<bool>(
+              valueListenable: themeNotifier,
+              builder: (context, isDarkMode, _) {
+                return IconButton(
+                  onPressed: themeNotifier.toggleDarkMode,
+                  icon: Icon(
+                    isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                    color: Colors.white,
+                  ),
+                );
+              })
         ],
       ),
       body: Column(

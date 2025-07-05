@@ -174,9 +174,9 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
           ),
         ),
         if (loadingSearch && isFetching)
-          const Center(
+          Center(
             child: CircularProgressIndicator(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.secondary,
               semanticsLabel: "Carregando lista...",
             ),
           ),
@@ -188,11 +188,7 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
                 itemBuilder: (context, index) {
                   final item = queryResults[index];
                   return Card(
-                    color: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
-                      side: BorderSide(color: Colors.grey, width: 0.5),
-                    ),
+                    color: Theme.of(context).colorScheme.tertiary,
                     elevation: 5,
                     child: ListTile(
                       onTap: () {
@@ -218,7 +214,7 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
                               item.descricao,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                  color: Colors.black,
+                                  //color: Colors.black,
                                   fontWeight: FontWeight.bold),
                             ),
                           )
@@ -226,7 +222,7 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
                       ),
                       trailing: Icon(
                         Icons.check,
-                        color: Colors.black,
+                        //color: Colors.black,
                       ),
                     ),
                   );
@@ -235,9 +231,9 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
         if (loadingSearch && isFetchingRef)
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.38,
-            child: const Center(
+            child: Center(
                 child: CircularProgressIndicator(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.secondary,
             )),
           ),
         if (showLinesResult)

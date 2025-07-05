@@ -4,4 +4,6 @@ abstract class StorageService {
   Future<void> addLine(String line);
   Future<void> removeLine(String line);
   Future<void> clearList();
+  Future<bool> getDarkMode();
+  Future<void> setDarkMode(bool isDarkMode);
 }

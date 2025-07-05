@@ -4,6 +4,7 @@ import 'package:df_bus/ads/ads_widget.dart';
 import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/models/bus_route.dart';
 import 'package:df_bus/services/service_locator.dart';
+import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // import 'package:geolocator/geolocator.dart';
@@ -27,6 +28,7 @@ class MapsWidgetState extends State<MapsWidget> {
   late Completer<GoogleMapController> mapController =
       Completer<GoogleMapController>();
   final searchLineController = getIt<SearchLineController>();
+  final themeNotifier = getIt<ThemeNotifier>();
 
   final List<FeatureBusRoute> _busRoute = [];
   Set<Marker> markes = {};
@@ -48,6 +50,7 @@ class MapsWidgetState extends State<MapsWidget> {
     _clearAll();
     // _setMapStyle();
     rootBundle.loadString('assets/maps/map_style_dark.json').then((string) {
+      if (!themeNotifier.isDarkMode) return;
       setState(() {
         _mapStyle = string;
       });
@@ -92,9 +95,6 @@ class MapsWidgetState extends State<MapsWidget> {
     await _getBusroute();
     await _getBusLocation();
     _initMarkers();
-    if (mounted) {
-      setState(() {});
-    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (_polylines.isNotEmpty) {
@@ -303,7 +303,8 @@ class MapsWidgetState extends State<MapsWidget> {
                   child: Text(
                     "Carregando a rota do ônibus...",
                     style: TextStyle(
-                        color: Colors.amber, fontWeight: FontWeight.bold),
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
               if (loadingBusLocation)
@@ -314,7 +315,8 @@ class MapsWidgetState extends State<MapsWidget> {
                   child: Text(
                     "Carregando a localização dos ônibus...",
                     style: TextStyle(
-                        color: Colors.amber, fontWeight: FontWeight.bold),
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
             ]),

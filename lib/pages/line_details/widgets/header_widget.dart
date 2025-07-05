@@ -14,10 +14,8 @@ class HeaderWidget extends StatelessWidget {
     const labelStyle = TextStyle(fontWeight: FontWeight.bold, color: textColor);
 
     return Container(
-      decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.tertiary,
-          borderRadius: BorderRadius.circular(7)),
       padding: const EdgeInsets.all(9),
+      color: Theme.of(context).colorScheme.primary,
       child: Column(
         children: [
           Text(

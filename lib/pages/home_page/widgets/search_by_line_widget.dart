@@ -96,7 +96,7 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
             height: MediaQuery.of(context).size.height * 0.49,
             child: Center(
                 child: CircularProgressIndicator(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.secondary,
             )),
           ),
         if (linesSearched.isNotEmpty)

@@ -23,6 +23,7 @@ class _LinesResultWidgetState extends State<LinesResultWidget> {
       itemBuilder: (context, index) {
         final line = widget.linesResult[index];
         return Card(
+          // color: Theme.of(context).colorScheme.tertiary,
           color: Theme.of(context).colorScheme.tertiary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5),

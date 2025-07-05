@@ -100,8 +100,8 @@ class _LineDetailsWidgetState extends State<LineDetailsWidget> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
-              child: const CircularProgressIndicator(
-                color: Colors.white,
+              child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.secondary,
               ),
             );
           } else if (snapshot.hasError) {

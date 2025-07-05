@@ -48,7 +48,7 @@ class _SearchLineInputWidgetState extends State<SearchLineInputWidget> {
         leading: Radio<SearchType>(
           value: title == "Linha" ? SearchType.linha : SearchType.referencia,
           groupValue: _type,
-          activeColor: Colors.amber,
+          activeColor: Theme.of(context).colorScheme.secondary,
           onChanged: (SearchType? value) {
             setState(
               () {

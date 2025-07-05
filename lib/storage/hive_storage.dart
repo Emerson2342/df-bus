@@ -4,6 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 class HiveStorage extends StorageService {
   final String linesBoxName = "lines";
+  final String darkModeBoxName = "isDarkMode";
 
   @override
   Future<List<String>> getLines() async {
@@ -69,6 +70,30 @@ class HiveStorage extends StorageService {
       await linesBox.clear();
     } catch (e) {
       debugPrint("HIVE Storage - Erro ao apagar a lista - $e");
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> getDarkMode() async {
+    try {
+      final darkModeBox = await Hive.openBox<bool>(darkModeBoxName);
+      final isDark =
+          darkModeBox.get(darkModeBoxName, defaultValue: false) ?? false;
+      return isDark;
+    } catch (e) {
+      debugPrint("HIVE Storage - Erro ao buscar dados salvos MODO ESCURO - $e");
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> setDarkMode(bool isDarkMode) async {
+    try {
+      final box = await Hive.openBox<bool>(darkModeBoxName);
+      await box.put(darkModeBoxName, isDarkMode);
+    } catch (e) {
+      debugPrint('Erro ao salvar dark mode no Hive: $e');
       rethrow;
     }
   }
