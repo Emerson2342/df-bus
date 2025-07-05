@@ -32,7 +32,7 @@ class MapsWidgetState extends State<MapsWidget> {
   Set<Marker> markes = {};
   Set<Polyline> _polylines = {};
   List<List<LatLng>> pointsOnMap = [];
-  late Timer _timer;
+  Timer? _timer;
   BitmapDescriptor customIcon = BitmapDescriptor.defaultMarker;
   String? _mapStyle;
   bool loadingBusRoute = true;
@@ -45,6 +45,7 @@ class MapsWidgetState extends State<MapsWidget> {
 
   @override
   void initState() {
+    _clearAll();
     // _setMapStyle();
     rootBundle.loadString('assets/maps/map_style_dark.json').then((string) {
       setState(() {
@@ -65,12 +66,16 @@ class MapsWidgetState extends State<MapsWidget> {
 
   @override
   void dispose() {
+    _clearAll();
+    super.dispose();
+  }
+
+  void _clearAll() {
     _busRoute.clear();
     pointsOnMap.clear();
     _polylines.clear();
     markes.clear();
-    _timer.cancel();
-    super.dispose();
+    _timer?.cancel();
   }
 
   void _loadCustomIcon() {
@@ -127,6 +132,8 @@ class MapsWidgetState extends State<MapsWidget> {
 
     final isCircular = pointsOnMap.length == 1;
     final isIdaVolta = pointsOnMap.length == 2;
+    debugPrint(
+        "********************Tamanho da lista - Init Markers  ${widget.busLine} ${pointsOnMap.length}");
 
     for (int i = 0; i < pointsOnMap.length; i++) {
       Color? color;
@@ -155,7 +162,6 @@ class MapsWidgetState extends State<MapsWidget> {
   }
 
   Future<void> _getBusLocation() async {
-    debugPrint("***************Chamou a localização dos ônibus");
     final newMarkers = <Marker>{};
     final geoLocation =
         await searchLineController.getBusLocation(widget.busLine);
@@ -226,17 +232,23 @@ class MapsWidgetState extends State<MapsWidget> {
   }
 
   Future<void> _getBusroute() async {
+    _busRoute.clear();
+    pointsOnMap.clear();
     if (!mounted) return;
     double sinh(double x) => (math.exp(x) - math.exp(-x)) / 2;
-    for (final route in widget.busRoute) {
+
+    final routeList = List<int>.from(widget.busRoute);
+
+    for (final route in routeList) {
       final busRoute = await searchLineController.getBusRoute(route.toString());
 
       _busRoute.add(busRoute);
     }
-
-    // setState(() {});
-    debugPrint("*********Quantidade de rotas ${_busRoute.length}");
-
+    if (!mounted) return;
+    setState(() {});
+    for (final r in widget.busRoute) {
+      debugPrint("*********** Rota id $r");
+    }
     for (final feature in _busRoute) {
       for (final f in feature.features) {
         final List<LatLng> singleRoute = f.geometry.coordinates.map((coord) {

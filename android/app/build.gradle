@@ -12,8 +12,6 @@ plugins {
     def keystorePropertiesFile = rootProject.file('/key.properties')
     if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-    } else {
-        throw new GradleException("Arquivo key.properties não encontrado em: ${keystorePropertiesFile}")
     }
 
 
