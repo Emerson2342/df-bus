@@ -1,4 +1,4 @@
-package com.example.df_bus
+package com.missinhoo.df_bus
 
 import io.flutter.embedding.android.FlutterActivity
 
