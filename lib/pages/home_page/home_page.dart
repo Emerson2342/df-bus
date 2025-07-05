@@ -70,6 +70,16 @@ class _HomePageState extends State<HomePage> with RouteAware {
         ),
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.primary,
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.dark_mode),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.dark_mode),
+          )
+        ],
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

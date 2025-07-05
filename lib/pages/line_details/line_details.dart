@@ -21,7 +21,7 @@ class LineDetailsWidget extends StatefulWidget {
 class _LineDetailsWidgetState extends State<LineDetailsWidget> {
   final searchLineController = getIt<SearchLineController>();
   List<BusSchedule> busSchedule = [];
-  List<int> busRoutes = [];
+  //List<int> busRoutes = [];
   List<BusDirection> busDirections = [];
 
   @override
@@ -108,12 +108,9 @@ class _LineDetailsWidgetState extends State<LineDetailsWidget> {
             return Text("Ops...Erro ao buscar a linha ${widget.busLine}");
           }
           final lineDetails = snapshot.data!;
-          for (var item in lineDetails) {
-            busRoutes.add(item.sequencial);
-          }
-          for (var item in busRoutes) {
-            debugPrint("*********Código da rota Main $item");
-          }
+          //busRoutes = [];
+          final busRoutes = lineDetails.map((item) => item.sequencial).toList();
+
           return Column(
             children: [
               HeaderWidget(lineDetails: lineDetails[0]),

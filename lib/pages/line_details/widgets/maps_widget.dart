@@ -120,7 +120,7 @@ class MapsWidgetState extends State<MapsWidget> {
       if (mounted && status.isGranted) {
         setState(() {});
       } else {
-        openAppSettings();
+        // openAppSettings();
       }
     } finally {
       _isRequestingPermission = false;
@@ -165,6 +165,7 @@ class MapsWidgetState extends State<MapsWidget> {
     final newMarkers = <Marker>{};
     final geoLocation =
         await searchLineController.getBusLocation(widget.busLine);
+    debugPrint("***************Chamou localização dos ônibus");
     for (int index = 0; index < geoLocation.features.length; index++) {
       final item = geoLocation.features[index];
       final lon = item.geometry.coordinates[0];
@@ -239,6 +240,11 @@ class MapsWidgetState extends State<MapsWidget> {
 
     final routeList = List<int>.from(widget.busRoute);
 
+    debugPrint(
+        "**********************Tamanho da lista - getBusroute Rotas: $routeList  Linha: ${widget.busLine}");
+    for (final r in routeList) {
+      debugPrint("*********** Rota id $r");
+    }
     for (final route in routeList) {
       final busRoute = await searchLineController.getBusRoute(route.toString());
 
@@ -246,9 +252,7 @@ class MapsWidgetState extends State<MapsWidget> {
     }
     if (!mounted) return;
     setState(() {});
-    for (final r in widget.busRoute) {
-      debugPrint("*********** Rota id $r");
-    }
+
     for (final feature in _busRoute) {
       for (final f in feature.features) {
         final List<LatLng> singleRoute = f.geometry.coordinates.map((coord) {
