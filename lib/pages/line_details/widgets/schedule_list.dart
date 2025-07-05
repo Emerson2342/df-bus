@@ -1,5 +1,7 @@
 import 'package:df_bus/models/bus_model.dart';
 import 'package:df_bus/models/bus_route.dart';
+import 'package:df_bus/services/service_locator.dart';
+import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:flutter/material.dart';
 
 class ScheduleListView extends StatelessWidget {
@@ -55,9 +57,9 @@ class ScheduleListView extends StatelessWidget {
 
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 3),
-          color: Theme.of(context).colorScheme.primary,
+          color: Theme.of(context).colorScheme.tertiary,
           shape: RoundedRectangleBorder(
-              side: BorderSide(color: Theme.of(context).colorScheme.tertiary),
+              side: BorderSide(color: Theme.of(context).colorScheme.primary),
               borderRadius: BorderRadius.circular(12)),
           child: Padding(
             padding: const EdgeInsets.all(12),
@@ -99,6 +101,7 @@ class ScheduleListView extends StatelessWidget {
   }
 
   Widget _horariosRow(List<Schedule> horarios, BuildContext context) {
+    final themeNotifier = getIt<ThemeNotifier>();
     horarios.sort((a, b) {
       final minutesA = a.hora * 60 + a.minuto;
       final minutesB = b.hora * 60 + b.minuto;
@@ -111,14 +114,20 @@ class ScheduleListView extends StatelessWidget {
       children: horarios.map((h) {
         final text =
             '${h.hora.toString().padLeft(2, '0')}:${h.minuto.toString().padLeft(2, '0')}';
-        return Chip(
-          label: Text(text),
-          shape: RoundedRectangleBorder(
-              side: const BorderSide(color: Colors.transparent),
-              borderRadius: BorderRadius.circular(5)),
-          backgroundColor: Theme.of(context).colorScheme.tertiary,
-          labelStyle:
-              const TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
+        return SizedBox(
+          width: 70,
+          child: Chip(
+            label: Text(text),
+            shape: RoundedRectangleBorder(
+                side: const BorderSide(color: Color.fromARGB(0, 10, 9, 9)),
+                borderRadius: BorderRadius.circular(3)),
+            backgroundColor: themeNotifier.isDarkMode
+                ? Theme.of(context).colorScheme.primary
+                : Color(0xFFF7F7F7),
+            labelStyle: TextStyle(
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         );
       }).toList(),
     );
