@@ -17,8 +17,6 @@ class _SearchLineInputWidgetState extends State<SearchLineInputWidget> {
   final searchLineController = getIt<SearchLineController>();
   SearchType _type = SearchType.linha;
 
-  // List<String> options = ['Linha', 'Referência'];
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -40,22 +38,33 @@ class _SearchLineInputWidgetState extends State<SearchLineInputWidget> {
 
   Expanded searchTypeOptions(BuildContext context, String title) {
     return Expanded(
-      child: ListTile(
-        title: Text(
-          title,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        leading: Radio<SearchType>(
-          value: title == "Linha" ? SearchType.linha : SearchType.referencia,
-          groupValue: _type,
-          activeColor: Theme.of(context).colorScheme.secondary,
-          onChanged: (SearchType? value) {
-            setState(
-              () {
-                if (value != null) _type = value;
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _type = title == "Linha" ? SearchType.linha : SearchType.referencia;
+          });
+        },
+        child: Row(
+          children: [
+            Radio<SearchType>(
+              value:
+                  title == "Linha" ? SearchType.linha : SearchType.referencia,
+              groupValue: _type,
+              activeColor: Theme.of(context).colorScheme.secondary,
+              onChanged: (SearchType? value) {
+                setState(() {
+                  if (value != null) _type = value;
+                });
               },
-            );
-          },
+            ),
+            Expanded(
+              child: Text(
+                title,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+          ],
         ),
       ),
     );
