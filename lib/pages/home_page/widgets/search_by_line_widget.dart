@@ -60,52 +60,54 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 15.0),
-                  child: TextField(
-                    controller: _textController,
-                    decoration: InputDecoration(
-                      labelText: 'Digite a linha',
+    return SafeArea(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 15.0),
+                    child: TextField(
+                      controller: _textController,
+                      decoration: InputDecoration(
+                        labelText: 'Digite a linha',
+                      ),
+                      onSubmitted: (_) async => _onSubmit(),
                     ),
-                    onSubmitted: (_) async => _onSubmit(),
                   ),
                 ),
-              ),
-              // SizedBox(width: 8),
-              IconButton(
-                icon: Icon(
-                  Icons.search,
-                  size: 35,
-                ),
-                onPressed: _onSubmit,
-              )
-            ],
+                // SizedBox(width: 8),
+                IconButton(
+                  icon: Icon(
+                    Icons.search,
+                    size: 35,
+                  ),
+                  onPressed: _onSubmit,
+                )
+              ],
+            ),
           ),
-        ),
-        // SizedBox(height: 7),
-        if (loadingSearch)
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.49,
-            child: Center(
-                child: CircularProgressIndicator(
-              color: Theme.of(context).colorScheme.secondary,
-            )),
-          ),
-        if (linesSearched.isNotEmpty)
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.49,
-            child: LinesResultWidget(linesResult: linesSearched),
-          ),
-        AdsBannerWidget()
-      ],
+          // SizedBox(height: 7),
+          if (loadingSearch)
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.45,
+              child: Center(
+                  child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.secondary,
+              )),
+            ),
+          if (linesSearched.isNotEmpty)
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.45,
+              child: LinesResultWidget(linesResult: linesSearched),
+            ),
+          AdsBannerWidget()
+        ],
+      ),
     );
   }
 }

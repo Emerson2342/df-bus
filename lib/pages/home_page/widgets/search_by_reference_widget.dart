@@ -77,181 +77,183 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _fromController,
-                  //enabled: enableFrom,
+    return SafeArea(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _fromController,
+                    //enabled: enableFrom,
 
-                  decoration: const InputDecoration(
-                    labelText: 'Origem',
+                    decoration: const InputDecoration(
+                      labelText: 'Origem',
+                    ),
+                    onChanged: (_) => _findByQuery(_fromController, true),
                   ),
-                  onChanged: (_) => _findByQuery(_fromController, true),
                 ),
-              ),
-              IconButton(
+                IconButton(
+                    onPressed: () {
+                      _fromController.text = "";
+                      setState(() {
+                        queryResults = [];
+                        linesResult = [];
+                        fromItem = null;
+                      });
+                    },
+                    icon: Icon(Icons.clear))
+              ],
+            ),
+          ),
+          //const SizedBox(height: 15),
+          Padding(
+            padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _toController,
+                    onChanged: (_) => _findByQuery(_toController, false),
+                    decoration: const InputDecoration(
+                      labelText: 'Destino',
+                    ),
+                  ),
+                ),
+                IconButton(
                   onPressed: () {
-                    _fromController.text = "";
+                    _toController.text = "";
                     setState(() {
                       queryResults = [];
                       linesResult = [];
-                      fromItem = null;
+                      toItem = null;
                     });
                   },
-                  icon: Icon(Icons.clear))
-            ],
-          ),
-        ),
-        //const SizedBox(height: 15),
-        Padding(
-          padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _toController,
-                  onChanged: (_) => _findByQuery(_toController, false),
-                  decoration: const InputDecoration(
-                    labelText: 'Destino',
-                  ),
-                ),
-              ),
-              IconButton(
-                onPressed: () {
-                  _toController.text = "";
-                  setState(() {
-                    queryResults = [];
-                    linesResult = [];
-                    toItem = null;
-                  });
-                },
-                icon: Icon(Icons.clear),
-              )
-            ],
-          ),
-        ),
-        SizedBox(height: MediaQuery.of(context).size.height * 0.01),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
-          onPressed: fromItem == null || toItem == null
-              ? null
-              : () async {
-                  // debugPrint();
-                  setState(() {
-                    loadingSearch = true;
-                    isFetchingRef = true;
-                    showLinesResult = false;
-                    showQueryResults = false;
-                    linesResult = [];
-                  });
-
-                  final list = await searchLineController.searchByRef(
-                      fromItem!, toItem!);
-                  for (final item in list) {
-                    SearchLine s = SearchLine(
-                        numero: item.numero,
-                        descricao: item.descricao,
-                        tarifa: item.faixaTarifaria.tarifa);
-                    linesResult.add(s);
-                  }
-                  setState(() {
-                    loadingSearch = false;
-                    isFetchingRef = false;
-                    showLinesResult = true;
-                  });
-                  if (list.isEmpty) {
-                    if (!context.mounted) return;
-                    messageSnackbar(context, "Nenhum resultado encontrado!");
-                  }
-                },
-          child: const Text(
-            "Pesquisar",
-          ),
-        ),
-        if (loadingSearch && isFetching)
-          Center(
-            child: CircularProgressIndicator(
-              color: Theme.of(context).colorScheme.secondary,
-              semanticsLabel: "Carregando lista...",
+                  icon: Icon(Icons.clear),
+                )
+              ],
             ),
           ),
-        if (showQueryResults)
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.38,
-            child: ListView.builder(
-                itemCount: queryResults.length,
-                itemBuilder: (context, index) {
-                  final item = queryResults[index];
-                  return Card(
-                    color: Theme.of(context).colorScheme.tertiary,
-                    elevation: 5,
-                    child: ListTile(
-                      onTap: () {
-                        if (enableFrom) {
-                          enableFrom = false;
-                          _fromController.text = item.descricao;
-                          fromItem = item;
-                          FocusScope.of(context).unfocus();
-                        } else {
-                          enableTo = false;
-                          _toController.text = item.descricao;
-                          toItem = item;
-                          FocusScope.of(context).unfocus();
-                        }
-                        setState(() {
-                          queryResults = [];
-                        });
-                      },
-                      title: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              item.descricao,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                  //color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          )
-                        ],
+          SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
+            onPressed: fromItem == null || toItem == null
+                ? null
+                : () async {
+                    // debugPrint();
+                    setState(() {
+                      loadingSearch = true;
+                      isFetchingRef = true;
+                      showLinesResult = false;
+                      showQueryResults = false;
+                      linesResult = [];
+                    });
+
+                    final list = await searchLineController.searchByRef(
+                        fromItem!, toItem!);
+                    for (final item in list) {
+                      SearchLine s = SearchLine(
+                          numero: item.numero,
+                          descricao: item.descricao,
+                          tarifa: item.faixaTarifaria.tarifa);
+                      linesResult.add(s);
+                    }
+                    setState(() {
+                      loadingSearch = false;
+                      isFetchingRef = false;
+                      showLinesResult = true;
+                    });
+                    if (list.isEmpty) {
+                      if (!context.mounted) return;
+                      messageSnackbar(context, "Nenhum resultado encontrado!");
+                    }
+                  },
+            child: const Text(
+              "Pesquisar",
+            ),
+          ),
+          if (loadingSearch && isFetching)
+            Center(
+              child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.secondary,
+                semanticsLabel: "Carregando lista...",
+              ),
+            ),
+          if (showQueryResults)
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.34,
+              child: ListView.builder(
+                  itemCount: queryResults.length,
+                  itemBuilder: (context, index) {
+                    final item = queryResults[index];
+                    return Card(
+                      color: Theme.of(context).colorScheme.tertiary,
+                      elevation: 5,
+                      child: ListTile(
+                        onTap: () {
+                          if (enableFrom) {
+                            enableFrom = false;
+                            _fromController.text = item.descricao;
+                            fromItem = item;
+                            FocusScope.of(context).unfocus();
+                          } else {
+                            enableTo = false;
+                            _toController.text = item.descricao;
+                            toItem = item;
+                            FocusScope.of(context).unfocus();
+                          }
+                          setState(() {
+                            queryResults = [];
+                          });
+                        },
+                        title: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                item.descricao,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    //color: Colors.black,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            )
+                          ],
+                        ),
+                        trailing: Icon(
+                          Icons.check,
+                          //color: Colors.black,
+                        ),
                       ),
-                      trailing: Icon(
-                        Icons.check,
-                        //color: Colors.black,
-                      ),
-                    ),
-                  );
-                }),
-          ),
-        if (loadingSearch && isFetchingRef)
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.38,
-            child: Center(
-                child: CircularProgressIndicator(
-              color: Theme.of(context).colorScheme.secondary,
-            )),
-          ),
-        if (showLinesResult)
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.38,
-            child: LinesResultWidget(linesResult: linesResult),
-          ),
-        if (!loadingSearch &&
-            !isFetching &&
-            !showQueryResults &&
-            !loadingSearch &&
-            !isFetchingRef &&
-            !showLinesResult)
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.38,
-          ),
-        AdsBannerWidget()
-      ],
+                    );
+                  }),
+            ),
+          if (loadingSearch && isFetchingRef)
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.34,
+              child: Center(
+                  child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.secondary,
+              )),
+            ),
+          if (showLinesResult)
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.34,
+              child: LinesResultWidget(linesResult: linesResult),
+            ),
+          if (!loadingSearch &&
+              !isFetching &&
+              !showQueryResults &&
+              !loadingSearch &&
+              !isFetchingRef &&
+              !showLinesResult)
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.34,
+            ),
+          AdsBannerWidget()
+        ],
+      ),
     );
   }
 }

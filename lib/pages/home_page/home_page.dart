@@ -13,7 +13,8 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with RouteAware {
+class _HomePageState extends State<HomePage>
+    with RouteAware, AutomaticKeepAliveClientMixin {
   final GlobalKey<LinesSavedState> _linesSavedKey = GlobalKey();
   final searchLineController = getIt<SearchLineController>();
   final themeNotifier = getIt<ThemeNotifier>();
@@ -57,31 +58,31 @@ class _HomePageState extends State<HomePage> with RouteAware {
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "DF BUS",
-          style: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24),
-        ),
-        centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        actions: [
-          ValueListenableBuilder<bool>(
-              valueListenable: themeNotifier,
-              builder: (context, isDarkMode, _) {
-                return IconButton(
-                  onPressed: themeNotifier.toggleDarkMode,
-                  icon: Icon(
-                    isDarkMode ? Icons.dark_mode : Icons.light_mode,
-                    color: Colors.white,
-                  ),
-                );
-              })
-        ],
-      ),
-      body: Column(
+    super.build(context);
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        SizedBox(
+            height: MediaQuery.of(context).size.height * 0.15,
+            child: LinesSaved(
+              key: _linesSavedKey,
+            )),
+        // ),
+        SizedBox(
+            height: MediaQuery.of(context).size.height * 0.68,
+            child: SearchLineInputWidget()),
+      ],
+    );
+  }
+}
+
+
+/*
+Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           SizedBox(
@@ -95,6 +96,4 @@ class _HomePageState extends State<HomePage> with RouteAware {
               child: SearchLineInputWidget()),
         ],
       ),
-    );
-  }
-}
+*/ 

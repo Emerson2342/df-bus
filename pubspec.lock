@@ -292,10 +292,10 @@ packages:
     dependency: transitive
     description:
       name: google_maps_flutter_web
-      sha256: a9822dbf31a3f76f239f6bda346511b051d3edf739806e9091be2729e8b645de
+      sha256: ce2cac714e5462bf761ff2fdfc3564c7e5d7ed0578268dccb0a54dbdb1e6214e
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.12+1"
+    version: "0.5.12+2"
   google_mobile_ads:
     dependency: "direct main"
     description:
@@ -392,6 +392,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.1.1"
+  markers_cluster_google_maps_flutter:
+    dependency: "direct main"
+    description:
+      name: markers_cluster_google_maps_flutter
+      sha256: aa359289176f40f8194d96d43755d5bea9fe247c385b8934f22353855f150dfb
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0+2"
   matcher:
     dependency: transitive
     description:

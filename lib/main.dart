@@ -2,6 +2,7 @@ import 'package:df_bus/firebase_options.dart';
 import 'package:df_bus/pages/home_page/home_page.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
+import 'package:df_bus/widgets/tabs_widget.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -55,7 +56,7 @@ class MyApp extends StatelessWidget {
                   theme: customLightTheme(),
                   darkTheme: customDarkTheme(),
                   themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-                  home: HomePage(),
+                  home: TabsMainWidget(),
                 );
               });
         });
