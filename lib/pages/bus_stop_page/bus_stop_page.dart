@@ -8,7 +8,6 @@ import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:markers_cluster_google_maps_flutter/markers_cluster_google_maps_flutter.dart';
 
 class BusStopPage extends StatefulWidget {
   const BusStopPage({super.key});
@@ -27,11 +26,10 @@ class _BusStopPageState extends State<BusStopPage>
   late ClusterManager clusterManager;
   final ClusterManagerId clusterId = const ClusterManagerId('busStopCluster');
 
-  late MarkersClusterManager _clusterManager;
-
-  double _currentZoom = 12.0;
+  Set<Marker> _markers = {};
 
   List<BusStop> busStops = [];
+
   void _loadCustomIcon() {
     BitmapDescriptor.asset(ImageConfiguration(), "assets/images/bus.png")
         .then((icon) {
@@ -46,23 +44,12 @@ class _BusStopPageState extends State<BusStopPage>
         await rootBundle.loadString('assets/bus_stop/bus_stop.json');
     final List<dynamic> jsonData = json.decode(jsonString);
     busStops = jsonData.map((e) => BusStop.fromJson(e)).toList();
-
-    for (var i = 0; i < busStops.length; i++) {
-      final stop = busStops[i];
-      _clusterManager.addMarker(Marker(
-        markerId: MarkerId(stop.codDftrans),
-        position: LatLng(stop.lat, stop.lng),
-        infoWindow: InfoWindow(title: 'Parada ${stop.codDftrans}'),
-      ));
-    }
-
-    await _clusterManager.updateClusters(zoomLevel: _currentZoom);
-    setState(() {});
+    debugPrint(
+        "Quantidade de parada de ônibus - ${busStops.length.toString()}");
   }
 
-  Future<void> _updateClusters() async {
-    await _clusterManager.updateClusters(zoomLevel: _currentZoom);
-    setState(() {});
+  void _init() async {
+    await _loadBusStops();
   }
 
   @override
@@ -72,18 +59,7 @@ class _BusStopPageState extends State<BusStopPage>
   void initState() {
     debugPrint("********************** Mapa Page");
     _loadCustomIcon();
-    _loadBusStops();
-    _clusterManager = MarkersClusterManager(
-      clusterMarkerSize: 20,
-      clusterColor: Colors.blue,
-      clusterBorderThickness: 2,
-      clusterBorderColor: Colors.blue[900]!,
-      clusterOpacity: 1,
-      clusterTextStyle: const TextStyle(fontSize: 10, color: Colors.white),
-      onMarkerTap: (LatLng position) {
-        debugPrint('Id da parada - $position');
-      },
-    );
+    _init();
     rootBundle.loadString('assets/maps/map_style_dark.json').then((string) {
       if (!themeNotifier.isDarkMode) return;
       setState(() {
@@ -91,6 +67,39 @@ class _BusStopPageState extends State<BusStopPage>
       });
     });
     super.initState();
+  }
+
+  void _onCameraIdle() async {
+    final controller = await _controller.future;
+    final zoom = await controller.getZoomLevel();
+    final bounds = await controller.getVisibleRegion();
+
+    if (zoom >= 16) {
+      final visibles = busStops.where((b) {
+        return b.lat >= bounds.southwest.latitude &&
+            b.lat <= bounds.northeast.latitude &&
+            b.lng >= bounds.southwest.longitude &&
+            b.lng <= bounds.northeast.longitude;
+      }).toList();
+
+      final newMarkers = visibles
+          .map(
+            (b) => Marker(
+              markerId: MarkerId('${b.lat},${b.lng}'),
+              position: LatLng(b.lat, b.lng),
+              infoWindow: InfoWindow(title: b.codDftrans),
+              icon: customIcon,
+            ),
+          )
+          .toSet();
+      setState(() {
+        _markers = newMarkers;
+      });
+    } else {
+      setState(() {
+        _markers.clear();
+      });
+    }
   }
 
   @override
@@ -111,17 +120,12 @@ class _BusStopPageState extends State<BusStopPage>
                 ),
                 onMapCreated: (GoogleMapController controller) {
                   _controller.complete(controller);
-                  _updateClusters();
+                  // _updateClusters();
                 },
                 style: _mapStyle,
-                markers: Set<Marker>.of(_clusterManager.getClusteredMarkers()),
-                onCameraMove: (position) {
-                  _currentZoom = position.zoom;
-                  // await _updateClusters();
-                },
-                onCameraIdle: () async {
-                  await _updateClusters();
-                },
+                markers: _markers,
+                onCameraMove: (_) {},
+                onCameraIdle: _onCameraIdle,
                 compassEnabled: true,
               ),
             ]),
