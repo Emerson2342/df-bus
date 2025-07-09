@@ -75,23 +75,26 @@ class _LineDetailsWidgetState extends State<LineDetailsWidget> {
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 150),
-        child: FloatingActionButton(
-          backgroundColor: Colors.white70,
-          onPressed: () {
-            showModalBottomSheet(
-                context: context,
-                builder: (context) {
-                  return ScheduleDetails(
-                    busLineSchedule: busSchedule,
-                    busDirections: busDirections,
-                  );
-                });
-          },
-          child: Icon(
-            Icons.schedule,
-            color: Colors.black,
+      floatingActionButton: Visibility(
+        visible: busDirections.isNotEmpty,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 150),
+          child: FloatingActionButton(
+            backgroundColor: Colors.white70,
+            onPressed: () {
+              showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return ScheduleDetails(
+                      busLineSchedule: busSchedule,
+                      busDirections: busDirections,
+                    );
+                  });
+            },
+            child: Icon(
+              Icons.schedule,
+              color: Colors.black,
+            ),
           ),
         ),
       ),

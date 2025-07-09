@@ -24,48 +24,53 @@ class _LinesResultWidgetState extends State<LinesResultWidget> {
         final line = widget.linesResult[index];
         return Card(
           // color: Theme.of(context).colorScheme.tertiary,
-          color: Theme.of(context).colorScheme.tertiary,
+          color: Colors.transparent,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(0),
           ),
           //   color: Color(0xffffffff),
-          elevation: 3,
-          child: ListTile(
-            onTap: () async {
-              debugPrint('Linha - ${line.numero}');
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => LineDetailsWidget(
-                    busLine: line.numero,
-                  ),
-                ),
-              );
-              searchLineController.addLine(line.numero);
-            },
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  line.numero,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                    child: Text(
-                      line.descricao,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
+          elevation: 0,
+          child: Container(
+            decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.grey))),
+            child: ListTile(
+              contentPadding: EdgeInsets.only(left: 3, right: 3),
+              onTap: () async {
+                debugPrint('Linha - ${line.numero}');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LineDetailsWidget(
+                      busLine: line.numero,
                     ),
                   ),
-                ),
-                Text(
-                  'R\$ ${line.tarifa.toStringAsFixed(2)}',
-                ),
-              ],
+                );
+                searchLineController.addLine(line.numero);
+              },
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    line.numero,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Text(
+                        line.descricao,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    'R\$ ${line.tarifa.toStringAsFixed(2)}',
+                  ),
+                ],
+              ),
+              trailing: Icon(Icons.arrow_forward),
             ),
-            trailing: Icon(Icons.arrow_forward),
           ),
         );
       },

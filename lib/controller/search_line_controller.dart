@@ -66,4 +66,9 @@ class SearchLineController {
     final busDirection = await busService.getBusDirection(busLine);
     return busDirection;
   }
+
+  Future<List<DetalheOnibus>> getBusStopLines(String id) async {
+    final lines = await busService.getBusStopLines(id);
+    return lines;
+  }
 }

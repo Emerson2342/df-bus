@@ -2,11 +2,14 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:df_bus/ads/ads_widget.dart';
+import 'package:df_bus/helpers/position_widget.dart';
 import 'package:df_bus/models/bus_stop.dart';
+import 'package:df_bus/pages/bus_stop_page/widgets/bus_stop_lines.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class BusStopPage extends StatefulWidget {
@@ -24,7 +27,8 @@ class _BusStopPageState extends State<BusStopPage>
   String? _mapStyle;
   BitmapDescriptor customIcon = BitmapDescriptor.defaultMarker;
   late ClusterManager clusterManager;
-  final ClusterManagerId clusterId = const ClusterManagerId('busStopCluster');
+  Position? position;
+  late CameraPosition _myCameraPosition;
 
   Set<Marker> _markers = {};
 
@@ -50,6 +54,25 @@ class _BusStopPageState extends State<BusStopPage>
 
   void _init() async {
     await _loadBusStops();
+    position = await getCurrentLocation();
+
+    _cameraPosition(position?.latitude, position?.longitude);
+    debugPrint(
+        ' ------- Latitude: ${position?.latitude}, Longitude: ${position?.longitude}');
+  }
+
+  void _cameraPosition(double? lat, double? lng) async {
+    final double baseLat = -15.7942;
+    final double baseLng = -47.8822;
+
+    setState(() {
+      _myCameraPosition = CameraPosition(
+        target: LatLng(lat ?? baseLat, lng ?? baseLng),
+        zoom: 16,
+      );
+    });
+    final controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(_myCameraPosition));
   }
 
   @override
@@ -59,6 +82,10 @@ class _BusStopPageState extends State<BusStopPage>
   void initState() {
     debugPrint("********************** Mapa Page");
     _loadCustomIcon();
+    _myCameraPosition = CameraPosition(
+      target: LatLng(-15.7942, -47.8822),
+      zoom: 16,
+    );
     _init();
     rootBundle.loadString('assets/maps/map_style_dark.json').then((string) {
       if (!themeNotifier.isDarkMode) return;
@@ -85,11 +112,21 @@ class _BusStopPageState extends State<BusStopPage>
       final newMarkers = visibles
           .map(
             (b) => Marker(
-              markerId: MarkerId('${b.lat},${b.lng}'),
-              position: LatLng(b.lat, b.lng),
-              infoWindow: InfoWindow(title: b.codDftrans),
-              icon: customIcon,
-            ),
+                markerId: MarkerId('${b.lat},${b.lng}'),
+                position: LatLng(b.lat, b.lng),
+                infoWindow: InfoWindow(title: b.codDftrans),
+                icon: customIcon,
+                onTap: () {
+                  showModalBottomSheet(
+                      backgroundColor:
+                          Theme.of(context).scaffoldBackgroundColor,
+                      context: context,
+                      builder: (context) {
+                        return BusStopLinesBottomSheet(
+                          busStopId: b.codDftrans,
+                        );
+                      });
+                }),
           )
           .toSet();
       setState(() {
@@ -114,10 +151,7 @@ class _BusStopPageState extends State<BusStopPage>
                 mapType: MapType.normal,
                 myLocationEnabled: true,
                 myLocationButtonEnabled: true,
-                initialCameraPosition: CameraPosition(
-                  target: LatLng(-15.7942, -47.8822),
-                  zoom: 14,
-                ),
+                initialCameraPosition: _myCameraPosition,
                 onMapCreated: (GoogleMapController controller) {
                   _controller.complete(controller);
                   // _updateClusters();

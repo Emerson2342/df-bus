@@ -1,5 +1,4 @@
 import 'package:df_bus/firebase_options.dart';
-import 'package:df_bus/pages/home_page/home_page.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:df_bus/widgets/tabs_widget.dart';

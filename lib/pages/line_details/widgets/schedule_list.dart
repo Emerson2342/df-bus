@@ -115,9 +115,11 @@ class ScheduleListView extends StatelessWidget {
         final text =
             '${h.hora.toString().padLeft(2, '0')}:${h.minuto.toString().padLeft(2, '0')}';
         return SizedBox(
-          width: 70,
+          width: 50,
           child: Chip(
+            padding: EdgeInsets.all(3),
             label: Text(text),
+            labelPadding: EdgeInsets.all(3),
             shape: RoundedRectangleBorder(
                 side: const BorderSide(color: Color.fromARGB(0, 10, 9, 9)),
                 borderRadius: BorderRadius.circular(3)),
