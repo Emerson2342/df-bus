@@ -1,6 +1,5 @@
 import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/pages/home_page/home_page.dart';
-import 'package:df_bus/pages/home_page/widgets/lines_saved_widget.dart';
 import 'package:df_bus/pages/bus_stop_page/bus_stop_page.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';

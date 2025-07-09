@@ -183,4 +183,20 @@ class BusService {
       rethrow;
     }
   }
+
+  Future<List<AllBusLocation>> getAllBusLocation() async {
+    await _initializeDioOnce();
+    try {
+      final response = await _dio.get("service/gps/operacoes");
+      return (response.data as List)
+          .map((b) => AllBusLocation.fromJson(b))
+          .toList();
+    } catch (e, stacktrace) {
+      debugPrint(
+          "BusService - Erro ao pesquisar a localização de todos os ônibus");
+      debugPrint(e.toString());
+      debugPrint(stacktrace.toString());
+      rethrow;
+    }
+  }
 }

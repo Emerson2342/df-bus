@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:df_bus/ads/ads_widget.dart';
+import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/helpers/position_widget.dart';
+import 'package:df_bus/models/bus_location.dart';
 import 'package:df_bus/models/bus_stop.dart';
 import 'package:df_bus/pages/bus_stop_page/widgets/bus_stop_lines.dart';
 import 'package:df_bus/services/service_locator.dart';
@@ -23,22 +25,63 @@ class _BusStopPageState extends State<BusStopPage>
     with AutomaticKeepAliveClientMixin {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
+
+  final searchLineController = getIt<SearchLineController>();
+
   final themeNotifier = getIt<ThemeNotifier>();
   String? _mapStyle;
   BitmapDescriptor customIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor piraIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor urbiIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor bsBusIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor marechalIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor piorneiraIcon = BitmapDescriptor.defaultMarker;
   late ClusterManager clusterManager;
   Position? position;
   late CameraPosition _myCameraPosition;
+  bool loadingAllBusLocation = true;
 
   Set<Marker> _markers = {};
 
   List<BusStop> busStops = [];
+  List<AllBusLocation> allBusLocation = [];
 
   void _loadCustomIcon() {
     BitmapDescriptor.asset(ImageConfiguration(), "assets/images/bus.png")
         .then((icon) {
       setState(() {
         customIcon = icon;
+      });
+    });
+    BitmapDescriptor.asset(ImageConfiguration(), "assets/icon/bs_bus.jpeg")
+        .then((icon) {
+      setState(() {
+        bsBusIcon = icon;
+      });
+    });
+    BitmapDescriptor.asset(ImageConfiguration(), "assets/icon/marechal.jpeg")
+        .then((icon) {
+      setState(() {
+        marechalIcon = icon;
+      });
+    });
+    BitmapDescriptor.asset(ImageConfiguration(), "assets/icon/pioneira.jpeg")
+        .then((icon) {
+      setState(() {
+        piorneiraIcon = icon;
+      });
+    });
+    BitmapDescriptor.asset(
+            ImageConfiguration(), "assets/icon/piracicabana.jpeg")
+        .then((icon) {
+      setState(() {
+        piraIcon = icon;
+      });
+    });
+    BitmapDescriptor.asset(ImageConfiguration(), "assets/icon/urbi.jpeg")
+        .then((icon) {
+      setState(() {
+        urbiIcon = icon;
       });
     });
   }
@@ -52,8 +95,22 @@ class _BusStopPageState extends State<BusStopPage>
         "Quantidade de parada de ônibus - ${busStops.length.toString()}");
   }
 
+  Future<void> _loadAllBusLocation() async {
+    final allLocation = await searchLineController.getAllBusLocation();
+    setState(() {
+      loadingAllBusLocation = false;
+      allBusLocation = allLocation;
+    });
+
+    debugPrint(">>>>>>>>>Quantidade de Empresas - ${allBusLocation.length}");
+    for (final item in allBusLocation) {
+      debugPrint(">>>>>>>>Quantidade de ônibus - ${item.veiculos.length}");
+    }
+  }
+
   void _init() async {
     await _loadBusStops();
+    await _loadAllBusLocation();
     position = await getCurrentLocation();
 
     _cameraPosition(position?.latitude, position?.longitude);
@@ -101,42 +158,89 @@ class _BusStopPageState extends State<BusStopPage>
     final zoom = await controller.getZoomLevel();
     final bounds = await controller.getVisibleRegion();
 
-    if (zoom >= 16) {
-      final visibles = busStops.where((b) {
-        return b.lat >= bounds.southwest.latitude &&
-            b.lat <= bounds.northeast.latitude &&
-            b.lng >= bounds.southwest.longitude &&
-            b.lng <= bounds.northeast.longitude;
-      }).toList();
+    BitmapDescriptor ccustomIcon;
 
-      final newMarkers = visibles
-          .map(
+    if (zoom >= 15) {
+      final Set<Marker> markers = {};
+      for (final item in allBusLocation) {
+        if (item.operadora.id == 3441) {
+          ccustomIcon = urbiIcon;
+        } else if (item.operadora.id == 3444) {
+          ccustomIcon = marechalIcon;
+        } else if (item.operadora.id == 3449) {
+          ccustomIcon = piorneiraIcon;
+        } else if (item.operadora.id == 3450) {
+          ccustomIcon = bsBusIcon;
+        } else if (item.operadora.id == 3437) {
+          ccustomIcon = piraIcon;
+        } else {
+          ccustomIcon = customIcon;
+        }
+
+        final allBus = item.veiculos.where((b) {
+          return b.localizacao.latitude >= bounds.southwest.latitude &&
+              b.localizacao.latitude <= bounds.northeast.latitude &&
+              b.localizacao.longitude >= bounds.southwest.longitude &&
+              b.localizacao.longitude <= bounds.northeast.longitude;
+        });
+        markers.addAll(
+          allBus.map(
             (b) => Marker(
-                markerId: MarkerId('${b.lat},${b.lng}'),
-                position: LatLng(b.lat, b.lng),
-                infoWindow: InfoWindow(title: b.codDftrans),
-                icon: customIcon,
-                onTap: () {
-                  showModalBottomSheet(
-                      backgroundColor:
-                          Theme.of(context).scaffoldBackgroundColor,
-                      context: context,
-                      builder: (context) {
-                        return BusStopLinesBottomSheet(
-                          busStopId: b.codDftrans,
-                        );
-                      });
-                }),
-          )
-          .toSet();
-      setState(() {
-        _markers = newMarkers;
-      });
+                markerId: MarkerId(
+                    '${b.localizacao.latitude},${b.localizacao.longitude}'),
+                position:
+                    LatLng(b.localizacao.latitude, b.localizacao.longitude),
+                infoWindow: InfoWindow(title: b.linha),
+                icon: ccustomIcon),
+          ),
+        );
+
+        setState(() {
+          _markers = markers;
+        });
+      }
     } else {
       setState(() {
         _markers.clear();
       });
     }
+
+    // if (false) {
+    //   final visibles = busStops.where((b) {
+    //     return b.lat >= bounds.southwest.latitude &&
+    //         b.lat <= bounds.northeast.latitude &&
+    //         b.lng >= bounds.southwest.longitude &&
+    //         b.lng <= bounds.northeast.longitude;
+    //   }).toList();
+
+    //   final newMarkers = visibles
+    //       .map(
+    //         (b) => Marker(
+    //             markerId: MarkerId('${b.lat},${b.lng}'),
+    //             position: LatLng(b.lat, b.lng),
+    //             infoWindow: InfoWindow(title: b.codDftrans),
+    //             icon: customIcon,
+    //             onTap: () {
+    //               showModalBottomSheet(
+    //                   backgroundColor:
+    //                       Theme.of(context).scaffoldBackgroundColor,
+    //                   context: context,
+    //                   builder: (context) {
+    //                     return BusStopLinesBottomSheet(
+    //                       busStopId: b.codDftrans,
+    //                     );
+    //                   });
+    //             }),
+    //       )
+    //       .toSet();
+    //   setState(() {
+    //     _markers = newMarkers;
+    //   });
+    // } else {
+    //   setState(() {
+    //     _markers.clear();
+    //   });
+    // }
   }
 
   @override

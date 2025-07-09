@@ -87,3 +87,80 @@ class PropertiesLocation {
     );
   }
 }
+
+class AllBusLocation {
+  final Operadora operadora;
+  final List<Veiculo> veiculos;
+
+  AllBusLocation({required this.operadora, required this.veiculos});
+
+  factory AllBusLocation.fromJson(Map<String, dynamic> json) {
+    return AllBusLocation(
+        operadora: json['operadora'] != null
+            ? Operadora.fromJson(json['operadora'])
+            : Operadora.empty(),
+        veiculos: ((json['veiculos'] ?? []) as List)
+            .map((v) => Veiculo.fromJson(v))
+            .toList());
+  }
+}
+
+class Operadora {
+  final int id;
+
+  Operadora({required this.id});
+
+  factory Operadora.fromJson(Map<String, dynamic> json) {
+    return Operadora(id: json["id"] ?? 0);
+  }
+  factory Operadora.empty() {
+    return Operadora(id: 0);
+  }
+}
+
+class Veiculo {
+  final String numero;
+  final String linha;
+  final int horario;
+  final Localizacao localizacao;
+  final String sentido;
+  final double direcao;
+
+  Veiculo(
+      {required this.numero,
+      required this.linha,
+      required this.horario,
+      required this.localizacao,
+      required this.sentido,
+      required this.direcao});
+
+  factory Veiculo.fromJson(Map<String, dynamic> json) {
+    return Veiculo(
+      numero: json['numero'] ?? "",
+      linha: json['linha'] ?? "",
+      horario: int.tryParse(json['horario']?.toString() ?? "") ?? 0,
+      localizacao: json['localizacao'] != null
+          ? Localizacao.fromJson(json['localizacao'])
+          : Localizacao.empty(),
+      sentido: json['sentido'] ?? "",
+      direcao: double.tryParse(json['direcao']?.toString() ?? "") ?? 0,
+    );
+  }
+}
+
+class Localizacao {
+  final double latitude;
+  final double longitude;
+
+  Localizacao({required this.latitude, required this.longitude});
+
+  factory Localizacao.fromJson(Map<String, dynamic> json) {
+    return Localizacao(
+        latitude: double.tryParse(json['latitude']?.toString() ?? "") ?? 0,
+        longitude: double.tryParse(json['longitude']?.toString() ?? "") ?? 0);
+  }
+
+  factory Localizacao.empty() {
+    return Localizacao(latitude: 0, longitude: 0);
+  }
+}

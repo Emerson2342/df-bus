@@ -71,4 +71,9 @@ class SearchLineController {
     final lines = await busService.getBusStopLines(id);
     return lines;
   }
+
+  Future<List<AllBusLocation>> getAllBusLocation() async {
+    final allBusLocation = await busService.getAllBusLocation();
+    return allBusLocation;
+  }
 }
