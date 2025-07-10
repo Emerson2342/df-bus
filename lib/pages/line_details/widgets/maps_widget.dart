@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'dart:math' as math;
 
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -31,9 +30,9 @@ class MapsWidgetState extends State<MapsWidget> {
   final themeNotifier = getIt<ThemeNotifier>();
 
   final List<FeatureBusRoute> _busRoute = [];
-  Set<Marker> markes = {};
-  Set<Polyline> _polylines = {};
   List<List<LatLng>> pointsOnMap = [];
+  Set<Polyline> _polylines = {};
+  Set<Marker> markes = {};
   Timer? _timer;
   BitmapDescriptor customIcon = BitmapDescriptor.defaultMarker;
   String? _mapStyle;
@@ -49,8 +48,12 @@ class MapsWidgetState extends State<MapsWidget> {
   void initState() {
     _clearAll();
     // _setMapStyle();
-    rootBundle.loadString('assets/maps/map_style_dark.json').then((string) {
-      if (!themeNotifier.isDarkMode) return;
+
+    rootBundle
+        .loadString(themeNotifier.isDarkMode
+            ? 'assets/maps/map_style_dark.json'
+            : 'assets/maps/map_style_light.json')
+        .then((string) {
       setState(() {
         _mapStyle = string;
       });
@@ -236,37 +239,18 @@ class MapsWidgetState extends State<MapsWidget> {
     _busRoute.clear();
     pointsOnMap.clear();
     if (!mounted) return;
-    double sinh(double x) => (math.exp(x) - math.exp(-x)) / 2;
 
-    final routeList = List<int>.from(widget.busRoute);
+    final busRoute = await searchLineController.getBusRoute(widget.busLine);
 
-    debugPrint(
-        "**********************Tamanho da lista - getBusroute Rotas: $routeList  Linha: ${widget.busLine}");
-    for (final r in routeList) {
-      debugPrint("*********** Rota id $r");
-    }
-    for (final route in routeList) {
-      final busRoute = await searchLineController.getBusRoute(route.toString());
+    for (final feature in busRoute.features) {
+      final coords = feature.geometry.coordinates;
 
-      _busRoute.add(busRoute);
-    }
-    if (!mounted) return;
-    setState(() {});
-
-    for (final feature in _busRoute) {
-      for (final f in feature.features) {
-        final List<LatLng> singleRoute = f.geometry.coordinates.map((coord) {
-          final x = coord[0];
-          final y = coord[1];
-
-          final lon = x * 180 / 20037508.34;
-          final lat =
-              (math.atan(sinh(y / 20037508.34 * math.pi)) * 180) / math.pi;
-
-          return LatLng(lat, lon);
-        }).toList();
-        pointsOnMap.add(singleRoute);
-      }
+      final List<LatLng> singleRoute = coords.map<LatLng>((coord) {
+        final lat = coord[1];
+        final lng = coord[0];
+        return LatLng(lat, lng);
+      }).toList();
+      pointsOnMap.add(singleRoute);
     }
     if (!mounted) return;
     setState(() {

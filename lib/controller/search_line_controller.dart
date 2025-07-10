@@ -41,8 +41,8 @@ class SearchLineController {
     return schedule;
   }
 
-  Future<FeatureBusRoute> getBusRoute(String routeCod) async {
-    final busRoute = await busService.getBusRoute(routeCod);
+  Future<FeatureBusRoute> getBusRoute(String line) async {
+    final busRoute = await busService.getBusRoute(line);
     return busRoute;
   }
 

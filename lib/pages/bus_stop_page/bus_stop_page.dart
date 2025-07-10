@@ -5,6 +5,7 @@ import 'package:df_bus/ads/ads_widget.dart';
 import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/helpers/position_widget.dart';
 import 'package:df_bus/models/bus_location.dart';
+import 'package:df_bus/models/bus_route.dart';
 import 'package:df_bus/models/bus_stop.dart';
 import 'package:df_bus/pages/bus_stop_page/widgets/bus_stop_lines.dart';
 import 'package:df_bus/services/service_locator.dart';
@@ -45,6 +46,9 @@ class _BusStopPageState extends State<BusStopPage>
 
   List<BusStop> busStops = [];
   List<AllBusLocation> allBusLocation = [];
+  final List<FeatureBusRoute> _busRoute = [];
+  List<List<LatLng>> pointsOnMap = [];
+  Set<Polyline> _polylines = {};
 
   void _loadCustomIcon() {
     BitmapDescriptor.asset(ImageConfiguration(), "assets/images/bus.png")
@@ -144,8 +148,11 @@ class _BusStopPageState extends State<BusStopPage>
       zoom: 16,
     );
     _init();
-    rootBundle.loadString('assets/maps/map_style_dark.json').then((string) {
-      if (!themeNotifier.isDarkMode) return;
+    rootBundle
+        .loadString(themeNotifier.isDarkMode
+            ? 'assets/maps/map_style_dark.json'
+            : 'assets/maps/map_style_light.json')
+        .then((string) {
       setState(() {
         _mapStyle = string;
       });
@@ -153,15 +160,67 @@ class _BusStopPageState extends State<BusStopPage>
     super.initState();
   }
 
+  Future<void> _getBusRoute(String busLine) async {
+    _busRoute.clear();
+    pointsOnMap.clear();
+    if (!mounted) return;
+
+    final busRoute = await searchLineController.getBusRoute(busLine);
+
+    for (final feature in busRoute.features) {
+      final coords = feature.geometry.coordinates;
+
+      final List<LatLng> singleRoute = coords.map<LatLng>((coord) {
+        final lat = coord[1];
+        final lng = coord[0];
+        return LatLng(lat, lng);
+      }).toList();
+      pointsOnMap.add(singleRoute);
+    }
+    _busRoutePolyline();
+  }
+
+  void _busRoutePolyline() {
+    final newPolylines = <Polyline>{};
+
+    final isCircular = pointsOnMap.length == 1;
+    final isIdaVolta = pointsOnMap.length == 2;
+
+    for (int i = 0; i < pointsOnMap.length; i++) {
+      Color? color;
+
+      if (isCircular) {
+        color = Colors.amber;
+      } else if (isIdaVolta) {
+        color = i == 0 ? Colors.amber : const Color.fromARGB(255, 45, 156, 65);
+      } else {
+        color = Colors.blueGrey;
+      }
+
+      newPolylines.add(
+        Polyline(
+          polylineId: PolylineId('polyline-$i'),
+          points: pointsOnMap[i],
+          color: color,
+          width: 2,
+        ),
+      );
+    }
+    if (!mounted) return;
+    // setState(() {
+    _polylines = newPolylines;
+    // });
+  }
+
   void _onCameraIdle() async {
     final controller = await _controller.future;
     final zoom = await controller.getZoomLevel();
     final bounds = await controller.getVisibleRegion();
+    final Set<Marker> newMarkers = {};
 
     BitmapDescriptor ccustomIcon;
 
     if (zoom >= 15) {
-      final Set<Marker> markers = {};
       for (final item in allBusLocation) {
         if (item.operadora.id == 3441) {
           ccustomIcon = urbiIcon;
@@ -183,7 +242,8 @@ class _BusStopPageState extends State<BusStopPage>
               b.localizacao.longitude >= bounds.southwest.longitude &&
               b.localizacao.longitude <= bounds.northeast.longitude;
         });
-        markers.addAll(
+
+        newMarkers.addAll(
           allBus.map(
             (b) => Marker(
                 markerId: MarkerId(
@@ -191,56 +251,50 @@ class _BusStopPageState extends State<BusStopPage>
                 position:
                     LatLng(b.localizacao.latitude, b.localizacao.longitude),
                 infoWindow: InfoWindow(title: b.linha),
+                onTap: () async {
+                  await _getBusRoute(b.linha);
+                },
                 icon: ccustomIcon),
           ),
         );
-
-        setState(() {
-          _markers = markers;
-        });
       }
+    }
+
+    if (zoom >= 16) {
+      final visibles = busStops.where((b) {
+        return b.lat >= bounds.southwest.latitude &&
+            b.lat <= bounds.northeast.latitude &&
+            b.lng >= bounds.southwest.longitude &&
+            b.lng <= bounds.northeast.longitude;
+      }).toList();
+
+      newMarkers.addAll(visibles.map(
+        (b) => Marker(
+          markerId: MarkerId('${b.lat},${b.lng}'),
+          position: LatLng(b.lat, b.lng),
+          //infoWindow: InfoWindow(title: b.codDftrans),
+          icon: customIcon,
+          onTap: () {
+            showModalBottomSheet(
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              context: context,
+              builder: (context) {
+                return BusStopLinesBottomSheet(
+                  busStopId: b.codDftrans,
+                );
+              },
+            );
+          },
+        ),
+      ));
+      setState(() {
+        _markers = newMarkers;
+      });
     } else {
       setState(() {
         _markers.clear();
       });
     }
-
-    // if (false) {
-    //   final visibles = busStops.where((b) {
-    //     return b.lat >= bounds.southwest.latitude &&
-    //         b.lat <= bounds.northeast.latitude &&
-    //         b.lng >= bounds.southwest.longitude &&
-    //         b.lng <= bounds.northeast.longitude;
-    //   }).toList();
-
-    //   final newMarkers = visibles
-    //       .map(
-    //         (b) => Marker(
-    //             markerId: MarkerId('${b.lat},${b.lng}'),
-    //             position: LatLng(b.lat, b.lng),
-    //             infoWindow: InfoWindow(title: b.codDftrans),
-    //             icon: customIcon,
-    //             onTap: () {
-    //               showModalBottomSheet(
-    //                   backgroundColor:
-    //                       Theme.of(context).scaffoldBackgroundColor,
-    //                   context: context,
-    //                   builder: (context) {
-    //                     return BusStopLinesBottomSheet(
-    //                       busStopId: b.codDftrans,
-    //                     );
-    //                   });
-    //             }),
-    //       )
-    //       .toSet();
-    //   setState(() {
-    //     _markers = newMarkers;
-    //   });
-    // } else {
-    //   setState(() {
-    //     _markers.clear();
-    //   });
-    // }
   }
 
   @override
@@ -252,6 +306,7 @@ class _BusStopPageState extends State<BusStopPage>
           Expanded(
             child: Stack(children: [
               GoogleMap(
+                polylines: _polylines,
                 mapType: MapType.normal,
                 myLocationEnabled: true,
                 myLocationButtonEnabled: true,

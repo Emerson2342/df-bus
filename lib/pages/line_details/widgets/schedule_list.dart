@@ -115,7 +115,7 @@ class ScheduleListView extends StatelessWidget {
         final text =
             '${h.hora.toString().padLeft(2, '0')}:${h.minuto.toString().padLeft(2, '0')}';
         return SizedBox(
-          width: 50,
+          width: 65,
           child: Chip(
             padding: EdgeInsets.all(3),
             label: Text(text),
