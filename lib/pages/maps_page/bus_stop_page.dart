@@ -7,7 +7,7 @@ import 'package:df_bus/helpers/position_widget.dart';
 import 'package:df_bus/models/bus_location.dart';
 import 'package:df_bus/models/bus_route.dart';
 import 'package:df_bus/models/bus_stop.dart';
-import 'package:df_bus/pages/bus_stop_page/widgets/bus_stop_lines.dart';
+import 'package:df_bus/pages/maps_page/widgets/bus_stop_lines.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:flutter/material.dart';
@@ -51,38 +51,37 @@ class _BusStopPageState extends State<BusStopPage>
   Set<Polyline> _polylines = {};
 
   void _loadCustomIcon() {
-    BitmapDescriptor.asset(ImageConfiguration(), "assets/images/bus.png")
+    BitmapDescriptor.asset(ImageConfiguration(), "assets/icon/bus_stop.png")
         .then((icon) {
       setState(() {
         customIcon = icon;
       });
     });
-    BitmapDescriptor.asset(ImageConfiguration(), "assets/icon/bs_bus.jpeg")
+    BitmapDescriptor.asset(ImageConfiguration(), "assets/icon/bs_bus.png")
         .then((icon) {
       setState(() {
         bsBusIcon = icon;
       });
     });
-    BitmapDescriptor.asset(ImageConfiguration(), "assets/icon/marechal.jpeg")
+    BitmapDescriptor.asset(ImageConfiguration(), "assets/icon/marechal.png")
         .then((icon) {
       setState(() {
         marechalIcon = icon;
       });
     });
-    BitmapDescriptor.asset(ImageConfiguration(), "assets/icon/pioneira.jpeg")
+    BitmapDescriptor.asset(ImageConfiguration(), "assets/icon/pioneira.png")
         .then((icon) {
       setState(() {
         piorneiraIcon = icon;
       });
     });
-    BitmapDescriptor.asset(
-            ImageConfiguration(), "assets/icon/piracicabana.jpeg")
+    BitmapDescriptor.asset(ImageConfiguration(), "assets/icon/piracicabana.png")
         .then((icon) {
       setState(() {
         piraIcon = icon;
       });
     });
-    BitmapDescriptor.asset(ImageConfiguration(), "assets/icon/urbi.jpeg")
+    BitmapDescriptor.asset(ImageConfiguration(), "assets/icon/urbi.png")
         .then((icon) {
       setState(() {
         urbiIcon = icon;
@@ -233,7 +232,7 @@ class _BusStopPageState extends State<BusStopPage>
         } else if (item.operadora.id == 3437) {
           ccustomIcon = piraIcon;
         } else {
-          ccustomIcon = customIcon;
+          ccustomIcon = bsBusIcon;
         }
 
         final allBus = item.veiculos.where((b) {
