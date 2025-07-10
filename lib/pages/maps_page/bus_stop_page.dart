@@ -49,6 +49,42 @@ class _BusStopPageState extends State<BusStopPage>
   final List<FeatureBusRoute> _busRoute = [];
   List<List<LatLng>> pointsOnMap = [];
   Set<Polyline> _polylines = {};
+  Timer? _timer;
+
+  @override
+  void initState() {
+    debugPrint("********************** Mapa Page");
+    _timer?.cancel();
+    _loadCustomIcon();
+    _myCameraPosition = CameraPosition(
+      target: LatLng(-15.7942, -47.8822),
+      zoom: 16,
+    );
+    _init();
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      await _loadAllBusLocation();
+    });
+    rootBundle
+        .loadString(themeNotifier.isDarkMode
+            ? 'assets/maps/map_style_dark.json'
+            : 'assets/maps/map_style_light.json')
+        .then((string) {
+      setState(() {
+        _mapStyle = string;
+      });
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 
   void _loadCustomIcon() {
     BitmapDescriptor.asset(ImageConfiguration(), "assets/icon/bus_stop.png")
@@ -137,27 +173,6 @@ class _BusStopPageState extends State<BusStopPage>
 
   @override
   bool get wantKeepAlive => true;
-
-  @override
-  void initState() {
-    debugPrint("********************** Mapa Page");
-    _loadCustomIcon();
-    _myCameraPosition = CameraPosition(
-      target: LatLng(-15.7942, -47.8822),
-      zoom: 16,
-    );
-    _init();
-    rootBundle
-        .loadString(themeNotifier.isDarkMode
-            ? 'assets/maps/map_style_dark.json'
-            : 'assets/maps/map_style_light.json')
-        .then((string) {
-      setState(() {
-        _mapStyle = string;
-      });
-    });
-    super.initState();
-  }
 
   Future<void> _getBusRoute(String busLine) async {
     _busRoute.clear();
