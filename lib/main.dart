@@ -71,7 +71,7 @@ ThemeData customLightTheme() {
       ),
       floatingLabelStyle: TextStyle(color: Color(0xff011f38)),
     ),
-    scaffoldBackgroundColor: Color(0xFFF7F7F7),
+    scaffoldBackgroundColor: Color(0xFFf5f5f5),
     //scaffoldBackgroundColor: Colors.white,
     colorScheme: ColorScheme.fromSeed(
       seedColor: Color(0xff010f1b),

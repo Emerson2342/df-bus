@@ -95,7 +95,7 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
           // SizedBox(height: 7),
 
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.43,
+            height: MediaQuery.of(context).size.height * 0.44,
             child: loadingSearch
                 ? SkeletonLinesResult()
                 : LinesResultWidget(

@@ -12,43 +12,36 @@ class SkeletonLinesResult extends StatelessWidget {
         itemCount: 5,
         itemBuilder: (context, index) {
           return Card(
-            color: Colors.transparent,
+            color: Theme.of(context).colorScheme.tertiary,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(0),
+              borderRadius: BorderRadius.circular(13),
             ),
-            elevation: 0,
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: Colors.grey),
-                ),
-              ),
-              child: ListTile(
-                contentPadding: EdgeInsets.only(left: 3, right: 3),
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "108.3",
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Text(
-                          "Lorem Ipsum has been the industry's standard",
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                        ),
+            elevation: 3,
+            child: ListTile(
+              contentPadding: EdgeInsets.only(left: 7, right: 7),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "108.3",
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Text(
+                        "Lorem Ipsum has been the industry's standard",
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
                       ),
                     ),
-                    Text(
-                      'R\$ 5,50',
-                    ),
-                  ],
-                ),
-                trailing: Icon(Icons.arrow_forward),
+                  ),
+                  Text(
+                    'R\$ 5,50',
+                  ),
+                ],
               ),
+              trailing: Icon(Icons.arrow_forward),
             ),
           );
         },
