@@ -2,8 +2,10 @@ import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/models/bus_model.dart';
 import 'package:df_bus/pages/home_page/widgets/lines_result_widget.dart';
 import 'package:df_bus/services/service_locator.dart';
+import 'package:df_bus/widgets/skeleton_lines_result_widget.dart';
 import 'package:df_bus/widgets/snackbar_message_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class BusStopLinesBottomSheet extends StatefulWidget {
   const BusStopLinesBottomSheet({super.key, required this.busStopId});
@@ -20,17 +22,40 @@ class _BusStopLinesBottomSheetState extends State<BusStopLinesBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final Text title = Text(
+      "Linhas",
+      style: TextStyle(fontWeight: FontWeight.bold),
+    );
+
+    final Container line = Container(
+      margin: const EdgeInsets.only(top: 8, bottom: 12),
+      width: 40,
+      height: 4,
+      decoration: BoxDecoration(
+        color: Colors.grey[400],
+        borderRadius: BorderRadius.circular(10),
+      ),
+    );
     return FutureBuilder(
         future:
             searchLineController.busService.getBusStopLines(widget.busStopId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return SizedBox(
-                height: 120,
-                child: Center(
-                  child: CircularProgressIndicator(
-                      color: Theme.of(context).colorScheme.secondary),
-                ));
+              height: MediaQuery.of(context).size.height * 0.45,
+              child: Column(
+                children: [
+                  line,
+                  title,
+                  const Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: SkeletonLinesResult(),
+                    ),
+                  ),
+                ],
+              ),
+            );
           } else if (snapshot.hasError) {
             Navigator.of(context).pop();
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -59,6 +84,8 @@ class _BusStopLinesBottomSheetState extends State<BusStopLinesBottomSheet> {
               height: MediaQuery.of(context).size.height * 0.45,
               child: Column(
                 children: [
+                  line,
+                  title,
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),

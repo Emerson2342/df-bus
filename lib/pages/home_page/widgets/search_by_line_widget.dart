@@ -3,9 +3,9 @@ import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/models/bus_model.dart';
 import 'package:df_bus/pages/home_page/widgets/lines_result_widget.dart';
 import 'package:df_bus/services/service_locator.dart';
+import 'package:df_bus/widgets/skeleton_lines_result_widget.dart';
 import 'package:df_bus/widgets/snackbar_message_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 class SearchByLineWidget extends StatefulWidget {
   const SearchByLineWidget({super.key});
@@ -94,30 +94,14 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
           ),
           // SizedBox(height: 7),
 
-          if (!loadingSearch)
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.43,
-              child: Skeletonizer(
-                enabled: true,
-                child: ListView.builder(
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      child: ListTile(
-                        title: Text('Item number $index as title'),
-                        subtitle: const Text('Subtitle here'),
-                        trailing: const Icon(Icons.ac_unit),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-          if (linesSearched.isNotEmpty && loadingSearch)
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.43,
-              child: LinesResultWidget(linesResult: linesSearched),
-            ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.43,
+            child: loadingSearch
+                ? SkeletonLinesResult()
+                : LinesResultWidget(
+                    linesResult: linesSearched,
+                  ),
+          ),
           AdsBannerWidget()
         ],
       ),

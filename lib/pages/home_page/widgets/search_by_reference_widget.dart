@@ -4,8 +4,10 @@ import 'package:df_bus/models/bus_model.dart';
 import 'package:df_bus/models/search_lines.dart';
 import 'package:df_bus/pages/home_page/widgets/lines_result_widget.dart';
 import 'package:df_bus/services/service_locator.dart';
+import 'package:df_bus/widgets/skeleton_lines_result_widget.dart';
 import 'package:df_bus/widgets/snackbar_message_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class SearchByRefWidget extends StatefulWidget {
   const SearchByRefWidget({super.key});
@@ -174,68 +176,88 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
               "Pesquisar",
             ),
           ),
-          if (loadingSearch && isFetching)
-            Center(
-              child: CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.secondary,
-                semanticsLabel: "Carregando lista...",
-              ),
-            ),
-          if (showQueryResults)
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.33,
-              child: ListView.builder(
-                  itemCount: queryResults.length,
-                  itemBuilder: (context, index) {
-                    final item = queryResults[index];
-                    return Card(
-                      color: Theme.of(context).colorScheme.tertiary,
-                      elevation: 5,
-                      child: ListTile(
-                        onTap: () {
-                          if (enableFrom) {
-                            enableFrom = false;
-                            _fromController.text = item.descricao;
-                            fromItem = item;
-                            FocusScope.of(context).unfocus();
-                          } else {
-                            enableTo = false;
-                            _toController.text = item.descricao;
-                            toItem = item;
-                            FocusScope.of(context).unfocus();
-                          }
-                          setState(() {
-                            queryResults = [];
-                          });
-                        },
-                        title: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                item.descricao,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    //color: Colors.black,
-                                    fontWeight: FontWeight.bold),
+          if (showQueryResults || loadingSearch && isFetching)
+            Skeletonizer(
+              enabled: loadingSearch && isFetching,
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.33,
+                child: loadingSearch && isFetching
+                    ? ListView.builder(
+                        itemCount: 7,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            color: Theme.of(context).colorScheme.tertiary,
+                            elevation: 5,
+                            child: const ListTile(
+                              title: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      "Lorem Ipsum is simply dummy text of the printing",
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  )
+                                ],
                               ),
-                            )
-                          ],
-                        ),
-                        trailing: Icon(
-                          Icons.check,
-                          //color: Colors.black,
-                        ),
-                      ),
-                    );
-                  }),
+                              trailing: Icon(
+                                Icons.check,
+                              ),
+                            ),
+                          );
+                        },
+                      )
+                    : ListView.builder(
+                        itemCount: queryResults.length,
+                        itemBuilder: (context, index) {
+                          final item = queryResults[index];
+                          return Card(
+                            color: Theme.of(context).colorScheme.tertiary,
+                            elevation: 5,
+                            child: ListTile(
+                              onTap: () {
+                                if (enableFrom) {
+                                  enableFrom = false;
+                                  _fromController.text = item.descricao;
+                                  fromItem = item;
+                                  FocusScope.of(context).unfocus();
+                                } else {
+                                  enableTo = false;
+                                  _toController.text = item.descricao;
+                                  toItem = item;
+                                  FocusScope.of(context).unfocus();
+                                }
+                                setState(() {
+                                  queryResults = [];
+                                });
+                              },
+                              title: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      item.descricao,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          //color: Colors.black,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  )
+                                ],
+                              ),
+                              trailing: Icon(
+                                Icons.check,
+                                //color: Colors.black,
+                              ),
+                            ),
+                          );
+                        }),
+              ),
             ),
           if (loadingSearch && isFetchingRef)
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.33,
-              child: Center(
-                  child: CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.secondary,
-              )),
+              child: SkeletonLinesResult(),
             ),
           if (showLinesResult)
             SizedBox(

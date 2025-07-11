@@ -58,7 +58,7 @@ class _BusStopPageState extends State<BusStopPage>
     _loadCustomIcon();
     _myCameraPosition = CameraPosition(
       target: LatLng(-15.7942, -47.8822),
-      zoom: 16,
+      zoom: 15,
     );
     _init();
     _timer = Timer.periodic(const Duration(seconds: 5), (timer) async {
@@ -159,7 +159,7 @@ class _BusStopPageState extends State<BusStopPage>
     setState(() {
       _myCameraPosition = CameraPosition(
         target: LatLng(lat ?? baseLat, lng ?? baseLng),
-        zoom: 16,
+        zoom: 15,
       );
     });
     final controller = await _controller.future;
@@ -228,7 +228,7 @@ class _BusStopPageState extends State<BusStopPage>
     final Set<Marker> newMarkers = {};
 
     BitmapDescriptor ccustomIcon;
-
+    debugPrint(">>>>>>>>>>>>>>>>>Zoom $zoom");
     if (zoom >= 15) {
       for (final item in allBusLocation) {
         if (item.operadora.id == 3441) {
@@ -269,7 +269,7 @@ class _BusStopPageState extends State<BusStopPage>
       }
     }
 
-    if (zoom >= 16) {
+    if (zoom >= 15) {
       final visibles = busStops.where((b) {
         return b.lat >= bounds.southwest.latitude &&
             b.lat <= bounds.northeast.latitude &&

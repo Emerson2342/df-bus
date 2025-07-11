@@ -73,7 +73,7 @@ class _HomePageState extends State<HomePage>
             )),
         // ),
         SizedBox(
-            height: MediaQuery.of(context).size.height * 0.67,
+            height: MediaQuery.of(context).size.height * 0.68,
             child: SearchLineInputWidget()),
       ],
     );

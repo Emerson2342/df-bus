@@ -40,54 +40,60 @@ class LinesSavedState extends State<LinesSaved> {
                 padding: const EdgeInsets.only(top: 15.0),
                 child: Text("Nenhuma busca recente"),
               )
-            : Wrap(spacing: 5, runSpacing: 5, children: [
-                ...linesSaved.map((lineSaved) {
-                  return SizedBox(
-                    width: (MediaQuery.of(context).size.width - 8 * 3) / 4,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+            : Wrap(
+                spacing: 5,
+                runSpacing: 5,
+                children: [
+                  ...linesSaved.map(
+                    (lineSaved) {
+                      return SizedBox(
+                        width: (MediaQuery.of(context).size.width - 8 * 3) / 4,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 8),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              //  backgroundColor: Theme.of(context).colorScheme.inverseSurface,
+                              backgroundColor: Colors.amber),
+                          // Color(0xff9dcbf9),
+                          onLongPress: () async {
+                            await searchLineController.removeLine(lineSaved);
+                            getLinesSaved();
+                          },
+                          onPressed: () async {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    LineDetailsWidget(busLine: lineSaved),
+                              ),
+                            );
+                            await searchLineController.addLine(lineSaved);
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.directions_bus,
+                                // color: Colors.white,
+                              ),
+                              SizedBox(
+                                width: 7,
+                              ),
+                              Text(
+                                lineSaved,
+                                // style: const TextStyle(color: Colors.white),
+                              ),
+                            ],
                           ),
-                          //  backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-                          backgroundColor: Colors.amber),
-                      // Color(0xff9dcbf9),
-                      onLongPress: () async {
-                        await searchLineController.removeLine(lineSaved);
-                        getLinesSaved();
-                      },
-                      onPressed: () async {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                LineDetailsWidget(busLine: lineSaved),
-                          ),
-                        );
-                        await searchLineController.addLine(lineSaved);
-                      },
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.directions_bus,
-                            // color: Colors.white,
-                          ),
-                          SizedBox(
-                            width: 7,
-                          ),
-                          Text(
-                            lineSaved,
-                            // style: const TextStyle(color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-              ]),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
       ],
     );
   }
