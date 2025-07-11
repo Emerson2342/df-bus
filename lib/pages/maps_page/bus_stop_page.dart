@@ -140,11 +140,6 @@ class _BusStopPageState extends State<BusStopPage>
       loadingAllBusLocation = false;
       allBusLocation = allLocation;
     });
-
-    debugPrint(">>>>>>>>>Quantidade de Empresas - ${allBusLocation.length}");
-    for (final item in allBusLocation) {
-      debugPrint(">>>>>>>>Quantidade de ônibus - ${item.veiculos.length}");
-    }
   }
 
   void _init() async {
