@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:df_bus/ads/ads_widget.dart';
 import 'package:df_bus/controller/search_line_controller.dart';
+import 'package:df_bus/controller/storage_controller.dart';
 import 'package:df_bus/helpers/position_widget.dart';
 import 'package:df_bus/models/bus_location.dart';
 import 'package:df_bus/models/bus_route.dart';
@@ -28,6 +29,7 @@ class _BusStopPageState extends State<BusStopPage>
       Completer<GoogleMapController>();
 
   final searchLineController = getIt<SearchLineController>();
+  final storageController = getIt<StorageController>();
 
   final themeNotifier = getIt<ThemeNotifier>();
   String? _mapStyle;
@@ -46,8 +48,8 @@ class _BusStopPageState extends State<BusStopPage>
 
   List<BusStop> busStops = [];
   List<AllBusLocation> allBusLocation = [];
-  final List<FeatureRoute> _busRoute = [];
-  List<List<LatLng>> pointsOnMap = [];
+  List<FeatureRoute> _busRoute = [];
+  List<LatLng> pointsOnMap = [];
   Set<Polyline> _polylines = {};
   Timer? _timer;
 
@@ -82,6 +84,7 @@ class _BusStopPageState extends State<BusStopPage>
 
   @override
   void dispose() {
+    _busRoute.clear();
     _timer?.cancel();
     super.dispose();
   }
@@ -169,22 +172,34 @@ class _BusStopPageState extends State<BusStopPage>
   @override
   bool get wantKeepAlive => true;
 
-  Future<void> _getBusRoute(String busLine) async {
+  Future<void> _getBusRoute(Veiculo bus) async {
     _busRoute.clear();
     pointsOnMap.clear();
     if (!mounted) return;
 
-    final busRoute = await searchLineController.getBusRoute(busLine);
+    final hasSaved = await storageController.isAlreadySaved(bus.linha);
 
-    for (final feature in busRoute) {
+    if (hasSaved) {
+      _busRoute = await storageController.getBusRoute(bus.linha);
+    } else {
+      _busRoute = await searchLineController.getBusRoute(bus.linha);
+      for (final route in _busRoute) {
+        await storageController.addBusRoute(route);
+      }
+    }
+
+    for (final feature in _busRoute) {
       final coords = feature.geometry.coordinates;
 
-      final List<LatLng> singleRoute = coords.map<LatLng>((coord) {
-        final lat = coord[1];
-        final lng = coord[0];
-        return LatLng(lat, lng);
-      }).toList();
-      pointsOnMap.add(singleRoute);
+      if (feature.properties.sentido == bus.sentido ||
+          feature.properties.sentido == "CIRCULAR") {
+        final List<LatLng> singleRoute = coords.map<LatLng>((coord) {
+          final lat = coord[1];
+          final lng = coord[0];
+          return LatLng(lat, lng);
+        }).toList();
+        pointsOnMap = singleRoute;
+      }
     }
     _busRoutePolyline();
   }
@@ -192,29 +207,15 @@ class _BusStopPageState extends State<BusStopPage>
   void _busRoutePolyline() {
     final newPolylines = <Polyline>{};
 
-    final isCircular = pointsOnMap.length == 1;
-    final isIdaVolta = pointsOnMap.length == 2;
+    newPolylines.add(
+      Polyline(
+        polylineId: PolylineId('polyline'),
+        points: pointsOnMap,
+        color: Colors.amber,
+        width: 2,
+      ),
+    );
 
-    for (int i = 0; i < pointsOnMap.length; i++) {
-      Color? color;
-
-      if (isCircular) {
-        color = Colors.amber;
-      } else if (isIdaVolta) {
-        color = i == 0 ? Colors.amber : const Color.fromARGB(255, 45, 156, 65);
-      } else {
-        color = Colors.blueGrey;
-      }
-
-      newPolylines.add(
-        Polyline(
-          polylineId: PolylineId('polyline-$i'),
-          points: pointsOnMap[i],
-          color: color,
-          width: 2,
-        ),
-      );
-    }
     if (!mounted) return;
     // setState(() {
     _polylines = newPolylines;
@@ -262,7 +263,7 @@ class _BusStopPageState extends State<BusStopPage>
                     LatLng(b.localizacao.latitude, b.localizacao.longitude),
                 infoWindow: InfoWindow(title: b.linha),
                 onTap: () async {
-                  await _getBusRoute(b.linha);
+                  await _getBusRoute(b);
                 },
                 icon: ccustomIcon),
           ),
