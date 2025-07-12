@@ -1,4 +1,4 @@
-import 'package:df_bus/controller/search_line_controller.dart';
+import 'package:df_bus/controller/storage_controller.dart';
 import 'package:df_bus/pages/home_page/widgets/lines_saved_widget.dart';
 import 'package:df_bus/pages/home_page/widgets/search_line_input_widget.dart';
 import 'package:df_bus/services/service_locator.dart';
@@ -16,7 +16,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage>
     with RouteAware, AutomaticKeepAliveClientMixin {
   final GlobalKey<LinesSavedState> _linesSavedKey = GlobalKey();
-  final searchLineController = getIt<SearchLineController>();
+  final storageController = getIt<StorageController>();
   final themeNotifier = getIt<ThemeNotifier>();
   String linetoSeach = "";
   //late List<SearchLine> linesSearched = [];
@@ -49,7 +49,7 @@ class _HomePageState extends State<HomePage>
   }
 
   void getLinesSaved() async {
-    final lines = await searchLineController.init();
+    final lines = await storageController.init();
     if (lines.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _linesSavedKey.currentState?.getLinesSaved();

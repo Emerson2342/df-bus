@@ -1,4 +1,5 @@
 import 'package:df_bus/controller/search_line_controller.dart';
+import 'package:df_bus/controller/storage_controller.dart';
 import 'package:df_bus/services/bus_service.dart';
 import 'package:df_bus/services/storage_service.dart';
 import 'package:df_bus/storage/hive_storage.dart';
@@ -12,5 +13,6 @@ void setupGetIt() {
   getIt.registerLazySingleton<BusService>(() => BusService());
   getIt.registerLazySingleton<SearchLineController>(
       () => SearchLineController());
+  getIt.registerLazySingleton<StorageController>(() => StorageController());
   getIt.registerLazySingleton<ThemeNotifier>(() => ThemeNotifier());
 }

@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:df_bus/models/bus_route.dart';
 import 'package:df_bus/services/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -5,6 +8,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 class HiveStorage extends StorageService {
   final String linesBoxName = "lines";
   final String darkModeBoxName = "isDarkMode";
+  final String busRouteBoxName = "busRoutes";
 
   @override
   Future<List<String>> getLines() async {
@@ -94,6 +98,38 @@ class HiveStorage extends StorageService {
       await box.put(darkModeBoxName, isDarkMode);
     } catch (e) {
       debugPrint('Erro ao salvar dark mode no Hive: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> addBusRoute(FeatureRoute busRoute) async {
+    try {
+      final routeBox = await Hive.openBox<String>(busRouteBoxName);
+      final key =
+          '${busRoute.properties.codLinha}_${busRoute.properties.sentido}';
+      final json = jsonEncode(busRoute.toJson());
+      await routeBox.put(key, json);
+    } catch (e) {
+      debugPrint(
+          "HIVE Storage - Erro ao salvar a rota da linha ${busRoute.properties.codLinha} - $e");
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<FeatureRoute>> getBusRoute(String busLine) async {
+    try {
+      final routeBox = await Hive.openBox<String>(busRouteBoxName);
+
+      final results = routeBox.values
+          .map((json) => FeatureRoute.fromJson(jsonDecode(json)))
+          .where((route) => route.properties.codLinha == busLine)
+          .toList();
+
+      return results;
+    } catch (e) {
+      debugPrint("HIVE Storage - Erro ao buscar a rota da linha $busLine - $e");
       rethrow;
     }
   }

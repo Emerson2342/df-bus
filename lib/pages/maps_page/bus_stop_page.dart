@@ -46,7 +46,7 @@ class _BusStopPageState extends State<BusStopPage>
 
   List<BusStop> busStops = [];
   List<AllBusLocation> allBusLocation = [];
-  final List<FeatureBusRoute> _busRoute = [];
+  final List<FeatureRoute> _busRoute = [];
   List<List<LatLng>> pointsOnMap = [];
   Set<Polyline> _polylines = {};
   Timer? _timer;
@@ -176,7 +176,7 @@ class _BusStopPageState extends State<BusStopPage>
 
     final busRoute = await searchLineController.getBusRoute(busLine);
 
-    for (final feature in busRoute.features) {
+    for (final feature in busRoute) {
       final coords = feature.geometry.coordinates;
 
       final List<LatLng> singleRoute = coords.map<LatLng>((coord) {

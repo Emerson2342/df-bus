@@ -1,4 +1,4 @@
-import 'package:df_bus/controller/search_line_controller.dart';
+import 'package:df_bus/controller/storage_controller.dart';
 import 'package:df_bus/pages/line_details/line_details.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +12,7 @@ class LinesSaved extends StatefulWidget {
 
 class LinesSavedState extends State<LinesSaved> {
   List<String> linesSaved = [];
-  final searchLineController = getIt<SearchLineController>();
+  final storageController = getIt<StorageController>();
   @override
   void initState() {
     getLinesSaved();
@@ -20,7 +20,7 @@ class LinesSavedState extends State<LinesSaved> {
   }
 
   void getLinesSaved() async {
-    final lines = await searchLineController.init();
+    final lines = await storageController.init();
     linesSaved = lines;
     debugPrint("*************linhas salvas");
     setState(() {});
@@ -59,7 +59,7 @@ class LinesSavedState extends State<LinesSaved> {
                               backgroundColor: Colors.amber),
                           // Color(0xff9dcbf9),
                           onLongPress: () async {
-                            await searchLineController.removeLine(lineSaved);
+                            await storageController.removeLine(lineSaved);
                             getLinesSaved();
                           },
                           onPressed: () async {
@@ -70,7 +70,7 @@ class LinesSavedState extends State<LinesSaved> {
                                     LineDetailsWidget(busLine: lineSaved),
                               ),
                             );
-                            await searchLineController.addLine(lineSaved);
+                            await storageController.addLine(lineSaved);
                           },
                           child: Row(
                             mainAxisSize: MainAxisSize.min,

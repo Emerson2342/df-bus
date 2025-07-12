@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:df_bus/ads/ads_widget.dart';
 import 'package:df_bus/controller/search_line_controller.dart';
+import 'package:df_bus/controller/storage_controller.dart';
 import 'package:df_bus/models/bus_route.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
@@ -27,9 +28,11 @@ class MapsWidgetState extends State<MapsWidget> {
   late Completer<GoogleMapController> mapController =
       Completer<GoogleMapController>();
   final searchLineController = getIt<SearchLineController>();
+
+  final storageController = getIt<StorageController>();
   final themeNotifier = getIt<ThemeNotifier>();
 
-  final List<FeatureBusRoute> _busRoute = [];
+  List<FeatureRoute> _busRoute = [];
   List<List<LatLng>> pointsOnMap = [];
   Set<Polyline> _polylines = {};
   Set<Marker> markes = {};
@@ -38,6 +41,7 @@ class MapsWidgetState extends State<MapsWidget> {
   String? _mapStyle;
   bool loadingBusRoute = true;
   bool loadingBusLocation = true;
+  //List<FeatureRoute> busRoute = [];
   static bool _isRequestingPermission = false;
 
   //Position? _currentPosition;
@@ -240,9 +244,18 @@ class MapsWidgetState extends State<MapsWidget> {
     pointsOnMap.clear();
     if (!mounted) return;
 
-    final busRoute = await searchLineController.getBusRoute(widget.busLine);
+    final isRouteSaved = await storageController.isAlreadySaved(widget.busLine);
 
-    for (final feature in busRoute.features) {
+    if (isRouteSaved) {
+      _busRoute = await storageController.getBusRoute(widget.busLine);
+    } else {
+      _busRoute = await searchLineController.getBusRoute(widget.busLine);
+      for (final route in _busRoute) {
+        await storageController.addBusRoute(route);
+      }
+    }
+
+    for (final feature in _busRoute) {
       final coords = feature.geometry.coordinates;
 
       final List<LatLng> singleRoute = coords.map<LatLng>((coord) {

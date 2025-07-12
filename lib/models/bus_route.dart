@@ -1,20 +1,20 @@
-class FeatureBusRoute {
-  final List<FeatureRoute> features;
-  final String type;
+// class FeatureBusRoute {
+//   final List<FeatureRoute> features;
+//   final String type;
 
-  FeatureBusRoute({required this.features, required this.type});
+//   FeatureBusRoute({required this.features, required this.type});
 
-  factory FeatureBusRoute.fromJson(Map<String, dynamic> json) {
-    return FeatureBusRoute(
-      features: json['features'] != null
-          ? (json['features'] as List)
-              .map((f) => FeatureRoute.fromJson(f))
-              .toList()
-          : [],
-      type: json['type']?.toString() ?? "",
-    );
-  }
-}
+//   factory FeatureBusRoute.fromJson(Map<String, dynamic> json) {
+//     return FeatureBusRoute(
+//       features: json['features'] != null
+//           ? (json['features'] as List)
+//               .map((f) => FeatureRoute.fromJson(f))
+//               .toList()
+//           : [],
+//       type: json['type']?.toString() ?? "",
+//     );
+//   }
+// }
 
 class FeatureRoute {
   final Geometry geometry;
@@ -40,13 +40,20 @@ class FeatureRoute {
         type: "",
         properties: PropertyRoute.empty());
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'geometry': geometry.toJson(),
+      'type': type,
+      'properties': properties.toJson(),
+    };
+  }
 }
 
 class Geometry {
   final List<List<double>> coordinates;
-  final String type;
 
-  Geometry({required this.coordinates, required this.type});
+  Geometry({required this.coordinates});
 
   factory Geometry.fromJson(Map<String, dynamic> json) {
     return Geometry(
@@ -54,12 +61,15 @@ class Geometry {
             .map((coord) => (coord as List)
                 .map((value) => (value as num).toDouble())
                 .toList())
-            .toList(),
-        type: json['type']?.toString() ?? "");
+            .toList());
   }
 
   factory Geometry.empty() {
-    return Geometry(coordinates: [], type: "");
+    return Geometry(coordinates: []);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'coordinates': coordinates};
   }
 }
 
@@ -81,6 +91,9 @@ class PropertyRoute {
 
   factory PropertyRoute.empty() {
     return PropertyRoute(sentido: "", seqLinha: 0, codLinha: "");
+  }
+  Map<String, dynamic> toJson() {
+    return {'sentido': sentido, 'seqLinha': seqLinha, 'codLinha': codLinha};
   }
 }
 

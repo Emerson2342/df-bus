@@ -1,4 +1,4 @@
-import 'package:df_bus/controller/search_line_controller.dart';
+import 'package:df_bus/controller/storage_controller.dart';
 import 'package:df_bus/models/bus_model.dart';
 import 'package:df_bus/pages/line_details/line_details.dart';
 import 'package:df_bus/services/service_locator.dart';
@@ -14,7 +14,7 @@ class LinesResultWidget extends StatefulWidget {
 }
 
 class _LinesResultWidgetState extends State<LinesResultWidget> {
-  final searchLineController = getIt<SearchLineController>();
+  final storageController = getIt<StorageController>();
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ class _LinesResultWidgetState extends State<LinesResultWidget> {
                   ),
                 ),
               );
-              searchLineController.addLine(line.numero);
+              storageController.addLine(line.numero);
             },
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

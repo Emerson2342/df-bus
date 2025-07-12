@@ -5,7 +5,6 @@ import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/widgets/skeleton_lines_result_widget.dart';
 import 'package:df_bus/widgets/snackbar_message_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 class BusStopLinesBottomSheet extends StatefulWidget {
   const BusStopLinesBottomSheet({super.key, required this.busStopId});
@@ -60,7 +59,7 @@ class _BusStopLinesBottomSheetState extends State<BusStopLinesBottomSheet> {
             Navigator.of(context).pop();
             WidgetsBinding.instance.addPostFrameCallback((_) {
               messageSnackbar(context,
-                  "Erro ao buscar linhas de ônibus - ${snapshot.error}!");
+                  "Erro ao buscar linhas de ônibus. tente novamente mais tarde");
             });
 
             return SizedBox.shrink();

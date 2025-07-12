@@ -91,11 +91,15 @@ class BusService {
     }
   }
 
-  Future<FeatureBusRoute> getBusRoute(String busLine) async {
+  Future<List<FeatureRoute>> getBusRoute(String busLine) async {
+    debugPrint("***********************Buscou a rota do ônibus");
     await _initializeDioOnce();
     try {
       final response = await _dio.get("percurso/linha/numero/$busLine/WGS");
-      return FeatureBusRoute.fromJson(response.data);
+
+      return (response.data['features'] as List)
+          .map((f) => FeatureRoute.fromJson(f))
+          .toList();
     } catch (e, stacktrace) {
       debugPrint("BusService - Erro ao buscar a rota da linha $busLine");
       debugPrint(e.toString());
