@@ -109,6 +109,13 @@ class HiveStorage extends StorageService {
       final key =
           '${busRoute.properties.codLinha}_${busRoute.properties.sentido}';
       final json = jsonEncode(busRoute.toJson());
+      if (!routeBox.containsKey(key)) {
+        if (routeBox.length >= 20) {
+          final first = routeBox.keys.first;
+          await routeBox.delete(first);
+        }
+      }
+
       await routeBox.put(key, json);
     } catch (e) {
       debugPrint(

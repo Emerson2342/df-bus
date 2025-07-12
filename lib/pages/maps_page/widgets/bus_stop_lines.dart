@@ -1,4 +1,5 @@
 import 'package:df_bus/controller/search_line_controller.dart';
+import 'package:df_bus/models/bus_location.dart';
 import 'package:df_bus/models/bus_model.dart';
 import 'package:df_bus/pages/home_page/widgets/lines_result_widget.dart';
 import 'package:df_bus/services/service_locator.dart';
@@ -7,9 +8,11 @@ import 'package:df_bus/widgets/snackbar_message_widget.dart';
 import 'package:flutter/material.dart';
 
 class BusStopLinesBottomSheet extends StatefulWidget {
-  const BusStopLinesBottomSheet({super.key, required this.busStopId});
+  const BusStopLinesBottomSheet(
+      {super.key, required this.busStopId, required this.allBuslocation});
 
   final String busStopId;
+  final List<Veiculo> allBuslocation;
 
   @override
   State<BusStopLinesBottomSheet> createState() =>
@@ -71,13 +74,28 @@ class _BusStopLinesBottomSheetState extends State<BusStopLinesBottomSheet> {
             return SizedBox.shrink();
           } else {
             List<SearchLine> results = [];
-            for (final item in snapshot.data!) {
-              final line = SearchLine(
-                  numero: item.numero,
-                  descricao: item.descricao,
-                  tarifa: item.faixaTarifaria.tarifa);
+            final List<Veiculo> allBus = [];
 
-              results.add(line);
+            for (final item in widget.allBuslocation) {
+              final bus = Veiculo(
+                  numero: item.numero,
+                  linha: item.linha,
+                  horario: item.horario,
+                  localizacao: item.localizacao,
+                  sentido: item.sentido,
+                  direcao: item.direcao);
+              allBus.add(bus);
+            }
+            for (final item in snapshot.data!) {
+              final isRunning = allBus.any((bus) => bus.linha == item.numero);
+              if (isRunning) {
+                final line = SearchLine(
+                    numero: item.numero,
+                    descricao: item.descricao,
+                    tarifa: item.faixaTarifaria.tarifa);
+
+                results.add(line);
+              }
             }
             return SizedBox(
               height: MediaQuery.of(context).size.height * 0.45,

@@ -226,6 +226,7 @@ class _BusStopPageState extends State<BusStopPage>
     final zoom = await controller.getZoomLevel();
     final bounds = await controller.getVisibleRegion();
     final Set<Marker> newMarkers = {};
+    final List<Veiculo> allBus = [];
 
     BitmapDescriptor ccustomIcon;
     debugPrint(">>>>>>>>>>>>>>>>>Zoom $zoom");
@@ -277,6 +278,12 @@ class _BusStopPageState extends State<BusStopPage>
             b.lng <= bounds.northeast.longitude;
       }).toList();
 
+      for (final item in allBusLocation) {
+        for (final b in item.veiculos) {
+          allBus.add(b);
+        }
+      }
+
       newMarkers.addAll(visibles.map(
         (b) => Marker(
           markerId: MarkerId('${b.lat},${b.lng}'),
@@ -290,6 +297,7 @@ class _BusStopPageState extends State<BusStopPage>
               builder: (context) {
                 return BusStopLinesBottomSheet(
                   busStopId: b.codDftrans,
+                  allBuslocation: allBus,
                 );
               },
             );
