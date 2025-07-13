@@ -8,7 +8,7 @@ import 'package:df_bus/helpers/position_widget.dart';
 import 'package:df_bus/models/bus_location.dart';
 import 'package:df_bus/models/bus_route.dart';
 import 'package:df_bus/models/bus_stop.dart';
-import 'package:df_bus/pages/maps_page/widgets/bus_stop_lines.dart';
+import 'package:df_bus/pages/maps_page/widgets/bus_stop_lines_bottom_sheet.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +45,7 @@ class _BusStopPageState extends State<BusStopPage>
   bool loadingAllBusLocation = true;
 
   Set<Marker> _markers = {};
+  bool showBusStops = false;
 
   List<BusStop> busStops = [];
   List<AllBusLocation> allBusLocation = [];
@@ -52,6 +53,9 @@ class _BusStopPageState extends State<BusStopPage>
   List<LatLng> pointsOnMap = [];
   Set<Polyline> _polylines = {};
   Timer? _timer;
+  final originIdNotifier =
+      getIt<ValueNotifier<String>>(instanceName: 'originId');
+  final destIdNotifier = getIt<ValueNotifier<String>>(instanceName: 'destId');
 
   @override
   void initState() {
@@ -87,6 +91,7 @@ class _BusStopPageState extends State<BusStopPage>
     _busRoute.clear();
     _timer?.cancel();
     super.dispose();
+    debugPrint("++++++++++++++Saiu da tela do mapa+++++++++++++");
   }
 
   void _loadCustomIcon() {
@@ -284,27 +289,35 @@ class _BusStopPageState extends State<BusStopPage>
           allBus.add(b);
         }
       }
-
-      newMarkers.addAll(visibles.map(
-        (b) => Marker(
-          markerId: MarkerId('${b.lat},${b.lng}'),
-          position: LatLng(b.lat, b.lng),
-          //infoWindow: InfoWindow(title: b.codDftrans),
-          icon: customIcon,
-          onTap: () {
-            showModalBottomSheet(
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-              context: context,
-              builder: (context) {
-                return BusStopLinesBottomSheet(
-                  busStopId: b.codDftrans,
-                  allBuslocation: allBus,
+      if (showBusStops) {
+        newMarkers.addAll(visibles.map((b) {
+          return Marker(
+            markerId: MarkerId('${b.lat},${b.lng}'),
+            position: LatLng(b.lat, b.lng),
+            icon: customIcon,
+            onTap: () {
+              if (originIdNotifier.value.isEmpty) {
+                originIdNotifier.value = b.codDftrans;
+              } else {
+                destIdNotifier.value = b.codDftrans;
+              }
+              if (originIdNotifier.value.isNotEmpty &&
+                  destIdNotifier.value.isNotEmpty) {
+                showModalBottomSheet(
+                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                  context: context,
+                  builder: (context) {
+                    return BusStopLinesBottomSheet(
+                      allBuslocation: allBus,
+                    );
+                  },
                 );
-              },
-            );
-          },
-        ),
-      ));
+              }
+            },
+          );
+        }));
+      }
+
       setState(() {
         _markers = newMarkers;
       });
@@ -322,24 +335,85 @@ class _BusStopPageState extends State<BusStopPage>
       body: Column(
         children: [
           Expanded(
-            child: Stack(children: [
-              GoogleMap(
-                polylines: _polylines,
-                mapType: MapType.normal,
-                myLocationEnabled: true,
-                myLocationButtonEnabled: true,
-                initialCameraPosition: _myCameraPosition,
-                onMapCreated: (GoogleMapController controller) {
-                  _controller.complete(controller);
-                  // _updateClusters();
-                },
-                style: _mapStyle,
-                markers: _markers,
-                onCameraMove: (_) {},
-                onCameraIdle: _onCameraIdle,
-                compassEnabled: true,
-              ),
-            ]),
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: GoogleMap(
+                    polylines: _polylines,
+                    mapType: MapType.normal,
+                    myLocationEnabled: true,
+                    myLocationButtonEnabled: true,
+                    initialCameraPosition: _myCameraPosition,
+                    onMapCreated: (GoogleMapController controller) {
+                      _controller.complete(controller);
+                      // _updateClusters();
+                    },
+                    onTap: (_) {
+                      setState(() {
+                        _polylines.clear();
+                      });
+                    },
+                    style: _mapStyle,
+                    markers: _markers,
+                    onCameraMove: (_) {},
+                    onCameraIdle: _onCameraIdle,
+                    compassEnabled: true,
+                  ),
+                ),
+                Positioned(
+                  top: 10,
+                  left: 10,
+                  right: 0,
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: showBusStops,
+                            checkColor: Colors.amber,
+                            activeColor: Colors.transparent,
+                            onChanged: (value) {
+                              setState(() {
+                                showBusStops = value!;
+                                _onCameraIdle();
+                              });
+                            },
+                          ),
+                          const Text('Mostrar paradas de ônibus',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.amber)),
+                        ],
+                      ),
+                      Visibility(
+                        visible: originIdNotifier.value.isNotEmpty,
+                        child: const Row(
+                          children: [
+                            Icon(Icons.check),
+                            Text(
+                              'Parada de origem selecionada',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Visibility(
+                        visible: destIdNotifier.value.isNotEmpty,
+                        child: const Row(
+                          children: [
+                            Icon(Icons.check),
+                            Text(
+                              'Parada de destino selecionada',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
           AdsBannerWidget()
         ],

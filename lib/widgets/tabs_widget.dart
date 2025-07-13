@@ -25,6 +25,9 @@ class _TabsMainWidgetState extends State<TabsMainWidget>
   final searchLineController = getIt<SearchLineController>();
 
   final themeNotifier = getIt<ThemeNotifier>();
+  final originIdNotifier =
+      getIt<ValueNotifier<String>>(instanceName: 'originId');
+  final destIdNotifier = getIt<ValueNotifier<String>>(instanceName: 'destId');
 
   @override
   void initState() {
@@ -34,6 +37,8 @@ class _TabsMainWidgetState extends State<TabsMainWidget>
     _tabController.addListener(() {
       setState(() {
         _allowSwipe = _tabController.index != 1;
+        originIdNotifier.value = '';
+        destIdNotifier.value = '';
       });
     });
   }

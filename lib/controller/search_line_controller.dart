@@ -49,8 +49,9 @@ class SearchLineController {
     return busDirection;
   }
 
-  Future<List<DetalheOnibus>> getBusStopLines(String id) async {
-    final lines = await busService.getBusStopLines(id);
+  Future<List<DetalheOnibus>> getBusStopLines(
+      String originId, String destId) async {
+    final lines = await busService.getBusStopLines(originId, destId);
     return lines;
   }
 

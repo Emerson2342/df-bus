@@ -173,15 +173,18 @@ class BusService {
     }
   }
 
-  Future<List<DetalheOnibus>> getBusStopLines(String id) async {
+  Future<List<DetalheOnibus>> getBusStopLines(
+      String oringinId, String destId) async {
     await _initializeDioOnce();
     try {
-      final response = await _dio.get("linha/paradacod/$id/paradacod/$id");
+      final response =
+          await _dio.get("linha/paradacod/$oringinId/paradacod/$destId");
       return (response.data as List)
           .map((l) => DetalheOnibus.fromJson(l))
           .toList();
     } catch (e, stacktrace) {
-      debugPrint("BusService - Erro ao pesquisar os ônibus da parada $id");
+      debugPrint(
+          "BusService - Erro ao pesquisar os ônibus de origem: $oringinId destino: $destId");
       debugPrint(e.toString());
       debugPrint(stacktrace.toString());
       rethrow;
