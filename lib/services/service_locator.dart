@@ -3,6 +3,7 @@ import 'package:df_bus/controller/storage_controller.dart';
 import 'package:df_bus/services/bus_service.dart';
 import 'package:df_bus/services/storage_service.dart';
 import 'package:df_bus/storage/hive_storage.dart';
+import 'package:df_bus/value_notifiers/show_maps_notifier.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -16,6 +17,7 @@ void setupGetIt() {
       () => SearchLineController());
   getIt.registerLazySingleton<StorageController>(() => StorageController());
   getIt.registerLazySingleton<ThemeNotifier>(() => ThemeNotifier());
+  getIt.registerLazySingleton<ShowMapsNotifier>(() => ShowMapsNotifier());
   getIt.registerSingleton<ValueNotifier<String>>(ValueNotifier<String>(''),
       instanceName: 'destId');
   getIt.registerSingleton<ValueNotifier<String>>(ValueNotifier<String>(''),

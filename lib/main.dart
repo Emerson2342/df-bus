@@ -1,7 +1,7 @@
 import 'package:df_bus/firebase_options.dart';
+import 'package:df_bus/pages/home_page/home_page.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
-import 'package:df_bus/widgets/tabs_widget.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
                   theme: customLightTheme(),
                   darkTheme: customDarkTheme(),
                   themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-                  home: TabsMainWidget(),
+                  home: HomePage(),
                 );
               });
         });
@@ -103,12 +103,3 @@ ThemeData customDarkTheme() {
     useMaterial3: true,
   );
 }
-
-/*scaffoldBackgroundColor: Color(0xff022948),
-        //scaffoldBackgroundColor: Colors.white,
-        colorScheme: ColorScheme.dark(
-          //seedColor: Color(0xff010f1b),
-          primary: Color(0xff011f38),
-          secondary: Color(0xff00bfff),
-          tertiary: Color(0xff24415c),
-          */

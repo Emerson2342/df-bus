@@ -22,6 +22,18 @@ class _BusStopLinesBottomSheetState extends State<BusStopLinesBottomSheet> {
   final originIdNotifier =
       getIt<ValueNotifier<String>>(instanceName: 'originId');
   final destIdNotifier = getIt<ValueNotifier<String>>(instanceName: 'destId');
+  late final String originId;
+  late final String destId;
+
+  @override
+  void initState() {
+    super.initState();
+    originId = originIdNotifier.value;
+    destId = destIdNotifier.value;
+
+    originIdNotifier.value = "";
+    destIdNotifier.value = "";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +52,8 @@ class _BusStopLinesBottomSheetState extends State<BusStopLinesBottomSheet> {
       ),
     );
     return FutureBuilder(
-        future: searchLineController.busService
-            .getBusStopLines(originIdNotifier.value, destIdNotifier.value),
+        future:
+            searchLineController.busService.getBusStopLines(originId, destId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return SizedBox(
@@ -60,13 +72,15 @@ class _BusStopLinesBottomSheetState extends State<BusStopLinesBottomSheet> {
               ),
             );
           } else if (snapshot.hasError) {
-            Navigator.of(context).pop();
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              messageSnackbar(context,
-                  "Erro ao buscar linhas de ônibus. tente novamente mais tarde");
+              Navigator.of(context).pop();
+              messageSnackbar(
+                context,
+                "Erro ao buscar linhas de ônibus. Tente novamente mais tarde",
+              );
             });
 
-            return SizedBox.shrink();
+            return const SizedBox.shrink();
           } else if (snapshot.data != null && snapshot.data!.isEmpty) {
             Navigator.of(context).pop();
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -98,8 +112,8 @@ class _BusStopLinesBottomSheetState extends State<BusStopLinesBottomSheet> {
                 results.add(line);
               }
             }
-            originIdNotifier.value = "";
-            destIdNotifier.value = "";
+            //originIdNotifier.value = "";
+            //destIdNotifier.value = "";
             return SizedBox(
               height: MediaQuery.of(context).size.height * 0.45,
               child: Column(

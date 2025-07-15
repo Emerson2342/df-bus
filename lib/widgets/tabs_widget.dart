@@ -1,7 +1,9 @@
 import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/pages/home_page/home_page.dart';
-import 'package:df_bus/pages/maps_page/bus_stop_page.dart';
+import 'package:df_bus/pages/all_bus_location/all_bus_location_page.dart';
+import 'package:df_bus/pages/teste/teste.dart';
 import 'package:df_bus/services/service_locator.dart';
+import 'package:df_bus/value_notifiers/show_maps_notifier.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:flutter/material.dart';
 
@@ -23,6 +25,7 @@ class _TabsMainWidgetState extends State<TabsMainWidget>
   ];
 
   final searchLineController = getIt<SearchLineController>();
+  final showMapsNotifier = getIt<ShowMapsNotifier>();
 
   final themeNotifier = getIt<ThemeNotifier>();
   final originIdNotifier =
@@ -50,47 +53,73 @@ class _TabsMainWidgetState extends State<TabsMainWidget>
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "DF BUS",
-          style: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24),
+    return Stack(
+      children: [
+        Scaffold(
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              showMapsNotifier.value = !showMapsNotifier.value;
+            },
+            child: Icon(Icons.map),
+          ),
+          appBar: AppBar(
+            title: const Text(
+              "DF BUS",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24),
+            ),
+            centerTitle: true,
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            bottom: TabBar(
+              controller: _tabController,
+              tabs: tabs,
+              labelColor: Colors.amber,
+              indicatorColor: Colors.amber,
+              unselectedLabelColor: Colors.blueGrey,
+            ),
+            actions: [
+              ValueListenableBuilder<bool>(
+                valueListenable: themeNotifier,
+                builder: (context, isDarkMode, _) {
+                  return IconButton(
+                    onPressed: themeNotifier.toggleDarkMode,
+                    icon: Icon(
+                      isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                      color: Colors.white,
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+          body: TabBarView(
+            controller: _tabController,
+            physics: _allowSwipe
+                ? const AlwaysScrollableScrollPhysics()
+                : const NeverScrollableScrollPhysics(),
+            children: [
+              HomePage(),
+              BusStopPage(),
+            ],
+          ),
         ),
-        centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: tabs,
-          labelColor: Colors.amber,
-          indicatorColor: Colors.amber,
-          unselectedLabelColor: Colors.blueGrey,
+        ValueListenableBuilder<bool>(
+          valueListenable: showMapsNotifier,
+          builder: (context, show, _) {
+            return Offstage(
+              offstage: !show,
+              child: IgnorePointer(
+                ignoring: !show,
+                child: TesteScreen(),
+              ),
+            );
+          },
         ),
-        actions: [
-          ValueListenableBuilder<bool>(
-              valueListenable: themeNotifier,
-              builder: (context, isDarkMode, _) {
-                return IconButton(
-                  onPressed: themeNotifier.toggleDarkMode,
-                  icon: Icon(
-                    isDarkMode ? Icons.dark_mode : Icons.light_mode,
-                    color: Colors.white,
-                  ),
-                );
-              })
-        ],
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        physics: _allowSwipe
-            ? const AlwaysScrollableScrollPhysics()
-            : const NeverScrollableScrollPhysics(),
-        children: [
-          HomePage(),
-          BusStopPage(),
-        ],
-      ),
+      ],
     );
   }
 }

@@ -8,9 +8,10 @@ import 'package:df_bus/helpers/position_widget.dart';
 import 'package:df_bus/models/bus_location.dart';
 import 'package:df_bus/models/bus_route.dart';
 import 'package:df_bus/models/bus_stop.dart';
-import 'package:df_bus/pages/maps_page/widgets/bus_stop_lines_bottom_sheet.dart';
+import 'package:df_bus/pages/all_bus_location/widgets/bus_stop_lines_bottom_sheet.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
+import 'package:df_bus/widgets/snackbar_message_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
@@ -67,7 +68,7 @@ class _BusStopPageState extends State<BusStopPage>
       zoom: 15,
     );
     _init();
-    _timer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+    _timer = Timer.periodic(const Duration(seconds: 20), (timer) async {
       if (!mounted) {
         timer.cancel();
         return;
@@ -143,11 +144,17 @@ class _BusStopPageState extends State<BusStopPage>
   }
 
   Future<void> _loadAllBusLocation() async {
-    final allLocation = await searchLineController.getAllBusLocation();
-    setState(() {
-      loadingAllBusLocation = false;
-      allBusLocation = allLocation;
-    });
+    try {
+      final allLocation = await searchLineController.getAllBusLocation();
+      setState(() {
+        loadingAllBusLocation = false;
+        allBusLocation = allLocation;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      messageSnackbar(
+          context, "Não foi possível buscar a localização dos ônibus.");
+    }
   }
 
   void _init() async {
