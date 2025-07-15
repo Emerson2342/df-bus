@@ -2,6 +2,7 @@ import 'package:df_bus/controller/storage_controller.dart';
 import 'package:df_bus/models/bus_model.dart';
 import 'package:df_bus/pages/line_details/line_details.dart';
 import 'package:df_bus/services/service_locator.dart';
+import 'package:df_bus/value_notifiers/line_details_notifier.dart';
 import 'package:flutter/material.dart';
 
 class LinesResultWidget extends StatefulWidget {
@@ -15,6 +16,7 @@ class LinesResultWidget extends StatefulWidget {
 
 class _LinesResultWidgetState extends State<LinesResultWidget> {
   final storageController = getIt<StorageController>();
+  final busLineNotifier = getIt<BusLineNotifier>();
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +36,11 @@ class _LinesResultWidgetState extends State<LinesResultWidget> {
             contentPadding: EdgeInsets.only(left: 7, right: 7),
             onTap: () async {
               debugPrint('Linha - ${line.numero}');
+              busLineNotifier.setBusLine(line.numero);
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => LineDetailsWidget(
-                    busLine: line.numero,
-                  ),
+                  builder: (context) => LineDetailsWidget(),
                 ),
               );
               storageController.addLine(line.numero);

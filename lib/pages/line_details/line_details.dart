@@ -1,18 +1,13 @@
 import 'package:df_bus/controller/search_line_controller.dart';
-import 'package:df_bus/models/bus_model.dart';
-import 'package:df_bus/models/bus_route.dart';
 import 'package:df_bus/pages/line_details/widgets/header_widget.dart';
 import 'package:df_bus/pages/line_details/widgets/maps_widget.dart';
 import 'package:df_bus/pages/line_details/widgets/schedule_details_bottom_sheet.dart';
 import 'package:df_bus/services/service_locator.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:df_bus/value_notifiers/line_details_notifier.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class LineDetailsWidget extends StatefulWidget {
-  const LineDetailsWidget({super.key, required this.busLine});
-
-  final String busLine;
+  const LineDetailsWidget({super.key});
 
   @override
   State<LineDetailsWidget> createState() => _LineDetailsWidgetState();
@@ -20,46 +15,11 @@ class LineDetailsWidget extends StatefulWidget {
 
 class _LineDetailsWidgetState extends State<LineDetailsWidget> {
   final searchLineController = getIt<SearchLineController>();
-  List<BusSchedule> busSchedule = [];
-  //List<int> busRoutes = [];
-  List<BusDirection> busDirections = [];
+  final busLineNotifier = getIt<BusLineNotifier>();
 
   @override
   void initState() {
     super.initState();
-    _loadBusSchedule();
-    _loadBusDirection();
-    registerLineDetails();
-  }
-
-  void registerLineDetails() {
-    final now = DateTime.now();
-
-    final dayWeek = DateFormat('EEEE').format(now);
-    final timeFormatted = DateFormat('HH:mm').format(now);
-
-    FirebaseAnalytics.instance.logEvent(
-      name: 'line_details_screen',
-      parameters: {
-        'linha': widget.busLine,
-        'dia': dayWeek,
-        'hora': timeFormatted,
-      },
-    );
-  }
-
-  _loadBusSchedule() async {
-    var busSc = await searchLineController.getBusSchedule(widget.busLine);
-    setState(() {
-      busSchedule = busSc;
-    });
-  }
-
-  _loadBusDirection() async {
-    var busDir = await searchLineController.getBusDirection(widget.busLine);
-    setState(() {
-      busDirections = busDir;
-    });
   }
 
   @override
@@ -67,7 +27,7 @@ class _LineDetailsWidgetState extends State<LineDetailsWidget> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Linha ${widget.busLine}",
+          "Linha ${busLineNotifier.value}",
           style:
               const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
@@ -75,31 +35,25 @@ class _LineDetailsWidgetState extends State<LineDetailsWidget> {
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      floatingActionButton: Visibility(
-        visible: busDirections.isNotEmpty,
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 150),
-          child: FloatingActionButton(
-            backgroundColor: Colors.white70,
-            onPressed: () {
-              showModalBottomSheet(
-                  context: context,
-                  builder: (context) {
-                    return ScheduleDetails(
-                      busLineSchedule: busSchedule,
-                      busDirections: busDirections,
-                    );
-                  });
-            },
-            child: Icon(
-              Icons.schedule,
-              color: Colors.black,
-            ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 150),
+        child: FloatingActionButton(
+          backgroundColor: Colors.white70,
+          onPressed: () async {
+            showModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  return ScheduleDetails();
+                });
+          },
+          child: Icon(
+            Icons.schedule,
+            color: Colors.black,
           ),
         ),
       ),
       body: FutureBuilder(
-        future: searchLineController.getBusDetails(widget.busLine),
+        future: searchLineController.getBusDetails(busLineNotifier.value),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
@@ -108,20 +62,17 @@ class _LineDetailsWidgetState extends State<LineDetailsWidget> {
               ),
             );
           } else if (snapshot.hasError) {
-            return Text("Ops...Erro ao buscar a linha ${widget.busLine}");
+            return Text(
+                "Ops...Erro ao buscar a linha ${busLineNotifier.value}");
           }
           final lineDetails = snapshot.data!;
           //busRoutes = [];
-          final busRoutes = lineDetails.map((item) => item.sequencial).toList();
 
           return Column(
             children: [
               HeaderWidget(lineDetails: lineDetails[0]),
               Expanded(
-                child: MapsWidget(
-                  busRoute: busRoutes,
-                  busLine: widget.busLine,
-                ),
+                child: MapsWidget(),
               ),
             ],
           );

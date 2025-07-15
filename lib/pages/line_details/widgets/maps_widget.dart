@@ -5,20 +5,17 @@ import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/controller/storage_controller.dart';
 import 'package:df_bus/models/bus_route.dart';
 import 'package:df_bus/services/service_locator.dart';
+import 'package:df_bus/value_notifiers/line_details_notifier.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class MapsWidget extends StatefulWidget {
-  const MapsWidget({super.key, required this.busRoute, required this.busLine});
-
-  final List<int> busRoute;
-  final String busLine;
+  const MapsWidget({super.key});
 
   @override
   State<MapsWidget> createState() => MapsWidgetState();
@@ -28,6 +25,7 @@ class MapsWidgetState extends State<MapsWidget> {
   late Completer<GoogleMapController> mapController =
       Completer<GoogleMapController>();
   final searchLineController = getIt<SearchLineController>();
+  final busLineNotifier = getIt<BusLineNotifier>();
 
   final storageController = getIt<StorageController>();
   final themeNotifier = getIt<ThemeNotifier>();
@@ -140,7 +138,7 @@ class MapsWidgetState extends State<MapsWidget> {
     final isCircular = pointsOnMap.length == 1;
     final isIdaVolta = pointsOnMap.length == 2;
     debugPrint(
-        "********************Tamanho da lista - Init Markers  ${widget.busLine} ${pointsOnMap.length}");
+        "********************Tamanho da lista - Init Markers  ${busLineNotifier.value} ${pointsOnMap.length}");
 
     for (int i = 0; i < pointsOnMap.length; i++) {
       Color? color;
@@ -171,7 +169,7 @@ class MapsWidgetState extends State<MapsWidget> {
   Future<void> _getBusLocation() async {
     final newMarkers = <Marker>{};
     final geoLocation =
-        await searchLineController.getBusLocation(widget.busLine);
+        await searchLineController.getBusLocation(busLineNotifier.value);
     debugPrint("***************Chamou localização dos ônibus");
     for (int index = 0; index < geoLocation.features.length; index++) {
       final item = geoLocation.features[index];
@@ -244,12 +242,13 @@ class MapsWidgetState extends State<MapsWidget> {
     pointsOnMap.clear();
     if (!mounted) return;
 
-    final isRouteSaved = await storageController.isAlreadySaved(widget.busLine);
+    final isRouteSaved =
+        await storageController.isAlreadySaved(busLineNotifier.value);
 
     if (isRouteSaved) {
-      _busRoute = await storageController.getBusRoute(widget.busLine);
+      _busRoute = await storageController.getBusRoute(busLineNotifier.value);
     } else {
-      _busRoute = await searchLineController.getBusRoute(widget.busLine);
+      _busRoute = await searchLineController.getBusRoute(busLineNotifier.value);
       for (final route in _busRoute) {
         await storageController.addBusRoute(route);
       }

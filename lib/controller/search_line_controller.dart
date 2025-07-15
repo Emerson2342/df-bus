@@ -4,9 +4,13 @@ import 'package:df_bus/models/bus_route.dart';
 import 'package:df_bus/models/search_lines.dart';
 import 'package:df_bus/services/bus_service.dart';
 import 'package:df_bus/services/service_locator.dart';
+import 'package:df_bus/value_notifiers/line_details_notifier.dart';
 
 class SearchLineController {
   final busService = getIt<BusService>();
+  final lineDetailsNotifier = getIt<LineDetailsNotifier>();
+  final busDirectionNotifier = getIt<BusDirectionNotifier>();
+  final busLineNotifier = getIt<BusLineNotifier>();
 
   Future<List<SearchLine>> searchLines(String linetoSeach) async {
     final response = await busService.searchLines(linetoSeach);
@@ -15,6 +19,8 @@ class SearchLineController {
 
   Future<List<DetalheOnibus>> getBusDetails(String line) async {
     final details = await busService.getLineDetails(line);
+    lineDetailsNotifier.setLineDetails(details);
+    busLineNotifier.setBusLine(line);
     return details;
   }
 
@@ -46,6 +52,7 @@ class SearchLineController {
 
   Future<List<BusDirection>> getBusDirection(String busLine) async {
     final busDirection = await busService.getBusDirection(busLine);
+    busDirectionNotifier.setBusDirection(busDirection);
     return busDirection;
   }
 

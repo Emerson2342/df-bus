@@ -9,3 +9,13 @@ class ShowMapsNotifier extends ValueNotifier<bool> {
     value = !value;
   }
 }
+
+class ShowLineDetailsMapsNotifier extends ValueNotifier<bool> {
+  ShowLineDetailsMapsNotifier() : super(false);
+
+  bool get showLinesDetailsMaps => value;
+
+  void showLineDetails() {
+    value = !value;
+  }
+}
