@@ -2,7 +2,9 @@ import 'package:df_bus/controller/storage_controller.dart';
 import 'package:df_bus/pages/home_page/widgets/lines_saved_widget.dart';
 import 'package:df_bus/pages/home_page/widgets/search_line_input_widget.dart';
 import 'package:df_bus/pages/all_bus_location/all_bus_location_page.dart';
+import 'package:df_bus/pages/line_details/line_details.dart';
 import 'package:df_bus/services/service_locator.dart';
+import 'package:df_bus/value_notifiers/line_details_notifier.dart';
 import 'package:df_bus/value_notifiers/show_maps_notifier.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +24,8 @@ class _HomePageState extends State<HomePage> with RouteAware
   final storageController = getIt<StorageController>();
   final themeNotifier = getIt<ThemeNotifier>();
   final showMapsNotifier = getIt<ShowMapsNotifier>();
+  final showLineDetailsNotifier = getIt<ShowLineDetailsMapsNotifier>();
+  final busLineNotifier = getIt<BusLineNotifier>();
   String linetoSeach = "";
   bool loadingSearch = false;
 
@@ -162,6 +166,16 @@ class _HomePageState extends State<HomePage> with RouteAware
                       ),
                       body: BusStopPage(),
                     )),
+              );
+            },
+          ),
+          ValueListenableBuilder(
+            valueListenable: showLineDetailsNotifier,
+            builder: (context, show, _) {
+              return Offstage(
+                offstage: !show,
+                child:
+                    IgnorePointer(ignoring: !show, child: LineDetailsWidget()),
               );
             },
           )

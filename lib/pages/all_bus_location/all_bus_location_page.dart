@@ -10,6 +10,7 @@ import 'package:df_bus/models/bus_route.dart';
 import 'package:df_bus/models/bus_stop.dart';
 import 'package:df_bus/pages/all_bus_location/widgets/bus_stop_lines_bottom_sheet.dart';
 import 'package:df_bus/services/service_locator.dart';
+import 'package:df_bus/value_notifiers/show_maps_notifier.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:df_bus/widgets/snackbar_message_widget.dart';
 import 'package:flutter/material.dart';
@@ -55,11 +56,14 @@ class _BusStopPageState extends State<BusStopPage> {
   Timer? _timer;
   final originIdNotifier =
       getIt<ValueNotifier<String>>(instanceName: 'originId');
+
+  final showMapsNotifier = getIt<ShowMapsNotifier>();
   final destIdNotifier = getIt<ValueNotifier<String>>(instanceName: 'destId');
 
   @override
   void initState() {
     debugPrint("********************** Mapa Page");
+    showMapsNotifier.addListener(_handleVisibilityChange);
     _timer?.cancel();
     _loadCustomIcon();
     _myCameraPosition = CameraPosition(
@@ -92,6 +96,13 @@ class _BusStopPageState extends State<BusStopPage> {
     _timer?.cancel();
     super.dispose();
     debugPrint("++++++++++++++Saiu da tela do mapa+++++++++++++");
+  }
+
+  void _handleVisibilityChange() {
+    if (!showMapsNotifier.value) {
+      _busRoute.clear();
+      _timer?.cancel();
+    }
   }
 
   void _loadCustomIcon() {

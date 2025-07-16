@@ -15,7 +15,7 @@ class ShowLineDetailsMapsNotifier extends ValueNotifier<bool> {
 
   bool get showLinesDetailsMaps => value;
 
-  void showLineDetails() {
-    value = !value;
+  void setShowLineDetails(bool showLineDetails) {
+    value = showLineDetails;
   }
 }

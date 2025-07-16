@@ -6,6 +6,7 @@ import 'package:df_bus/controller/storage_controller.dart';
 import 'package:df_bus/models/bus_route.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/value_notifiers/line_details_notifier.dart';
+import 'package:df_bus/value_notifiers/show_maps_notifier.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,6 +30,7 @@ class MapsWidgetState extends State<MapsWidget> {
 
   final storageController = getIt<StorageController>();
   final themeNotifier = getIt<ThemeNotifier>();
+  final showLineDetailsNotifier = getIt<ShowLineDetailsMapsNotifier>();
 
   List<FeatureRoute> _busRoute = [];
   List<List<LatLng>> pointsOnMap = [];
@@ -49,7 +51,7 @@ class MapsWidgetState extends State<MapsWidget> {
   void initState() {
     _clearAll();
     // _setMapStyle();
-
+    showLineDetailsNotifier.addListener(_handleVisibilityChange);
     rootBundle
         .loadString(themeNotifier.isDarkMode
             ? 'assets/maps/map_style_dark.json'
@@ -75,6 +77,12 @@ class MapsWidgetState extends State<MapsWidget> {
   void dispose() {
     _clearAll();
     super.dispose();
+  }
+
+  void _handleVisibilityChange() {
+    if (!showLineDetailsNotifier.value) {
+      _clearAll();
+    }
   }
 
   void _clearAll() {
@@ -169,7 +177,8 @@ class MapsWidgetState extends State<MapsWidget> {
     final newMarkers = <Marker>{};
     final geoLocation =
         await searchLineController.getBusLocation(busLineNotifier.value);
-    debugPrint("***************Chamou localização dos ônibus");
+    debugPrint(
+        "***************Chamou localização dos ônibus - ${busLineNotifier.value}");
     for (int index = 0; index < geoLocation.features.length; index++) {
       final item = geoLocation.features[index];
       final lon = item.geometry.coordinates[0];
