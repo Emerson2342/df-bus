@@ -66,6 +66,7 @@ class LinesSavedState extends State<LinesSaved> {
                           },
                           onPressed: () async {
                             busLineNotifier.setBusLine(lineSaved);
+                            searchLineController.getBusDetails(lineSaved);
                             Navigator.push(
                               context,
                               MaterialPageRoute(

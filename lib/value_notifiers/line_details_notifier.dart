@@ -8,6 +8,14 @@ import 'package:intl/intl.dart';
 
 final searchLineController = getIt<SearchLineController>();
 
+class LoadingBusDetailsNotifier extends ValueNotifier<bool> {
+  LoadingBusDetailsNotifier() : super(true);
+  bool get loadinBusDetails => value;
+  void setLoadingBusDetails(bool isLoading) {
+    value = isLoading;
+  }
+}
+
 class BusLineNotifier extends ValueNotifier<String> {
   BusLineNotifier() : super("");
 
@@ -40,9 +48,8 @@ class BusScheduleNotifier extends ValueNotifier<List<BusSchedule>> {
 
   List<BusSchedule> get busSchedule => value;
 
-  loadBusSchedule(String busLine) async {
-    var busSc = await searchLineController.getBusSchedule(busLine);
-    value = busSc;
+  setBusSchedule(List<BusSchedule> busSchedule) async {
+    value = busSchedule;
   }
 }
 

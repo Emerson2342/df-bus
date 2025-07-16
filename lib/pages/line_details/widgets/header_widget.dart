@@ -1,17 +1,17 @@
 import 'package:df_bus/helpers/string_formatter.dart';
-import 'package:df_bus/models/bus_model.dart';
+import 'package:df_bus/services/service_locator.dart';
+import 'package:df_bus/value_notifiers/line_details_notifier.dart';
 import 'package:flutter/material.dart';
 
 class HeaderWidget extends StatelessWidget {
-  const HeaderWidget({super.key, required this.lineDetails});
-
-  final DetalheOnibus lineDetails;
+  const HeaderWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
     const textColor = Colors.white;
     const textDataColor = Colors.white70;
     const labelStyle = TextStyle(fontWeight: FontWeight.bold, color: textColor);
+    final lineDetailsNotifier = getIt<LineDetailsNotifier>();
 
     return Container(
       padding: const EdgeInsets.all(9),
@@ -19,7 +19,7 @@ class HeaderWidget extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            lineDetails.descricao,
+            lineDetailsNotifier.value[0].descricao,
             textAlign: TextAlign.center,
             style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
           ),
@@ -28,7 +28,7 @@ class HeaderWidget extends StatelessWidget {
             children: [
               const Text("Empresa: ", style: labelStyle),
               Text(
-                lineDetails.operadoras[0].nome,
+                lineDetailsNotifier.value[0].operadoras[0].nome,
                 style: TextStyle(color: textDataColor),
               ),
             ],
@@ -41,7 +41,7 @@ class HeaderWidget extends StatelessWidget {
                 style: labelStyle,
               ),
               Text(
-                priceBr(lineDetails.faixaTarifaria.tarifa),
+                priceBr(lineDetailsNotifier.value[0].faixaTarifaria.tarifa),
                 style: TextStyle(color: textDataColor),
               )
             ],

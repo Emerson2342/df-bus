@@ -31,4 +31,6 @@ void setupGetIt() {
   getIt.registerLazySingleton<BusDirectionNotifier>(
       () => BusDirectionNotifier());
   getIt.registerLazySingleton<LineDetailsNotifier>(() => LineDetailsNotifier());
+  getIt.registerLazySingleton<LoadingBusDetailsNotifier>(
+      () => LoadingBusDetailsNotifier());
 }

@@ -24,8 +24,7 @@ class BusStopPage extends StatefulWidget {
   State<BusStopPage> createState() => _BusStopPageState();
 }
 
-class _BusStopPageState extends State<BusStopPage>
-    with AutomaticKeepAliveClientMixin {
+class _BusStopPageState extends State<BusStopPage> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
@@ -181,9 +180,6 @@ class _BusStopPageState extends State<BusStopPage>
     controller.animateCamera(CameraUpdate.newCameraPosition(_myCameraPosition));
   }
 
-  @override
-  bool get wantKeepAlive => true;
-
   Future<void> _getBusRoute(Veiculo bus) async {
     _busRoute.clear();
     pointsOnMap.clear();
@@ -337,93 +333,95 @@ class _BusStopPageState extends State<BusStopPage>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-    return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: GoogleMap(
-                    polylines: _polylines,
-                    mapType: MapType.normal,
-                    myLocationEnabled: true,
-                    myLocationButtonEnabled: true,
-                    initialCameraPosition: _myCameraPosition,
-                    onMapCreated: (GoogleMapController controller) {
-                      _controller.complete(controller);
-                      // _updateClusters();
-                    },
-                    onTap: (_) {
-                      setState(() {
-                        _polylines.clear();
-                      });
-                    },
-                    style: _mapStyle,
-                    markers: _markers,
-                    onCameraMove: (_) {},
-                    onCameraIdle: _onCameraIdle,
-                    compassEnabled: true,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        body: Column(
+          children: [
+            Expanded(
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: GoogleMap(
+                      polylines: _polylines,
+                      mapType: MapType.normal,
+                      myLocationEnabled: true,
+                      myLocationButtonEnabled: true,
+                      initialCameraPosition: _myCameraPosition,
+                      onMapCreated: (GoogleMapController controller) {
+                        _controller.complete(controller);
+                        // _updateClusters();
+                      },
+                      onTap: (_) {
+                        setState(() {
+                          _polylines.clear();
+                        });
+                      },
+                      style: _mapStyle,
+                      markers: _markers,
+                      onCameraMove: (_) {},
+                      onCameraIdle: _onCameraIdle,
+                      compassEnabled: true,
+                    ),
                   ),
-                ),
-                Positioned(
-                  top: 10,
-                  left: 10,
-                  right: 0,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: showBusStops,
-                            checkColor: Colors.amber,
-                            activeColor: Colors.transparent,
-                            onChanged: (value) {
-                              setState(() {
-                                showBusStops = value!;
-                                _onCameraIdle();
-                              });
-                            },
+                  Positioned(
+                    top: 10,
+                    left: 10,
+                    right: 0,
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: showBusStops,
+                              checkColor: Colors.amber,
+                              activeColor: Colors.transparent,
+                              onChanged: (value) {
+                                setState(() {
+                                  showBusStops = value!;
+                                  _onCameraIdle();
+                                });
+                              },
+                            ),
+                            const Text('Mostrar paradas de ônibus',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.amber)),
+                          ],
+                        ),
+                        Visibility(
+                          visible: originIdNotifier.value.isNotEmpty,
+                          child: const Row(
+                            children: [
+                              Icon(Icons.check),
+                              Text(
+                                'Parada de origem selecionada',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ],
                           ),
-                          const Text('Mostrar paradas de ônibus',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.amber)),
-                        ],
-                      ),
-                      Visibility(
-                        visible: originIdNotifier.value.isNotEmpty,
-                        child: const Row(
-                          children: [
-                            Icon(Icons.check),
-                            Text(
-                              'Parada de origem selecionada',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ],
                         ),
-                      ),
-                      Visibility(
-                        visible: destIdNotifier.value.isNotEmpty,
-                        child: const Row(
-                          children: [
-                            Icon(Icons.check),
-                            Text(
-                              'Parada de destino selecionada',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ],
+                        Visibility(
+                          visible: destIdNotifier.value.isNotEmpty,
+                          child: const Row(
+                            children: [
+                              Icon(Icons.check),
+                              Text(
+                                'Parada de destino selecionada',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                )
-              ],
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-          AdsBannerWidget()
-        ],
+            AdsBannerWidget()
+          ],
+        ),
       ),
     );
   }

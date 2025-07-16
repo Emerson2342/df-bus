@@ -39,7 +39,6 @@ class MapsWidgetState extends State<MapsWidget> {
   String? _mapStyle;
   bool loadingBusRoute = true;
   bool loadingBusLocation = true;
-  //List<FeatureRoute> busRoute = [];
   static bool _isRequestingPermission = false;
 
   //Position? _currentPosition;

@@ -27,38 +27,41 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeNotifier = getIt<ThemeNotifier>();
-    return FutureBuilder(
-        future: themeNotifier.init(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return MaterialApp(
-              debugShowCheckedModeBanner: false,
-              home: Scaffold(
-                backgroundColor: Colors.white,
-                body: Center(
-                  child: Image.asset(
-                    'assets/icon/icon.png',
-                    width: 100,
-                    fit: BoxFit.contain,
+    return SafeArea(
+      top: false,
+      child: FutureBuilder(
+          future: themeNotifier.init(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return MaterialApp(
+                debugShowCheckedModeBanner: false,
+                home: Scaffold(
+                  backgroundColor: Colors.white,
+                  body: Center(
+                    child: Image.asset(
+                      'assets/icon/icon.png',
+                      width: 100,
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
-              ),
-            );
-          }
-          return ValueListenableBuilder<bool>(
-              valueListenable: themeNotifier,
-              builder: (context, isDarkMode, _) {
-                return MaterialApp(
-                  navigatorObservers: [routeObserver],
-                  debugShowCheckedModeBanner: false,
-                  title: 'DF Bus',
-                  theme: customLightTheme(),
-                  darkTheme: customDarkTheme(),
-                  themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-                  home: HomePage(),
-                );
-              });
-        });
+              );
+            }
+            return ValueListenableBuilder<bool>(
+                valueListenable: themeNotifier,
+                builder: (context, isDarkMode, _) {
+                  return MaterialApp(
+                    navigatorObservers: [routeObserver],
+                    debugShowCheckedModeBanner: false,
+                    title: 'DF Bus',
+                    theme: customLightTheme(),
+                    darkTheme: customDarkTheme(),
+                    themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+                    home: HomePage(),
+                  );
+                });
+          }),
+    );
   }
 }
 

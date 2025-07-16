@@ -180,7 +180,7 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
             Skeletonizer(
               enabled: loadingSearch && isFetching,
               child: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.33,
+                height: MediaQuery.of(context).size.height * 0.36,
                 child: loadingSearch && isFetching
                     ? ListView.builder(
                         itemCount: 7,
@@ -256,12 +256,12 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
             ),
           if (loadingSearch && isFetchingRef)
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.33,
+              height: MediaQuery.of(context).size.height * 0.36,
               child: SkeletonLinesResult(),
             ),
           if (showLinesResult)
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.33,
+              height: MediaQuery.of(context).size.height * 0.36,
               child: LinesResultWidget(linesResult: linesResult),
             ),
           if (!loadingSearch &&
@@ -271,7 +271,7 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
               !isFetchingRef &&
               !showLinesResult)
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.33,
+              height: MediaQuery.of(context).size.height * 0.36,
             ),
           AdsBannerWidget()
         ],

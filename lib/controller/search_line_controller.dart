@@ -11,22 +11,24 @@ class SearchLineController {
   final lineDetailsNotifier = getIt<LineDetailsNotifier>();
   final busDirectionNotifier = getIt<BusDirectionNotifier>();
   final busLineNotifier = getIt<BusLineNotifier>();
+  final busScheduleNotifier = getIt<BusScheduleNotifier>();
+  final loadingBusDetailsNotifier = getIt<LoadingBusDetailsNotifier>();
 
   Future<List<SearchLine>> searchLines(String linetoSeach) async {
     final response = await busService.searchLines(linetoSeach);
     return response;
   }
 
-  Future<List<DetalheOnibus>> getBusDetails(String line) async {
-    final details = await busService.getLineDetails(line);
+  Future<void> getBusDetails(String busLine) async {
+    loadingBusDetailsNotifier.setLoadingBusDetails(true);
+    final details = await busService.getLineDetails(busLine);
+    final busDirection = await busService.getBusDirection(busLine);
+    final busSchedule = await busService.getBusSchedule(busLine);
     lineDetailsNotifier.setLineDetails(details);
-    busLineNotifier.setBusLine(line);
-    return details;
-  }
-
-  Future<List<BusSchedule>> getBusSchedule(String line) async {
-    final schedule = await busService.getBusSchedule(line);
-    return schedule;
+    busLineNotifier.setBusLine(busLine);
+    busDirectionNotifier.setBusDirection(busDirection);
+    busScheduleNotifier.setBusSchedule(busSchedule);
+    loadingBusDetailsNotifier.setLoadingBusDetails(false);
   }
 
   Future<List<FeatureRoute>> getBusRoute(String line) async {
@@ -50,11 +52,10 @@ class SearchLineController {
     return lines;
   }
 
-  Future<List<BusDirection>> getBusDirection(String busLine) async {
-    final busDirection = await busService.getBusDirection(busLine);
-    busDirectionNotifier.setBusDirection(busDirection);
-    return busDirection;
-  }
+  // Future<List<BusDirection>> getBusDirection(String busLine) async {
+
+  //   return busDirection;
+  // }
 
   Future<List<DetalheOnibus>> getBusStopLines(
       String originId, String destId) async {

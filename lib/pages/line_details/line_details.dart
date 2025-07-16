@@ -1,4 +1,3 @@
-import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/pages/line_details/widgets/header_widget.dart';
 import 'package:df_bus/pages/line_details/widgets/maps_widget.dart';
 import 'package:df_bus/pages/line_details/widgets/schedule_details_bottom_sheet.dart';
@@ -14,8 +13,8 @@ class LineDetailsWidget extends StatefulWidget {
 }
 
 class _LineDetailsWidgetState extends State<LineDetailsWidget> {
-  final searchLineController = getIt<SearchLineController>();
   final busLineNotifier = getIt<BusLineNotifier>();
+  final loadingBusDetailsNotifier = getIt<LoadingBusDetailsNotifier>();
 
   @override
   void initState() {
@@ -52,32 +51,32 @@ class _LineDetailsWidgetState extends State<LineDetailsWidget> {
           ),
         ),
       ),
-      body: FutureBuilder(
-        future: searchLineController.getBusDetails(busLineNotifier.value),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.secondary,
-              ),
-            );
-          } else if (snapshot.hasError) {
-            return Text(
-                "Ops...Erro ao buscar a linha ${busLineNotifier.value}");
-          }
-          final lineDetails = snapshot.data!;
-          //busRoutes = [];
-
-          return Column(
-            children: [
-              HeaderWidget(lineDetails: lineDetails[0]),
-              Expanded(
-                child: MapsWidget(),
-              ),
-            ],
-          );
+      body: ValueListenableBuilder<bool>(
+        valueListenable: loadingBusDetailsNotifier,
+        builder: (context, isLoading, _) {
+          return isLoading
+              ? Center(
+                  child: CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.secondary,
+                ))
+              : Column(
+                  children: [
+                    HeaderWidget(),
+                    Expanded(
+                      child: MapsWidget(),
+                    ),
+                  ],
+                );
         },
       ),
     );
   }
 }
+/*Column(
+            children: [
+              HeaderWidget(),
+              Expanded(
+                child: MapsWidget(),
+              ),
+            ],
+          );*/

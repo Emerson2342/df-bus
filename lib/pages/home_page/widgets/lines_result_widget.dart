@@ -37,6 +37,7 @@ class _LinesResultWidgetState extends State<LinesResultWidget> {
             onTap: () async {
               debugPrint('Linha - ${line.numero}');
               busLineNotifier.setBusLine(line.numero);
+              searchLineController.getBusDetails(line.numero);
               Navigator.push(
                 context,
                 MaterialPageRoute(
