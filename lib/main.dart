@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-final RouteObserver<ModalRoute<void>> routeObserver =
-    RouteObserver<ModalRoute<void>>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
@@ -51,7 +49,6 @@ class MyApp extends StatelessWidget {
                 valueListenable: themeNotifier,
                 builder: (context, isDarkMode, _) {
                   return MaterialApp(
-                    navigatorObservers: [routeObserver],
                     debugShowCheckedModeBanner: false,
                     title: 'DF Bus',
                     theme: customLightTheme(),

@@ -11,6 +11,10 @@ class FeatureBusLocation {
             .toList(),
         type: json['type']?.toString() ?? "");
   }
+
+  factory FeatureBusLocation.empty() {
+    return FeatureBusLocation(features: [], type: "");
+  }
 }
 
 class FeatureLocation {

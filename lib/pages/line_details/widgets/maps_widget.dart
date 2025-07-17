@@ -38,6 +38,11 @@ class MapsWidgetState extends State<MapsWidget> {
   Set<Marker> markes = {};
   Timer? _timer;
   BitmapDescriptor customIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor piraIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor urbiIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor bsBusIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor marechalIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor piorneiraIcon = BitmapDescriptor.defaultMarker;
   String? _mapStyle;
   bool loadingBusRoute = true;
   bool loadingBusLocation = true;
@@ -103,15 +108,6 @@ class MapsWidgetState extends State<MapsWidget> {
     _timer?.cancel();
   }
 
-  void _loadCustomIcon() {
-    BitmapDescriptor.asset(ImageConfiguration(), "assets/images/bus.png")
-        .then((icon) {
-      setState(() {
-        customIcon = icon;
-      });
-    });
-  }
-
   Future<void> _init() async {
     await _getBusroute();
     await _getBusLocation();
@@ -121,6 +117,45 @@ class MapsWidgetState extends State<MapsWidget> {
       if (_polylines.isNotEmpty) {
         await setInitialCamera(mapController, _polylines);
       }
+    });
+  }
+
+  void _loadCustomIcon() {
+    BitmapDescriptor.asset(ImageConfiguration(), "assets/icon/bus_stop.png")
+        .then((icon) {
+      setState(() {
+        customIcon = icon;
+      });
+    });
+    BitmapDescriptor.asset(ImageConfiguration(), "assets/icon/bs_bus.png")
+        .then((icon) {
+      setState(() {
+        bsBusIcon = icon;
+      });
+    });
+    BitmapDescriptor.asset(ImageConfiguration(), "assets/icon/marechal.png")
+        .then((icon) {
+      setState(() {
+        marechalIcon = icon;
+      });
+    });
+    BitmapDescriptor.asset(ImageConfiguration(), "assets/icon/pioneira.png")
+        .then((icon) {
+      setState(() {
+        piorneiraIcon = icon;
+      });
+    });
+    BitmapDescriptor.asset(ImageConfiguration(), "assets/icon/piracicabana.png")
+        .then((icon) {
+      setState(() {
+        piraIcon = icon;
+      });
+    });
+    BitmapDescriptor.asset(ImageConfiguration(), "assets/icon/urbi.png")
+        .then((icon) {
+      setState(() {
+        urbiIcon = icon;
+      });
     });
   }
 
@@ -188,6 +223,7 @@ class MapsWidgetState extends State<MapsWidget> {
         await searchLineController.getBusLocation(busLineNotifier.value);
     debugPrint(
         "***************Chamou localização dos ônibus - ${busLineNotifier.value}");
+    BitmapDescriptor busIcon;
     for (int index = 0; index < geoLocation.features.length; index++) {
       final item = geoLocation.features[index];
       final lon = item.geometry.coordinates[0];
@@ -202,6 +238,20 @@ class MapsWidgetState extends State<MapsWidget> {
       final textUpdate = diff.inMinutes == 0
           ? 'Última atualização: $seconds segundos atrás'
           : 'Última atualização: ${diff.inMinutes} min e $seconds segundos atrás';
+
+      if (item.properties.idOperadora == 3441) {
+        busIcon = urbiIcon;
+      } else if (item.properties.idOperadora == 3444) {
+        busIcon = marechalIcon;
+      } else if (item.properties.idOperadora == 3449) {
+        busIcon = piorneiraIcon;
+      } else if (item.properties.idOperadora == 3450) {
+        busIcon = bsBusIcon;
+      } else if (item.properties.idOperadora == 3437) {
+        busIcon = piraIcon;
+      } else {
+        busIcon = BitmapDescriptor.defaultMarker;
+      }
       newMarkers.add(
         Marker(
           markerId: MarkerId("marker -$index"),
@@ -209,7 +259,7 @@ class MapsWidgetState extends State<MapsWidget> {
           infoWindow: InfoWindow(
               title: "Linha: ${item.properties.linha} - Ônibus: $busNumber",
               snippet: textUpdate),
-          icon: customIcon,
+          icon: busIcon,
         ),
       );
     }

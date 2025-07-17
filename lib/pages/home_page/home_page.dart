@@ -4,11 +4,9 @@ import 'package:df_bus/pages/home_page/widgets/search_line_input_widget.dart';
 import 'package:df_bus/pages/all_bus_location/all_bus_location_page.dart';
 import 'package:df_bus/pages/line_details/line_details.dart';
 import 'package:df_bus/services/service_locator.dart';
-import 'package:df_bus/value_notifiers/line_details_notifier.dart';
 import 'package:df_bus/value_notifiers/show_maps_notifier.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:flutter/material.dart';
-import './../../main.dart' show routeObserver;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,35 +15,12 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with RouteAware
-//AutomaticKeepAliveClientMixin
-{
+class _HomePageState extends State<HomePage> {
   final GlobalKey<LinesSavedState> _linesSavedKey = GlobalKey();
   final storageController = getIt<StorageController>();
   final themeNotifier = getIt<ThemeNotifier>();
   final showMapsNotifier = getIt<ShowMapsNotifier>();
   final showLineDetailsNotifier = getIt<ShowLineDetailsMapsNotifier>();
-  final busLineNotifier = getIt<BusLineNotifier>();
-  String linetoSeach = "";
-  bool loadingSearch = false;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    routeObserver.subscribe(this, ModalRoute.of(context)!);
-  }
-
-  @override
-  void dispose() {
-    routeObserver.unsubscribe(this);
-    super.dispose();
-  }
-
-  @override
-  void didPopNext() {
-    debugPrint('****Voltou pra Home Page');
-    getLinesSaved();
-  }
 
   @override
   void initState() {
@@ -63,123 +38,136 @@ class _HomePageState extends State<HomePage> with RouteAware
     }
   }
 
-  // @override
-  // bool get wantKeepAlive => true;
-
   @override
   Widget build(BuildContext context) {
-    //super.build(context);
     return SafeArea(
       top: false,
-      child: Stack(
-        children: [
-          Scaffold(
-            floatingActionButton: Padding(
-              padding: const EdgeInsets.only(bottom: 85),
-              child: FloatingActionButton(
-                backgroundColor: Colors.black38,
-                onPressed: () {
-                  showMapsNotifier.value = !showMapsNotifier.value;
-                },
-                child: Icon(
-                  Icons.place_rounded,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            appBar: AppBar(
-              title: const Text(
-                "DF BUS",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24),
-              ),
-              centerTitle: true,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              actions: [
-                ValueListenableBuilder<bool>(
-                  valueListenable: themeNotifier,
-                  builder: (context, isDarkMode, _) {
-                    return IconButton(
-                      onPressed: themeNotifier.toggleDarkMode,
-                      icon: Icon(
-                        isDarkMode ? Icons.dark_mode : Icons.light_mode,
-                        color: Colors.white,
-                      ),
-                    );
+      child: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (bool didPop, dynamic result) async {
+          if (!didPop) {
+            final mapsVisible = showMapsNotifier.value;
+            final detailsVisible = showLineDetailsNotifier.value;
+
+            if (mapsVisible || detailsVisible) {
+              showMapsNotifier.value = false;
+              showLineDetailsNotifier.value = false;
+            } else {
+              Navigator.of(context).pop();
+            }
+          }
+        },
+        child: Stack(
+          children: [
+            Scaffold(
+              floatingActionButton: Padding(
+                padding: const EdgeInsets.only(bottom: 85),
+                child: FloatingActionButton(
+                  backgroundColor: Colors.black38,
+                  onPressed: () {
+                    showMapsNotifier.showMaps();
                   },
+                  child: Icon(
+                    Icons.place_rounded,
+                    color: Colors.white,
+                  ),
                 ),
-              ],
+              ),
+              appBar: AppBar(
+                title: const Text(
+                  "DF BUS",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24),
+                ),
+                centerTitle: true,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                actions: [
+                  ValueListenableBuilder<bool>(
+                    valueListenable: themeNotifier,
+                    builder: (context, isDarkMode, _) {
+                      return IconButton(
+                        onPressed: themeNotifier.toggleDarkMode,
+                        icon: Icon(
+                          isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                          color: Colors.white,
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              body: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.15,
+                      child: LinesSaved(
+                        key: _linesSavedKey,
+                      )),
+                  // ),
+                  SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.68,
+                      child: SearchLineInputWidget()),
+                ],
+              ),
             ),
-            body: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.15,
-                    child: LinesSaved(
-                      key: _linesSavedKey,
-                    )),
-                // ),
-                SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.68,
-                    child: SearchLineInputWidget()),
-              ],
-            ),
-          ),
-          ValueListenableBuilder(
-            valueListenable: showMapsNotifier,
-            builder: (context, show, _) {
-              return Offstage(
-                offstage: !show,
-                child: IgnorePointer(
-                    ignoring: !show,
-                    child: Scaffold(
-                      appBar: AppBar(
-                        bottom: PreferredSize(
-                          preferredSize: const Size.fromHeight(30.0),
-                          child: const Text(
-                            "Ônibus em tempo real",
+            ValueListenableBuilder(
+              valueListenable: showMapsNotifier,
+              builder: (context, show, _) {
+                return Offstage(
+                  offstage: !show,
+                  child: IgnorePointer(
+                      ignoring: !show,
+                      child: Scaffold(
+                        appBar: AppBar(
+                          bottom: PreferredSize(
+                            preferredSize: const Size.fromHeight(30.0),
+                            child: const Text(
+                              "Ônibus em tempo real",
+                              style: TextStyle(
+                                  color: Colors.amber,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          title: const Text(
+                            "DF BUS",
                             style: TextStyle(
-                                color: Colors.amber,
-                                fontWeight: FontWeight.bold),
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24),
                           ),
-                        ),
-                        title: const Text(
-                          "DF BUS",
-                          style: TextStyle(
+                          centerTitle: true,
+                          leading: IconButton(
+                            icon: Icon(
+                              Icons.arrow_back,
                               color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 24),
-                        ),
-                        centerTitle: true,
-                        leading: IconButton(
-                          icon: Icon(
-                            Icons.arrow_back,
-                            color: Colors.white,
+                            ),
+                            onPressed: () {
+                              showMapsNotifier.showMaps();
+                            },
                           ),
-                          onPressed: () {
-                            showMapsNotifier.value = false;
-                          },
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
                         ),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                      ),
-                      body: BusStopPage(),
-                    )),
-              );
-            },
-          ),
-          ValueListenableBuilder(
-            valueListenable: showLineDetailsNotifier,
-            builder: (context, show, _) {
-              return Offstage(
-                offstage: !show,
-                child:
-                    IgnorePointer(ignoring: !show, child: LineDetailsWidget()),
-              );
-            },
-          )
-        ],
+                        body: BusStopPage(),
+                      )),
+                );
+              },
+            ),
+            ValueListenableBuilder(
+              valueListenable: showLineDetailsNotifier,
+              builder: (context, show, _) {
+                return Offstage(
+                  offstage: !show,
+                  child: IgnorePointer(
+                      ignoring: !show, child: LineDetailsWidget()),
+                );
+              },
+            )
+          ],
+        ),
       ),
     );
   }

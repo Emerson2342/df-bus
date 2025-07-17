@@ -5,6 +5,7 @@ import 'package:df_bus/models/search_lines.dart';
 import 'package:df_bus/services/bus_service.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/value_notifiers/line_details_notifier.dart';
+import 'package:flutter/material.dart';
 
 class SearchLineController {
   final busService = getIt<BusService>();
@@ -20,51 +21,88 @@ class SearchLineController {
   }
 
   Future<void> getBusDetails(String busLine) async {
-    loadingBusDetailsNotifier.setLoadingBusDetails(true);
-    final details = await busService.getLineDetails(busLine);
-    final busDirection = await busService.getBusDirection(busLine);
-    final busSchedule = await busService.getBusSchedule(busLine);
-    lineDetailsNotifier.setLineDetails(details);
-    busLineNotifier.setBusLine(busLine);
-    busDirectionNotifier.setBusDirection(busDirection);
-    busScheduleNotifier.setBusSchedule(busSchedule);
-    loadingBusDetailsNotifier.setLoadingBusDetails(false);
+    try {
+      loadingBusDetailsNotifier.setLoadingBusDetails(true);
+      final details = await busService.getLineDetails(busLine);
+      final busDirection = await busService.getBusDirection(busLine);
+      final busSchedule = await busService.getBusSchedule(busLine);
+      lineDetailsNotifier.setLineDetails(details);
+      busLineNotifier.setBusLine(busLine);
+      busDirectionNotifier.setBusDirection(busDirection);
+      busScheduleNotifier.setBusSchedule(busSchedule);
+      loadingBusDetailsNotifier.setLoadingBusDetails(false);
+    } catch (e, stackTrace) {
+      debugPrint('Erro ao buscar detalhes do ônibus: $e');
+      debugPrint(stackTrace.toString());
+    } finally {
+      loadingBusDetailsNotifier.setLoadingBusDetails(false);
+    }
   }
 
   Future<List<FeatureRoute>> getBusRoute(String line) async {
-    final busRoute = await busService.getBusRoute(line);
-    return busRoute;
+    try {
+      final busRoute = await busService.getBusRoute(line);
+      return busRoute;
+    } catch (e, stackTrace) {
+      debugPrint('Erro ao buscar a rota do ônibus: $e');
+      debugPrint(stackTrace.toString());
+      return [];
+    }
   }
 
   Future<FeatureBusLocation> getBusLocation(String line) async {
-    final busLocation = await busService.getBusLocation(line);
-    return busLocation;
+    try {
+      final busLocation = await busService.getBusLocation(line);
+      return busLocation;
+    } catch (e, stackTrace) {
+      debugPrint('Erro ao buscar a localização do ônibus: $e');
+      debugPrint(stackTrace.toString());
+      return FeatureBusLocation.empty();
+    }
   }
 
   Future<List<QuerySearch>> findByQuery(String query) async {
-    final queryResult = await busService.findQuery(query);
-    return queryResult;
+    try {
+      final queryResult = await busService.findQuery(query);
+      return queryResult;
+    } catch (e, stackTrace) {
+      debugPrint('Erro ao buscar a query: $e');
+      debugPrint(stackTrace.toString());
+      return [];
+    }
   }
 
   Future<List<DetalheOnibus>> searchByRef(
       QuerySearch fromItem, QuerySearch toItem) async {
-    final lines = await busService.searchByRef(fromItem, toItem);
-    return lines;
+    try {
+      final lines = await busService.searchByRef(fromItem, toItem);
+      return lines;
+    } catch (e, stackTrace) {
+      debugPrint('Erro ao buscar ônibus por referência: $e');
+      debugPrint(stackTrace.toString());
+      return [];
+    }
   }
 
-  // Future<List<BusDirection>> getBusDirection(String busLine) async {
-
-  //   return busDirection;
-  // }
-
-  Future<List<DetalheOnibus>> getBusStopLines(
-      String originId, String destId) async {
-    final lines = await busService.getBusStopLines(originId, destId);
-    return lines;
+  Future<List<DetalheOnibus>> getBusStopLines(String bustopId) async {
+    try {
+      final lines = await busService.getBusStopLines(bustopId);
+      return lines;
+    } catch (e, stackTrace) {
+      debugPrint('Erro ao buscar linhas da parada de ônibus: $e');
+      debugPrint(stackTrace.toString());
+      return [];
+    }
   }
 
   Future<List<AllBusLocation>> getAllBusLocation() async {
-    final allBusLocation = await busService.getAllBusLocation();
-    return allBusLocation;
+    try {
+      final allBusLocation = await busService.getAllBusLocation();
+      return allBusLocation;
+    } catch (e, stackTrace) {
+      debugPrint('Erro ao buscar a localização de todos os ônibus: $e');
+      debugPrint(stackTrace.toString());
+      return [];
+    }
   }
 }

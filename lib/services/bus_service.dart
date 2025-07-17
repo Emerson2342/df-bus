@@ -9,23 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class BusService {
-  // final Dio _dio = Dio(
-  //   BaseOptions(baseUrl: "https://www.sistemas.dftrans.df.gov.br/"),
-  // )..httpClientAdapter = IOHttpClientAdapter(
-  //     createHttpClient: () {
-  //       final client = HttpClient();
-  //       client.badCertificateCallback = (
-  //         X509Certificate cert,
-  //         String host,
-  //         int port,
-  //       ) =>
-  //           true;
-  //       return client;
-  //     },
-  //   );
-  // final Dio _dio =
-  //     Dio(BaseOptions(baseUrl: "https://www.sistemas.dftrans.df.gov.br/"));
-
   late final Dio _dio;
   bool _initialized = false;
 
@@ -173,18 +156,17 @@ class BusService {
     }
   }
 
-  Future<List<DetalheOnibus>> getBusStopLines(
-      String oringinId, String destId) async {
+  Future<List<DetalheOnibus>> getBusStopLines(String bustopId) async {
     await _initializeDioOnce();
     try {
       final response =
-          await _dio.get("linha/paradacod/$oringinId/paradacod/$destId");
+          await _dio.get("linha/paradacod/$bustopId/paradacod/$bustopId");
       return (response.data as List)
           .map((l) => DetalheOnibus.fromJson(l))
           .toList();
     } catch (e, stacktrace) {
       debugPrint(
-          "BusService - Erro ao pesquisar os ônibus de origem: $oringinId destino: $destId");
+          "BusService - Erro ao pesquisar os ônibus da parada: $bustopId");
       debugPrint(e.toString());
       debugPrint(stacktrace.toString());
       rethrow;

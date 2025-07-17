@@ -8,9 +8,11 @@ import 'package:df_bus/widgets/snackbar_message_widget.dart';
 import 'package:flutter/material.dart';
 
 class BusStopLinesBottomSheet extends StatefulWidget {
-  const BusStopLinesBottomSheet({super.key, required this.allBuslocation});
+  const BusStopLinesBottomSheet(
+      {super.key, required this.allBuslocation, required this.bustopId});
 
   final List<Veiculo> allBuslocation;
+  final String bustopId;
 
   @override
   State<BusStopLinesBottomSheet> createState() =>
@@ -19,20 +21,10 @@ class BusStopLinesBottomSheet extends StatefulWidget {
 
 class _BusStopLinesBottomSheetState extends State<BusStopLinesBottomSheet> {
   final searchLineController = getIt<SearchLineController>();
-  final originIdNotifier =
-      getIt<ValueNotifier<String>>(instanceName: 'originId');
-  final destIdNotifier = getIt<ValueNotifier<String>>(instanceName: 'destId');
-  late final String originId;
-  late final String destId;
 
   @override
   void initState() {
     super.initState();
-    originId = originIdNotifier.value;
-    destId = destIdNotifier.value;
-
-    originIdNotifier.value = "";
-    destIdNotifier.value = "";
   }
 
   @override
@@ -53,7 +45,7 @@ class _BusStopLinesBottomSheetState extends State<BusStopLinesBottomSheet> {
     );
     return FutureBuilder(
         future:
-            searchLineController.busService.getBusStopLines(originId, destId),
+            searchLineController.busService.getBusStopLines(widget.bustopId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return SizedBox(
@@ -112,8 +104,6 @@ class _BusStopLinesBottomSheetState extends State<BusStopLinesBottomSheet> {
                 results.add(line);
               }
             }
-            //originIdNotifier.value = "";
-            //destIdNotifier.value = "";
             return SizedBox(
               height: MediaQuery.of(context).size.height * 0.45,
               child: Column(

@@ -59,7 +59,6 @@ class _BusStopPageState extends State<BusStopPage> {
       getIt<ValueNotifier<String>>(instanceName: 'originId');
 
   final showMapsNotifier = getIt<ShowMapsNotifier>();
-  final destIdNotifier = getIt<ValueNotifier<String>>(instanceName: 'destId');
 
   @override
   void initState() {
@@ -207,8 +206,9 @@ class _BusStopPageState extends State<BusStopPage> {
     for (final feature in _busRoute) {
       final coords = feature.geometry.coordinates;
 
-      if (feature.properties.sentido == bus.sentido ||
-          feature.properties.sentido == "CIRCULAR") {
+      if (feature.properties.sentido.toLowerCase() ==
+              bus.sentido.toLowerCase() ||
+          feature.properties.sentido.toLowerCase() == "circular") {
         final List<LatLng> singleRoute = coords.map<LatLng>((coord) {
           final lat = coord[1];
           final lng = coord[0];
@@ -277,7 +277,8 @@ class _BusStopPageState extends State<BusStopPage> {
                     '${b.localizacao.latitude},${b.localizacao.longitude}'),
                 position:
                     LatLng(b.localizacao.latitude, b.localizacao.longitude),
-                infoWindow: InfoWindow(title: b.linha),
+                infoWindow:
+                    InfoWindow(title: b.linha, snippet: "Sentido ${b.sentido}"),
                 onTap: () async {
                   await _getBusRoute(b);
                 },
@@ -307,23 +308,16 @@ class _BusStopPageState extends State<BusStopPage> {
             position: LatLng(b.lat, b.lng),
             icon: customIcon,
             onTap: () {
-              if (originIdNotifier.value.isEmpty) {
-                originIdNotifier.value = b.codDftrans;
-              } else {
-                destIdNotifier.value = b.codDftrans;
-              }
-              if (originIdNotifier.value.isNotEmpty &&
-                  destIdNotifier.value.isNotEmpty) {
-                showModalBottomSheet(
-                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                  context: context,
-                  builder: (context) {
-                    return BusStopLinesBottomSheet(
-                      allBuslocation: allBus,
-                    );
-                  },
-                );
-              }
+              showModalBottomSheet(
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                context: context,
+                builder: (context) {
+                  return BusStopLinesBottomSheet(
+                    bustopId: b.codDftrans,
+                    allBuslocation: allBus,
+                  );
+                },
+              );
             },
           );
         }));
@@ -341,95 +335,70 @@ class _BusStopPageState extends State<BusStopPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        body: Column(
-          children: [
-            Expanded(
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: GoogleMap(
-                      polylines: _polylines,
-                      mapType: MapType.normal,
-                      myLocationEnabled: true,
-                      myLocationButtonEnabled: true,
-                      initialCameraPosition: _myCameraPosition,
-                      onMapCreated: (GoogleMapController controller) {
-                        _controller.complete(controller);
-                        // _updateClusters();
-                      },
-                      onTap: (_) {
-                        setState(() {
-                          _polylines.clear();
-                        });
-                      },
-                      style: _mapStyle,
-                      markers: _markers,
-                      onCameraMove: (_) {},
-                      onCameraIdle: _onCameraIdle,
-                      compassEnabled: true,
-                    ),
+    return Scaffold(
+      body: Column(
+        children: [
+          Expanded(
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: GoogleMap(
+                    polylines: _polylines,
+                    mapType: MapType.normal,
+                    myLocationEnabled: true,
+                    myLocationButtonEnabled: true,
+                    initialCameraPosition: _myCameraPosition,
+                    onMapCreated: (GoogleMapController controller) {
+                      _controller.complete(controller);
+                      // _updateClusters();
+                    },
+                    onTap: (_) {
+                      setState(() {
+                        _polylines.clear();
+                      });
+                    },
+                    style: _mapStyle,
+                    markers: _markers,
+                    onCameraMove: (_) {},
+                    onCameraIdle: _onCameraIdle,
+                    compassEnabled: true,
                   ),
-                  Positioned(
-                    top: 10,
-                    left: 10,
-                    right: 0,
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Checkbox(
-                              value: showBusStops,
-                              checkColor: Colors.amber,
-                              activeColor: Colors.transparent,
-                              onChanged: (value) {
-                                setState(() {
-                                  showBusStops = value!;
-                                  _onCameraIdle();
-                                });
-                              },
-                            ),
-                            const Text('Mostrar paradas de ônibus',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.amber)),
-                          ],
-                        ),
-                        Visibility(
-                          visible: originIdNotifier.value.isNotEmpty,
-                          child: const Row(
-                            children: [
-                              Icon(Icons.check),
-                              Text(
-                                'Parada de origem selecionada',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ],
+                ),
+                Positioned(
+                  top: 10,
+                  left: 10,
+                  right: 0,
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: showBusStops,
+                            checkColor: Colors.amber,
+                            activeColor: Colors.transparent,
+                            onChanged: (value) {
+                              setState(() {
+                                showBusStops = value!;
+                                _onCameraIdle();
+                              });
+                            },
                           ),
-                        ),
-                        Visibility(
-                          visible: destIdNotifier.value.isNotEmpty,
-                          child: const Row(
-                            children: [
-                              Icon(Icons.check),
-                              Text(
-                                'Parada de destino selecionada',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ],
+                          const Text(
+                            'Mostrar paradas de ônibus',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.amber),
                           ),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
+                        ],
+                      ),
+                    ],
+                  ),
+                )
+              ],
             ),
-            AdsBannerWidget()
-          ],
-        ),
+          ),
+          AdsBannerWidget()
+        ],
       ),
     );
   }
