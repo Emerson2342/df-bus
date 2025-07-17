@@ -45,13 +45,16 @@ class MapsWidgetState extends State<MapsWidget> {
 
   //Position? _currentPosition;
   final CameraPosition _initialCameraPosition =
-      CameraPosition(target: LatLng(-15.793112, -47.884543), zoom: 15);
+      CameraPosition(target: LatLng(-15.793112, -47.884543), zoom: 10);
 
   @override
   void initState() {
     _clearAll();
+    debugPrint(">>>>>>>>Entrou na tela MAPS DETAILS LINE");
+    _requestPerm();
     // _setMapStyle();
     showLineDetailsNotifier.addListener(_handleVisibilityChange);
+
     rootBundle
         .loadString(themeNotifier.isDarkMode
             ? 'assets/maps/map_style_dark.json'
@@ -62,14 +65,7 @@ class MapsWidgetState extends State<MapsWidget> {
       });
     });
     _loadCustomIcon();
-    _init();
-    _timer = Timer.periodic(const Duration(seconds: 5), (timer) async {
-      if (!mounted) {
-        timer.cancel();
-        return;
-      }
-      await _getBusLocation();
-    });
+
     super.initState();
   }
 
@@ -80,9 +76,23 @@ class MapsWidgetState extends State<MapsWidget> {
   }
 
   void _handleVisibilityChange() {
-    if (!showLineDetailsNotifier.value) {
+    if (showLineDetailsNotifier.value) {
+      _init();
+      _timer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+        if (!mounted) {
+          timer.cancel();
+          return;
+        }
+        await _getBusLocation();
+      });
+    } else {
       _clearAll();
     }
+    setState(() {});
+  }
+
+  void _requestPerm() async {
+    await _requestLocationPermission();
   }
 
   void _clearAll() {
@@ -103,7 +113,6 @@ class MapsWidgetState extends State<MapsWidget> {
   }
 
   Future<void> _init() async {
-    await _requestLocationPermission();
     await _getBusroute();
     await _getBusLocation();
     _initMarkers();
@@ -278,8 +287,11 @@ class MapsWidgetState extends State<MapsWidget> {
     });
   }
 
+  int _buildCounter = 0;
   @override
   Widget build(BuildContext context) {
+    _buildCounter++;
+    debugPrint('[MapsWidget] build count: $_buildCounter');
     return Scaffold(
       body: Column(
         children: [
@@ -295,6 +307,8 @@ class MapsWidgetState extends State<MapsWidget> {
                   initialCameraPosition: _initialCameraPosition,
                   onMapCreated: (GoogleMapController controller) {
                     mapController.complete(controller);
+                    debugPrint(
+                        '++++++++++++++++++[GoogleMap] Mapa foi criado!');
                   },
                   style: _mapStyle,
                 ),

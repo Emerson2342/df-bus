@@ -26,64 +26,65 @@ class _LineDetailsWidgetState extends State<LineDetailsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              showLineDetailsNotifier.setShowLineDetails(false);
-            },
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
           ),
-          title: Text(
-            "Linha ${busLineNotifier.value}",
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          centerTitle: true,
-          iconTheme: const IconThemeData(color: Colors.white),
-        ),
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.only(bottom: 150),
-          child: FloatingActionButton(
-            backgroundColor: Colors.white70,
-            onPressed: () async {
-              showModalBottomSheet(
-                  context: context,
-                  builder: (context) {
-                    return ScheduleDetails();
-                  });
-            },
-            child: Icon(
-              Icons.schedule,
-              color: Colors.black,
-            ),
-          ),
-        ),
-        body: ValueListenableBuilder<bool>(
-          valueListenable: loadingBusDetailsNotifier,
-          builder: (context, isLoading, _) {
-            return isLoading
-                ? Center(
-                    child: CircularProgressIndicator(
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                  )
-                : Column(
-                    children: [
-                      HeaderWidget(),
-                      Expanded(
-                        child: MapsWidget(),
-                      ),
-                    ],
-                  );
+          onPressed: () {
+            showLineDetailsNotifier.setShowLineDetails(false);
           },
         ),
+        title: Text(
+          "Linha ${busLineNotifier.value}",
+          style:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 150),
+        child: FloatingActionButton(
+          backgroundColor: Colors.white70,
+          onPressed: () async {
+            showModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  return ScheduleDetails();
+                });
+          },
+          child: Icon(
+            Icons.schedule,
+            color: Colors.black,
+          ),
+        ),
+      ),
+      body: ValueListenableBuilder<bool>(
+        valueListenable: loadingBusDetailsNotifier,
+        builder: (context, isLoading, child) {
+          return IndexedStack(
+            index: isLoading ? 0 : 1,
+            children: [
+              Center(
+                child: CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+              ),
+              Column(
+                children: [
+                  HeaderWidget(),
+                  Expanded(
+                    child: MapsWidget(),
+                  ),
+                ],
+              )
+            ],
+          );
+        },
       ),
     );
   }

@@ -12,6 +12,9 @@ class HeaderWidget extends StatelessWidget {
     const textDataColor = Colors.white70;
     const labelStyle = TextStyle(fontWeight: FontWeight.bold, color: textColor);
     final lineDetailsNotifier = getIt<LineDetailsNotifier>();
+    if (lineDetailsNotifier.value.isEmpty) {
+      return SizedBox();
+    }
 
     return Container(
       padding: const EdgeInsets.all(9),

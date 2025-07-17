@@ -42,7 +42,8 @@ class _BusStopPageState extends State<BusStopPage> {
   BitmapDescriptor piorneiraIcon = BitmapDescriptor.defaultMarker;
   late ClusterManager clusterManager;
   Position? position;
-  late CameraPosition _myCameraPosition;
+  CameraPosition _myCameraPosition =
+      CameraPosition(target: LatLng(-15.793112, -47.884543), zoom: 10);
   bool loadingAllBusLocation = true;
 
   Set<Marker> _markers = {};
@@ -66,18 +67,7 @@ class _BusStopPageState extends State<BusStopPage> {
     showMapsNotifier.addListener(_handleVisibilityChange);
     _timer?.cancel();
     _loadCustomIcon();
-    _myCameraPosition = CameraPosition(
-      target: LatLng(-15.7942, -47.8822),
-      zoom: 15,
-    );
-    _init();
-    _timer = Timer.periodic(const Duration(seconds: 20), (timer) async {
-      if (!mounted) {
-        timer.cancel();
-        return;
-      }
-      await _loadAllBusLocation();
-    });
+
     rootBundle
         .loadString(themeNotifier.isDarkMode
             ? 'assets/maps/map_style_dark.json'
@@ -99,7 +89,16 @@ class _BusStopPageState extends State<BusStopPage> {
   }
 
   void _handleVisibilityChange() {
-    if (!showMapsNotifier.value) {
+    if (showMapsNotifier.value) {
+      _init();
+      _timer = Timer.periodic(const Duration(seconds: 20), (timer) async {
+        if (!mounted) {
+          timer.cancel();
+          return;
+        }
+        await _loadAllBusLocation();
+      });
+    } else {
       _busRoute.clear();
       _timer?.cancel();
     }
@@ -173,8 +172,6 @@ class _BusStopPageState extends State<BusStopPage> {
     position = await getCurrentLocation();
 
     _cameraPosition(position?.latitude, position?.longitude);
-    debugPrint(
-        ' ------- Latitude: ${position?.latitude}, Longitude: ${position?.longitude}');
   }
 
   void _cameraPosition(double? lat, double? lng) async {
