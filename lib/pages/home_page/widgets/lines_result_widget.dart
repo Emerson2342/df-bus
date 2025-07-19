@@ -41,7 +41,7 @@ class _LinesResultWidgetState extends State<LinesResultWidget> {
               searchLineController.getBusDetails(line.numero);
               /////
               showLineDetailsNotifier.setShowLineDetails(true);
-              storageController.addLine(line.numero);
+              await storageController.addLine(line.numero);
             },
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

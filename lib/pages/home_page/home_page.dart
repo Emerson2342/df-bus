@@ -7,6 +7,7 @@ import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/value_notifiers/show_maps_notifier.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -49,11 +50,14 @@ class _HomePageState extends State<HomePage> {
             final mapsVisible = showMapsNotifier.value;
             final detailsVisible = showLineDetailsNotifier.value;
 
-            if (mapsVisible || detailsVisible) {
+            if (mapsVisible && detailsVisible) {
+              showLineDetailsNotifier.value = false;
+            } else if (mapsVisible && !detailsVisible) {
               showMapsNotifier.value = false;
+            } else if (!mapsVisible && detailsVisible) {
               showLineDetailsNotifier.value = false;
             } else {
-              Navigator.of(context).pop();
+              SystemNavigator.pop();
             }
           }
         },

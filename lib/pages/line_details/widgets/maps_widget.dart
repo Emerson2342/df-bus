@@ -83,12 +83,16 @@ class MapsWidgetState extends State<MapsWidget> {
   void _handleVisibilityChange() {
     if (showLineDetailsNotifier.value) {
       _init();
+
       _timer = Timer.periodic(const Duration(seconds: 5), (timer) async {
         if (!mounted) {
           timer.cancel();
           return;
         }
         await _getBusLocation();
+        setState(() {
+          loadingBusLocation = false;
+        });
       });
     } else {
       _clearAll();
@@ -110,7 +114,13 @@ class MapsWidgetState extends State<MapsWidget> {
 
   Future<void> _init() async {
     await _getBusroute();
+    setState(() {
+      loadingBusLocation = true;
+    });
     await _getBusLocation();
+    setState(() {
+      loadingBusLocation = false;
+    });
     _initMarkers();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -266,7 +276,6 @@ class MapsWidgetState extends State<MapsWidget> {
     if (!mounted) return;
     setState(() {
       markes = newMarkers;
-      loadingBusLocation = false;
     });
   }
 
@@ -308,6 +317,9 @@ class MapsWidgetState extends State<MapsWidget> {
     _busRoute.clear();
     pointsOnMap.clear();
     if (!mounted) return;
+    setState(() {
+      loadingBusRoute = true;
+    });
 
     final isRouteSaved =
         await storageController.isAlreadySaved(busLineNotifier.value);
