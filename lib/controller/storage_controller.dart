@@ -1,23 +1,25 @@
 import 'package:df_bus/models/bus_route.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/services/storage_service.dart';
+import 'package:df_bus/value_notifiers/lines_saved_notifier.dart';
 
 class StorageController {
   final storageService = getIt<StorageService>();
-  Future<List<String>> init() async {
-    return await storageService.getLines();
+  final linesSavedNotifier = getIt<LinesSavedNotifier>();
+
+  Future<void> getLines() async {
+    final lines = await storageService.getLines();
+    linesSavedNotifier.setLinesSaved(lines);
   }
 
   Future<void> addLine(String line) async {
     await storageService.addLine(line);
+    await getLines();
   }
 
   Future<void> removeLine(String line) async {
     await storageService.removeLine(line);
-  }
-
-  Future<void> deleteLines() async {
-    await storageService.clearList();
+    await getLines();
   }
 
   Future<List<FeatureRoute>> getBusRoute(String busLine) async {

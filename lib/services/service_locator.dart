@@ -4,6 +4,7 @@ import 'package:df_bus/services/bus_service.dart';
 import 'package:df_bus/services/storage_service.dart';
 import 'package:df_bus/storage/hive_storage.dart';
 import 'package:df_bus/value_notifiers/line_details_notifier.dart';
+import 'package:df_bus/value_notifiers/lines_saved_notifier.dart';
 import 'package:df_bus/value_notifiers/show_maps_notifier.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:flutter/material.dart';
@@ -33,4 +34,5 @@ void setupGetIt() {
   getIt.registerLazySingleton<LineDetailsNotifier>(() => LineDetailsNotifier());
   getIt.registerLazySingleton<LoadingBusDetailsNotifier>(
       () => LoadingBusDetailsNotifier());
+  getIt.registerLazySingleton<LinesSavedNotifier>(() => LinesSavedNotifier());
 }
