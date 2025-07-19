@@ -26,6 +26,7 @@ android {
     }
 
     kotlinOptions {
+        freeCompilerArgs += ["-Xno-call-assertions", "-Xno-param-assertions", "-Xdisable-default-scripting-plugin", "-Xdisable-incremental-compilation"]
         jvmTarget = JavaVersion.VERSION_1_8
     }
 
