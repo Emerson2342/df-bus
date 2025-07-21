@@ -4,6 +4,7 @@ import 'package:df_bus/pages/home_page/widgets/search_line_input_widget.dart';
 import 'package:df_bus/pages/all_bus_location/all_bus_location_page.dart';
 import 'package:df_bus/pages/line_details/line_details.dart';
 import 'package:df_bus/services/service_locator.dart';
+import 'package:df_bus/value_notifiers/lines_saved_notifier.dart';
 import 'package:df_bus/value_notifiers/show_maps_notifier.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,7 @@ class _HomePageState extends State<HomePage> {
   final themeNotifier = getIt<ThemeNotifier>();
   final showMapsNotifier = getIt<ShowMapsNotifier>();
   final showLineDetailsNotifier = getIt<ShowLineDetailsMapsNotifier>();
+  final linesSavedNotifier = getIt<LinesSavedNotifier>();
 
   @override
   void initState() {
@@ -31,8 +33,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   void getLinesSaved() async {
-    final lines = await storageController.init();
-    if (lines.isNotEmpty) {
+    await storageController.getLines();
+    if (linesSavedNotifier.value.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _linesSavedKey.currentState?.getLinesSaved();
       });
@@ -70,6 +72,7 @@ class _HomePageState extends State<HomePage> {
                   backgroundColor: Colors.black38,
                   onPressed: () {
                     showMapsNotifier.showMaps();
+                    FocusScope.of(context).unfocus();
                   },
                   child: Icon(
                     Icons.place_rounded,
