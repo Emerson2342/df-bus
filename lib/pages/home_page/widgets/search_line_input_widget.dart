@@ -25,7 +25,7 @@ class _SearchLineInputWidgetState extends State<SearchLineInputWidget> {
         Row(
           children: [
             searchTypeOptions(context, "Linha"),
-            searchTypeOptions(context, "Referência")
+            searchTypeOptions(context, "Origem/Destino")
           ],
         ),
         IndexedStack(

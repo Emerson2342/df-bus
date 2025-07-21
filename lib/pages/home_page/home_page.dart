@@ -72,6 +72,7 @@ class _HomePageState extends State<HomePage> {
                   backgroundColor: Colors.black38,
                   onPressed: () {
                     showMapsNotifier.showMaps();
+                    FocusScope.of(context).unfocus();
                   },
                   child: Icon(
                     Icons.place_rounded,
