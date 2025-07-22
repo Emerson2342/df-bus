@@ -7,7 +7,7 @@ import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/widgets/skeleton_lines_result_widget.dart';
 import 'package:df_bus/widgets/snackbar_message_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:skeletonizer/skeletonizer.dart';
+import 'package:shimmer/shimmer.dart';
 
 class SearchByRefWidget extends StatefulWidget {
   const SearchByRefWidget({super.key});
@@ -177,83 +177,84 @@ class _SearchByRefWidgetState extends State<SearchByRefWidget> {
             ),
           ),
           if (showQueryResults || loadingSearch && isFetching)
-            Skeletonizer(
-              enabled: loadingSearch && isFetching,
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.36,
-                child: loadingSearch && isFetching
-                    ? ListView.builder(
-                        itemCount: 7,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            color: Theme.of(context).colorScheme.tertiary,
-                            elevation: 5,
-                            child: const ListTile(
-                              title: Row(
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.36,
+              child: loadingSearch && isFetching
+                  ? ListView.builder(
+                      itemCount: 7,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          color: Theme.of(context).colorScheme.tertiary,
+                          elevation: 5,
+                          child: ListTile(
+                            title: Shimmer.fromColors(
+                              baseColor: Colors.grey,
+                              highlightColor: Colors.white,
+                              child: Row(
                                 children: [
                                   Expanded(
-                                    child: Text(
-                                      "Lorem Ipsum is simply dummy text of the printing",
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
+                                    child: Container(
+                                      height: 25,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
                                     ),
                                   )
                                 ],
                               ),
-                              trailing: Icon(
-                                Icons.check,
-                              ),
                             ),
-                          );
-                        },
-                      )
-                    : ListView.builder(
-                        itemCount: queryResults.length,
-                        itemBuilder: (context, index) {
-                          final item = queryResults[index];
-                          return Card(
-                            color: Theme.of(context).colorScheme.tertiary,
-                            elevation: 5,
-                            child: ListTile(
-                              onTap: () {
-                                if (enableFrom) {
-                                  enableFrom = false;
-                                  _fromController.text = item.descricao;
-                                  fromItem = item;
-                                  FocusScope.of(context).unfocus();
-                                } else {
-                                  enableTo = false;
-                                  _toController.text = item.descricao;
-                                  toItem = item;
-                                  FocusScope.of(context).unfocus();
-                                }
-                                setState(() {
-                                  queryResults = [];
-                                });
-                              },
-                              title: Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      item.descricao,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                          //color: Colors.black,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  )
-                                ],
-                              ),
-                              trailing: Icon(
-                                Icons.check,
-                                //color: Colors.black,
-                              ),
+                          ),
+                        );
+                      },
+                    )
+                  : ListView.builder(
+                      itemCount: queryResults.length,
+                      itemBuilder: (context, index) {
+                        final item = queryResults[index];
+                        return Card(
+                          color: Theme.of(context).colorScheme.tertiary,
+                          elevation: 5,
+                          child: ListTile(
+                            onTap: () {
+                              if (enableFrom) {
+                                enableFrom = false;
+                                _fromController.text = item.descricao;
+                                fromItem = item;
+                                FocusScope.of(context).unfocus();
+                              } else {
+                                enableTo = false;
+                                _toController.text = item.descricao;
+                                toItem = item;
+                                FocusScope.of(context).unfocus();
+                              }
+                              setState(() {
+                                queryResults = [];
+                              });
+                            },
+                            title: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    item.descricao,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        //color: Colors.black,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                )
+                              ],
                             ),
-                          );
-                        }),
-              ),
+                            trailing: Icon(
+                              Icons.check,
+                              //color: Colors.black,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
             ),
+
           if (loadingSearch && isFetchingRef)
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.36,

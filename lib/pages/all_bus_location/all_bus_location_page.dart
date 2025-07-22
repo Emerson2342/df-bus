@@ -59,6 +59,7 @@ class _BusStopPageState extends State<BusStopPage> {
       getIt<ValueNotifier<String>>(instanceName: 'originId');
 
   final showMapsNotifier = getIt<ShowMapsNotifier>();
+  bool _mapAlreadyInitialized = false;
 
   @override
   void initState() {
@@ -89,6 +90,8 @@ class _BusStopPageState extends State<BusStopPage> {
 
   void _handleVisibilityChange() {
     if (showMapsNotifier.value) {
+      if (_mapAlreadyInitialized) return;
+      _mapAlreadyInitialized = true;
       _init();
       _timer = Timer.periodic(const Duration(seconds: 20), (timer) async {
         if (!mounted) {
@@ -98,6 +101,7 @@ class _BusStopPageState extends State<BusStopPage> {
         await _loadAllBusLocation();
       });
     } else {
+      _mapAlreadyInitialized = false;
       _busRoute.clear();
       _timer?.cancel();
     }
