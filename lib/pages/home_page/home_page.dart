@@ -106,16 +106,16 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
               body: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.15,
+                      height: MediaQuery.of(context).size.height * 0.1,
                       child: LinesSaved(
                         key: _linesSavedKey,
                       )),
                   // ),
                   SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.68,
+                      height: MediaQuery.of(context).size.height * 0.75,
                       child: SearchLineInputWidget()),
                 ],
               ),

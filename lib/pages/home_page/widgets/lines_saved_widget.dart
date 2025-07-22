@@ -3,6 +3,7 @@ import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/value_notifiers/line_details_notifier.dart';
 import 'package:df_bus/value_notifiers/lines_saved_notifier.dart';
 import 'package:df_bus/value_notifiers/show_maps_notifier.dart';
+import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:flutter/material.dart';
 
 class LinesSaved extends StatefulWidget {
@@ -17,6 +18,7 @@ class LinesSavedState extends State<LinesSaved> {
   final busLineNotifier = getIt<BusLineNotifier>();
   final showLineDetailsNotifier = getIt<ShowLineDetailsMapsNotifier>();
   final linesSavedNotifier = getIt<LinesSavedNotifier>();
+  final themeNotifier = getIt<ThemeNotifier>();
   @override
   void initState() {
     getLinesSaved();
@@ -29,6 +31,11 @@ class LinesSavedState extends State<LinesSaved> {
 
   @override
   Widget build(BuildContext context) {
+    final backgroundColor =
+        themeNotifier.isDarkMode ? Colors.amber : Color(0xff24415c);
+    final textColor = themeNotifier.isDarkMode
+        ? Theme.of(context).colorScheme.primary
+        : Theme.of(context).colorScheme.tertiary;
     return ValueListenableBuilder(
         valueListenable: linesSavedNotifier,
         builder: (context, linesSaved, _) {
@@ -37,7 +44,7 @@ class LinesSavedState extends State<LinesSaved> {
             children: [
               Text(
                 "Últimas Buscas",
-                style: Theme.of(context).textTheme.titleLarge,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
               ),
               linesSaved.isEmpty
                   ? Padding(
@@ -53,16 +60,16 @@ class LinesSavedState extends State<LinesSaved> {
                             return SizedBox(
                               width:
                                   (MediaQuery.of(context).size.width - 8 * 3) /
-                                      4,
+                                      5,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 12, vertical: 8),
+                                        horizontal: 5, vertical: 3),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     //  backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-                                    backgroundColor: Colors.amber),
+                                    backgroundColor: backgroundColor),
                                 // Color(0xff9dcbf9),
                                 onLongPress: () async {
                                   await storageController.removeLine(lineSaved);
@@ -78,16 +85,18 @@ class LinesSavedState extends State<LinesSaved> {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(
+                                    Icon(
                                       Icons.directions_bus,
-                                      // color: Colors.white,
+                                      color: textColor,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 7,
                                     ),
                                     Text(
                                       lineSaved,
-                                      // style: const TextStyle(color: Colors.white),
+                                      style: TextStyle(
+                                          color: textColor,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                   ],
                                 ),

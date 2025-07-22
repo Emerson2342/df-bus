@@ -44,8 +44,8 @@ class HiveStorage extends StorageService {
       var lines = await getLines();
       lines.insert(0, line);
       lines = lines.toSet().toList();
-      if (lines.length > 8) {
-        lines = lines.sublist(0, 8);
+      if (lines.length > 5) {
+        lines = lines.sublist(0, 5);
       }
       await saveLines(lines);
     } catch (e) {

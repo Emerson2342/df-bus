@@ -23,9 +23,7 @@ class _LinesResultWidgetState extends State<LinesResultWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final color = themeNotifier.isDarkMode
-        ? Colors.amber
-        : Theme.of(context).colorScheme.primary;
+    final color = themeNotifier.isDarkMode ? Colors.amber : Color(0xff24415c);
 
     return ListView.builder(
       itemCount: widget.linesResult.length,

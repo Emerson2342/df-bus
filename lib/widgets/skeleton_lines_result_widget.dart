@@ -9,9 +9,7 @@ class SkeletonLinesResult extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeNotifier = getIt<ThemeNotifier>();
-    final color = themeNotifier.isDarkMode
-        ? Colors.amber
-        : Theme.of(context).colorScheme.primary;
+    final color = themeNotifier.isDarkMode ? Colors.amber : Color(0xff24415c);
     return ListView.builder(
       itemCount: 7,
       itemBuilder: (context, index) {
