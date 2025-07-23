@@ -46,3 +46,5 @@ app.*.map.json
 
 google-services.json
 firebase.json
+
+pubspec.lock
