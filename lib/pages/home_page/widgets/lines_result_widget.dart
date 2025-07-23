@@ -18,6 +18,7 @@ class LinesResultWidget extends StatefulWidget {
 class _LinesResultWidgetState extends State<LinesResultWidget> {
   final storageController = getIt<StorageController>();
   final busLineNotifier = getIt<BusLineNotifier>();
+  final showMapsNotifier = getIt<ShowMapsNotifier>();
   final showLineDetailsNotifier = getIt<ShowLineDetailsMapsNotifier>();
   final themeNotifier = getIt<ThemeNotifier>();
 
@@ -47,9 +48,14 @@ class _LinesResultWidgetState extends State<LinesResultWidget> {
               contentPadding: EdgeInsets.only(left: 7, right: 7),
               onTap: () async {
                 debugPrint('Linha - ${line.numero}');
+
+                if (showMapsNotifier.value) {
+                  Navigator.of(context).pop();
+                }
                 busLineNotifier.setBusLine(line.numero);
                 searchLineController.getBusDetails(line.numero);
                 /////
+                ///
                 showLineDetailsNotifier.setShowLineDetails(true);
                 await storageController.addLine(line.numero);
               },

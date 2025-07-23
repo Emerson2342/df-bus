@@ -10,6 +10,7 @@ import 'package:df_bus/models/bus_route.dart';
 import 'package:df_bus/models/bus_stop.dart';
 import 'package:df_bus/pages/all_bus_location/widgets/bus_stop_lines_bottom_sheet.dart';
 import 'package:df_bus/services/service_locator.dart';
+import 'package:df_bus/value_notifiers/bottom_sheet_lines.dart';
 import 'package:df_bus/value_notifiers/show_maps_notifier.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:df_bus/widgets/snackbar_message_widget.dart';
@@ -33,6 +34,7 @@ class _BusStopPageState extends State<BusStopPage> {
   final storageController = getIt<StorageController>();
 
   final themeNotifier = getIt<ThemeNotifier>();
+  final showLinesNotifier = getIt<ShowBottomSheetLinesNotifier>();
   String? _mapStyle;
   BitmapDescriptor customIcon = BitmapDescriptor.defaultMarker;
   BitmapDescriptor piraIcon = BitmapDescriptor.defaultMarker;
@@ -312,6 +314,7 @@ class _BusStopPageState extends State<BusStopPage> {
             position: LatLng(b.lat, b.lng),
             icon: customIcon,
             onTap: () {
+              showLinesNotifier.value = true;
               showModalBottomSheet(
                 backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 context: context,

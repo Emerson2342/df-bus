@@ -56,8 +56,6 @@ class BusScheduleNotifier extends ValueNotifier<List<BusSchedule>> {
 class BusDirectionNotifier extends ValueNotifier<List<BusDirection>> {
   BusDirectionNotifier() : super([]);
 
-  List<BusDirection> get busDirection => value;
-
   setBusDirection(List<BusDirection> busDirection) {
     value = busDirection;
   }
@@ -65,8 +63,6 @@ class BusDirectionNotifier extends ValueNotifier<List<BusDirection>> {
 
 class LineDetailsNotifier extends ValueNotifier<List<DetalheOnibus>> {
   LineDetailsNotifier() : super([]);
-
-  List<DetalheOnibus> get lineDetails => value;
 
   setLineDetails(List<DetalheOnibus> lineDetails) {
     value = lineDetails;

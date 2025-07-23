@@ -4,6 +4,7 @@ import 'package:df_bus/pages/home_page/widgets/search_line_input_widget.dart';
 import 'package:df_bus/pages/all_bus_location/all_bus_location_page.dart';
 import 'package:df_bus/pages/line_details/line_details.dart';
 import 'package:df_bus/services/service_locator.dart';
+import 'package:df_bus/value_notifiers/bottom_sheet_lines.dart';
 import 'package:df_bus/value_notifiers/lines_saved_notifier.dart';
 import 'package:df_bus/value_notifiers/show_maps_notifier.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
@@ -24,6 +25,7 @@ class _HomePageState extends State<HomePage> {
   final showMapsNotifier = getIt<ShowMapsNotifier>();
   final showLineDetailsNotifier = getIt<ShowLineDetailsMapsNotifier>();
   final linesSavedNotifier = getIt<LinesSavedNotifier>();
+  final bottomSheetLinesNotifier = getIt<ShowBottomSheetLinesNotifier>();
 
   @override
   void initState() {
@@ -51,10 +53,13 @@ class _HomePageState extends State<HomePage> {
           if (!didPop) {
             final mapsVisible = showMapsNotifier.value;
             final detailsVisible = showLineDetailsNotifier.value;
+            final linesVisible = bottomSheetLinesNotifier.value;
 
             if (mapsVisible && detailsVisible) {
               showLineDetailsNotifier.value = false;
-            } else if (mapsVisible && !detailsVisible) {
+            } else if (mapsVisible && !detailsVisible && linesVisible) {
+              bottomSheetLinesNotifier.value = false;
+            } else if (mapsVisible && !detailsVisible && !linesVisible) {
               showMapsNotifier.value = false;
             } else if (!mapsVisible && detailsVisible) {
               showLineDetailsNotifier.value = false;

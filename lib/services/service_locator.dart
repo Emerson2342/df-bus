@@ -3,6 +3,7 @@ import 'package:df_bus/controller/storage_controller.dart';
 import 'package:df_bus/services/bus_service.dart';
 import 'package:df_bus/services/storage_service.dart';
 import 'package:df_bus/storage/hive_storage.dart';
+import 'package:df_bus/value_notifiers/bottom_sheet_lines.dart';
 import 'package:df_bus/value_notifiers/line_details_notifier.dart';
 import 'package:df_bus/value_notifiers/lines_saved_notifier.dart';
 import 'package:df_bus/value_notifiers/show_maps_notifier.dart';
@@ -35,4 +36,6 @@ void setupGetIt() {
   getIt.registerLazySingleton<LoadingBusDetailsNotifier>(
       () => LoadingBusDetailsNotifier());
   getIt.registerLazySingleton<LinesSavedNotifier>(() => LinesSavedNotifier());
+  getIt.registerLazySingleton<ShowBottomSheetLinesNotifier>(
+      () => ShowBottomSheetLinesNotifier());
 }
