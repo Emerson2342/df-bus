@@ -14,7 +14,6 @@ import 'package:df_bus/value_notifiers/bottom_sheet_lines.dart';
 import 'package:df_bus/value_notifiers/show_bus_stops_notifier.dart';
 import 'package:df_bus/value_notifiers/show_maps_notifier.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
-import 'package:df_bus/widgets/snackbar_message_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
@@ -168,9 +167,7 @@ class _BusStopPageState extends State<BusStopPage> {
         allBusLocation = allLocation;
       });
     } catch (e) {
-      if (!mounted) return;
-      messageSnackbar(
-          context, "Não foi possível buscar a localização dos ônibus.");
+      debugPrint("Erro ao buscar a localização dos ônibus");
     }
   }
 
@@ -332,6 +329,7 @@ class _BusStopPageState extends State<BusStopPage> {
         _markers = newMarkers;
       });
     } else {
+      if (!mounted) return;
       setState(() {
         _markers.clear();
       });

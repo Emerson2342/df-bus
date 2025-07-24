@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
 
   final textDialog =
       "Este aplicativo não possui qualquer vínculo com a Secretaria de Mobilidade do Distrito Federal (SEMOB/DF). Todas as informações exibidas — incluindo horários, localizações e rotas de ônibus — são obtidas diretamente de dados públicos fornecidos pela própria secretaria."
-      " Em caso de divergências, atrasos ou informações incorretas, a responsabilidade é inteiramente da Secretaria de Mobilidade do DF, fonte original dos dados. Caso queira entrar em contato com a SEMOB, ligue para 162.";
+      " Em caso de divergências, atrasos ou informações incorretas, a responsabilidade é inteiramente da Secretaria de Mobilidade do DF, fonte original dos dados. Caso queira entrar em contato com a SEMOB, ligue para 156.";
   @override
   void initState() {
     super.initState();
