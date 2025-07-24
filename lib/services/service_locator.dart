@@ -6,6 +6,7 @@ import 'package:df_bus/storage/hive_storage.dart';
 import 'package:df_bus/value_notifiers/bottom_sheet_lines.dart';
 import 'package:df_bus/value_notifiers/line_details_notifier.dart';
 import 'package:df_bus/value_notifiers/lines_saved_notifier.dart';
+import 'package:df_bus/value_notifiers/show_bus_stops_notifier.dart';
 import 'package:df_bus/value_notifiers/show_maps_notifier.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:flutter/material.dart';
@@ -38,4 +39,6 @@ void setupGetIt() {
   getIt.registerLazySingleton<LinesSavedNotifier>(() => LinesSavedNotifier());
   getIt.registerLazySingleton<ShowBottomSheetLinesNotifier>(
       () => ShowBottomSheetLinesNotifier());
+  getIt.registerLazySingleton<ShowBusStopsNotifier>(
+      () => ShowBusStopsNotifier());
 }

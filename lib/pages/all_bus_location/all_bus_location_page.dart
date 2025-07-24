@@ -11,6 +11,7 @@ import 'package:df_bus/models/bus_stop.dart';
 import 'package:df_bus/pages/all_bus_location/widgets/bus_stop_lines_bottom_sheet.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/value_notifiers/bottom_sheet_lines.dart';
+import 'package:df_bus/value_notifiers/show_bus_stops_notifier.dart';
 import 'package:df_bus/value_notifiers/show_maps_notifier.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:df_bus/widgets/snackbar_message_widget.dart';
@@ -35,6 +36,8 @@ class _BusStopPageState extends State<BusStopPage> {
 
   final themeNotifier = getIt<ThemeNotifier>();
   final showLinesNotifier = getIt<ShowBottomSheetLinesNotifier>();
+  final showBusStopsNotifier = getIt<ShowBusStopsNotifier>();
+
   String? _mapStyle;
   BitmapDescriptor customIcon = BitmapDescriptor.defaultMarker;
   BitmapDescriptor piraIcon = BitmapDescriptor.defaultMarker;
@@ -49,7 +52,6 @@ class _BusStopPageState extends State<BusStopPage> {
   bool loadingAllBusLocation = true;
 
   Set<Marker> _markers = {};
-  bool showBusStops = false;
 
   List<BusStop> busStops = [];
   List<AllBusLocation> allBusLocation = [];
@@ -67,6 +69,7 @@ class _BusStopPageState extends State<BusStopPage> {
   void initState() {
     debugPrint("********************** Mapa Page");
     showMapsNotifier.addListener(_handleVisibilityChange);
+    showBusStopsNotifier.addListener(_onCameraIdle);
     _timer?.cancel();
     _loadCustomIcon();
 
@@ -212,16 +215,12 @@ class _BusStopPageState extends State<BusStopPage> {
     for (final feature in _busRoute) {
       final coords = feature.geometry.coordinates;
 
-      if (feature.properties.sentido.toLowerCase() ==
-              bus.sentido.toLowerCase() ||
-          feature.properties.sentido.toLowerCase() == "circular") {
-        final List<LatLng> singleRoute = coords.map<LatLng>((coord) {
-          final lat = coord[1];
-          final lng = coord[0];
-          return LatLng(lat, lng);
-        }).toList();
-        pointsOnMap = singleRoute;
-      }
+      final List<LatLng> singleRoute = coords.map<LatLng>((coord) {
+        final lat = coord[1];
+        final lng = coord[0];
+        return LatLng(lat, lng);
+      }).toList();
+      pointsOnMap = singleRoute;
     }
     _busRoutePolyline();
   }
@@ -283,8 +282,7 @@ class _BusStopPageState extends State<BusStopPage> {
                     '${b.localizacao.latitude},${b.localizacao.longitude}'),
                 position:
                     LatLng(b.localizacao.latitude, b.localizacao.longitude),
-                infoWindow:
-                    InfoWindow(title: b.linha, snippet: "Sentido ${b.sentido}"),
+                infoWindow: InfoWindow(title: b.linha),
                 onTap: () async {
                   await _getBusRoute(b);
                 },
@@ -307,7 +305,7 @@ class _BusStopPageState extends State<BusStopPage> {
           allBus.add(b);
         }
       }
-      if (showBusStops) {
+      if (showBusStopsNotifier.value) {
         newMarkers.addAll(visibles.map((b) {
           return Marker(
             markerId: MarkerId('${b.lat},${b.lng}'),
@@ -371,36 +369,6 @@ class _BusStopPageState extends State<BusStopPage> {
                     compassEnabled: true,
                   ),
                 ),
-                Positioned(
-                  top: 10,
-                  left: 10,
-                  right: 0,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: showBusStops,
-                            checkColor: Colors.amber,
-                            activeColor: Colors.transparent,
-                            onChanged: (value) {
-                              setState(() {
-                                showBusStops = value!;
-                                _onCameraIdle();
-                              });
-                            },
-                          ),
-                          const Text(
-                            'Mostrar paradas de ônibus',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.amber),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                )
               ],
             ),
           ),

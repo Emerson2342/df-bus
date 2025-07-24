@@ -15,7 +15,7 @@ class _AdsBannerWidgetState extends State<AdsBannerWidget> {
 
   final adUnitId = Platform.isAndroid
       ? 'ca-app-pub-4117477719356991/2278226666'
-      : 'ca-app-pub-3940256099942544/2435281174';
+      : 'ca-app-pub-4117477719356991/2278226666';
 
   @override
   void didChangeDependencies() {

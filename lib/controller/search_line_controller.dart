@@ -46,7 +46,7 @@ class SearchLineController {
     } catch (e, stackTrace) {
       debugPrint('Erro ao buscar a rota do ônibus: $e');
       debugPrint(stackTrace.toString());
-      return [];
+      rethrow;
     }
   }
 
@@ -57,7 +57,7 @@ class SearchLineController {
     } catch (e, stackTrace) {
       debugPrint('Erro ao buscar a localização do ônibus: $e');
       debugPrint(stackTrace.toString());
-      return FeatureBusLocation.empty();
+      rethrow;
     }
   }
 
@@ -68,7 +68,7 @@ class SearchLineController {
     } catch (e, stackTrace) {
       debugPrint('Erro ao buscar a query: $e');
       debugPrint(stackTrace.toString());
-      return [];
+      rethrow;
     }
   }
 
@@ -80,7 +80,7 @@ class SearchLineController {
     } catch (e, stackTrace) {
       debugPrint('Erro ao buscar ônibus por referência: $e');
       debugPrint(stackTrace.toString());
-      return [];
+      rethrow;
     }
   }
 
@@ -91,7 +91,7 @@ class SearchLineController {
     } catch (e, stackTrace) {
       debugPrint('Erro ao buscar linhas da parada de ônibus: $e');
       debugPrint(stackTrace.toString());
-      return [];
+      rethrow;
     }
   }
 
@@ -102,7 +102,7 @@ class SearchLineController {
     } catch (e, stackTrace) {
       debugPrint('Erro ao buscar a localização de todos os ônibus: $e');
       debugPrint(stackTrace.toString());
-      return [];
+      rethrow;
     }
   }
 }

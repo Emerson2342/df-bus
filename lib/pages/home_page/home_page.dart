@@ -6,6 +6,7 @@ import 'package:df_bus/pages/line_details/line_details.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/value_notifiers/bottom_sheet_lines.dart';
 import 'package:df_bus/value_notifiers/lines_saved_notifier.dart';
+import 'package:df_bus/value_notifiers/show_bus_stops_notifier.dart';
 import 'package:df_bus/value_notifiers/show_maps_notifier.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,11 @@ class _HomePageState extends State<HomePage> {
   final showLineDetailsNotifier = getIt<ShowLineDetailsMapsNotifier>();
   final linesSavedNotifier = getIt<LinesSavedNotifier>();
   final bottomSheetLinesNotifier = getIt<ShowBottomSheetLinesNotifier>();
+  final showBusStopsNotifier = getIt<ShowBusStopsNotifier>();
 
+  final textDialog =
+      "Este aplicativo não possui qualquer vínculo com a Secretaria de Mobilidade do Distrito Federal (SEMOB/DF). Todas as informações exibidas — incluindo horários, localizações e rotas de ônibus — são obtidas diretamente de dados públicos fornecidos pela própria secretaria."
+      " Em caso de divergências, atrasos ou informações incorretas, a responsabilidade é inteiramente da Secretaria de Mobilidade do DF, fonte original dos dados. Caso queira entrar em contato com a SEMOB, ligue para 162.";
   @override
   void initState() {
     super.initState();
@@ -86,6 +91,28 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               appBar: AppBar(
+                leading: IconButton(
+                    icon: Icon(Icons.info_outline, color: Colors.white),
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                title: Text("Sobre o Bus DF"),
+                                content: Text(textDialog),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(),
+                                      child: Text(
+                                        "Fechar",
+                                        style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary),
+                                      ))
+                                ],
+                              ));
+                    }),
                 title: const Text(
                   "DF BUS",
                   style: TextStyle(
@@ -136,11 +163,24 @@ class _HomePageState extends State<HomePage> {
                         appBar: AppBar(
                           bottom: PreferredSize(
                             preferredSize: const Size.fromHeight(30.0),
-                            child: const Text(
-                              "Ônibus em tempo real",
-                              style: TextStyle(
-                                  color: Colors.amber,
-                                  fontWeight: FontWeight.bold),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Checkbox(
+                                  value: showBusStopsNotifier.value,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      showBusStopsNotifier.value = value!;
+                                    });
+                                  },
+                                ),
+                                const Text(
+                                  'Mostrar paradas de ônibus',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                              ],
                             ),
                           ),
                           title: const Text(
