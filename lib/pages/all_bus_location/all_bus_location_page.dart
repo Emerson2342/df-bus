@@ -14,6 +14,7 @@ import 'package:df_bus/value_notifiers/bottom_sheet_lines.dart';
 import 'package:df_bus/value_notifiers/show_bus_stops_notifier.dart';
 import 'package:df_bus/value_notifiers/show_maps_notifier.dart';
 import 'package:df_bus/value_notifiers/theme_notifier.dart';
+import 'package:df_bus/widgets/snackbar_message_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
@@ -48,7 +49,7 @@ class _BusStopPageState extends State<BusStopPage> {
   Position? position;
   CameraPosition _myCameraPosition =
       CameraPosition(target: LatLng(-15.793112, -47.884543), zoom: 10);
-  bool loadingAllBusLocation = true;
+  bool firstEntry = true;
 
   Set<Marker> _markers = {};
 
@@ -63,6 +64,7 @@ class _BusStopPageState extends State<BusStopPage> {
 
   final showMapsNotifier = getIt<ShowMapsNotifier>();
   bool _mapAlreadyInitialized = false;
+  bool _loadingData = true;
 
   @override
   void initState() {
@@ -108,6 +110,10 @@ class _BusStopPageState extends State<BusStopPage> {
       _mapAlreadyInitialized = false;
       _busRoute.clear();
       _timer?.cancel();
+      if (!mounted) return;
+      setState(() {
+        _loadingData = false;
+      });
     }
   }
 
@@ -163,7 +169,6 @@ class _BusStopPageState extends State<BusStopPage> {
     try {
       final allLocation = await searchLineController.getAllBusLocation();
       setState(() {
-        loadingAllBusLocation = false;
         allBusLocation = allLocation;
       });
     } catch (e) {
@@ -174,16 +179,24 @@ class _BusStopPageState extends State<BusStopPage> {
   void _init() async {
     await _loadBusStops();
     await _loadAllBusLocation();
-    position = await getCurrentLocation();
-
-    _cameraPosition(position?.latitude, position?.longitude);
+    Position? position;
+    try {
+      position = await getCurrentLocation();
+      _cameraPosition(position.latitude, position.longitude);
+    } catch (e) {
+      if (!mounted) return;
+      messageSnackbar(context, "$e");
+      _cameraPosition(null, null);
+    }
   }
 
   void _cameraPosition(double? lat, double? lng) async {
     final double baseLat = -15.7942;
     final double baseLng = -47.8822;
 
+    if (!mounted) return;
     setState(() {
+      _loadingData = false;
       _myCameraPosition = CameraPosition(
         target: LatLng(lat ?? baseLat, lng ?? baseLng),
         zoom: 15,
@@ -353,7 +366,6 @@ class _BusStopPageState extends State<BusStopPage> {
                     initialCameraPosition: _myCameraPosition,
                     onMapCreated: (GoogleMapController controller) {
                       _controller.complete(controller);
-                      // _updateClusters();
                     },
                     onTap: (_) {
                       setState(() {
@@ -367,6 +379,30 @@ class _BusStopPageState extends State<BusStopPage> {
                     compassEnabled: true,
                   ),
                 ),
+                if (_loadingData)
+                  Positioned(
+                    top: 15,
+                    left: 15,
+                    right: 0,
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                              color: Theme.of(context).colorScheme.secondary),
+                        ),
+                        SizedBox(width: 7),
+                        Text(
+                          "Aguarde. Carregando os dados...",
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.secondary,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  )
               ],
             ),
           ),

@@ -32,10 +32,10 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
     loadingSearch = true;
     final text = _textController.text.trim();
     linesSearched = [];
-    if (text.isNotEmpty) {
-      _textController.clear();
+    _textController.clear();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       FocusScope.of(context).unfocus();
-    }
+    });
 
     setState(() {});
 
