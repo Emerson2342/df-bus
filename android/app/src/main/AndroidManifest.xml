@@ -16,6 +16,9 @@
             android:resource="@xml/ga_ad_services_config"
         tools:replace="android:resource" />
         <meta-data
+            android:name="io.flutter.embedding.android.EnableImpeller"
+            android:value="false" />
+        <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-4117477719356991~9943888299"/>
         <meta-data

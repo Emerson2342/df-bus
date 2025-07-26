@@ -48,3 +48,8 @@ google-services.json
 firebase.json
 
 pubspec.lock
+
+# FVM Version Cache
+.fvm/
+
+.vscode/
