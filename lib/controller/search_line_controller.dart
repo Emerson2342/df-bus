@@ -5,6 +5,7 @@ import 'package:df_bus/models/search_lines.dart';
 import 'package:df_bus/services/bus_service.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/value_notifiers/line_details_notifier.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class SearchLineController {
@@ -50,10 +51,34 @@ class SearchLineController {
     }
   }
 
-  Future<FeatureBusLocation> getBusLocation(String line) async {
+  Future<FeatureBusLocation?> getBusLocation(
+      String line, BuildContext context) async {
     try {
       final busLocation = await busService.getBusLocation(line);
       return busLocation;
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.sendTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        if (!context.mounted) rethrow;
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text("Ops.."),
+                content: Text(
+                    "Houve uma demora na busca da linha $line. Tente novamente mais tarde!"),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text("Fechar"),
+                  )
+                ],
+              );
+            });
+        return null;
+      } else {
+        rethrow;
+      }
     } catch (e, stackTrace) {
       debugPrint('Erro ao buscar a localização do ônibus: $e');
       debugPrint(stackTrace.toString());

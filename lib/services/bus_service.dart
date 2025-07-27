@@ -24,7 +24,9 @@ class BusService {
     final adapter = IOHttpClientAdapter();
     adapter.createHttpClient = () => httpClient;
 
-    _dio = Dio(BaseOptions(baseUrl: "https://www.sistemas.dftrans.df.gov.br/"));
+    _dio = Dio(
+      BaseOptions(baseUrl: "https://www.sistemas.dftrans.df.gov.br/"),
+    );
     _dio.httpClientAdapter = adapter;
 
     _initialized = true;
@@ -94,7 +96,9 @@ class BusService {
   Future<FeatureBusLocation> getBusLocation(String busLine) async {
     await _initializeDioOnce();
     try {
-      final response = await _dio.get("gps/linha/$busLine/geo/recent");
+      final response = await _dio.get(
+        "gps/linha/$busLine/geo/recent",
+      );
       return FeatureBusLocation.fromJson(response.data);
     } catch (e, stacktrace) {
       debugPrint(
