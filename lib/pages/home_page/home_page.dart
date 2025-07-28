@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage> {
                       showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
-                                title: Text("Sobre o Bus DF"),
+                                title: Text("Sobre o DF BUS"),
                                 content: Text(textDialog),
                                 actions: [
                                   TextButton(

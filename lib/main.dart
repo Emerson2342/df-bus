@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:upgrader/upgrader.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,7 +55,10 @@ class MyApp extends StatelessWidget {
                     theme: customLightTheme(),
                     darkTheme: customDarkTheme(),
                     themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-                    home: HomePage(),
+                    home: UpgradeAlert(
+                        upgrader:
+                            Upgrader(countryCode: 'br', languageCode: 'pt'),
+                        child: HomePage()),
                   );
                 });
           }),
@@ -85,6 +89,11 @@ ThemeData customLightTheme() {
 
 ThemeData customDarkTheme() {
   return ThemeData(
+    dialogTheme: DialogThemeData(
+      backgroundColor: Color(0xff022948),
+    ),
+    textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(foregroundColor: Colors.amber)),
     fontFamily: 'QuickSand',
     inputDecorationTheme: InputDecorationTheme(
       focusedBorder: UnderlineInputBorder(
