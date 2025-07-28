@@ -74,6 +74,7 @@ class MapsWidgetState extends State<MapsWidget> {
 
   void _handleMapStyleMode() async {
     final style = await getMapstyle();
+    if (!mounted) return;
     setState(() {
       _mapStyle = style;
     });
@@ -96,7 +97,7 @@ class MapsWidgetState extends State<MapsWidget> {
   }
 
   void _clearAll() {
-    if (!mounted) return;
+    if (!context.mounted) return;
     setState(() {
       _busRoute.clear();
       pointsOnMap.clear();
@@ -110,7 +111,7 @@ class MapsWidgetState extends State<MapsWidget> {
 
   Future<void> _init() async {
     await _getBusroute();
-
+    if (!mounted) return;
     setState(() {
       loadingBusLocation = true;
     });
@@ -292,6 +293,7 @@ class MapsWidgetState extends State<MapsWidget> {
   Future<void> _getBusroute() async {
     _busRoute.clear();
     pointsOnMap.clear();
+    if (!mounted) return;
     setState(() {
       loadingBusRoute = true;
     });

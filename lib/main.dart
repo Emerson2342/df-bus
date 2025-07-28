@@ -79,7 +79,7 @@ ThemeData customLightTheme() {
     //scaffoldBackgroundColor: Colors.white,
     colorScheme: ColorScheme.fromSeed(
       seedColor: Color(0xff010f1b),
-      primary: Color(0xff011f38),
+      primary: Color(0xff2f7bfe),
       secondary: Color(0xff011f38),
       tertiary: Colors.white,
     ),

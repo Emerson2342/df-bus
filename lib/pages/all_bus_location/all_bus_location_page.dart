@@ -88,6 +88,7 @@ class _BusStopPageState extends State<BusStopPage> {
   }
 
   void _handleMapStyleMode() async {
+    if (!mounted) return;
     final style = await getMapstyle();
     setState(() {
       _mapStyle = style;

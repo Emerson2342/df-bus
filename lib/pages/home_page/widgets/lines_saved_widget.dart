@@ -31,8 +31,9 @@ class LinesSavedState extends State<LinesSaved> {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor =
-        themeNotifier.isDarkMode ? Colors.amber : Color(0xff24415c);
+    final backgroundColor = themeNotifier.isDarkMode
+        ? Colors.amber
+        : Theme.of(context).colorScheme.primary;
     final textColor = themeNotifier.isDarkMode
         ? Theme.of(context).colorScheme.primary
         : Theme.of(context).colorScheme.tertiary;

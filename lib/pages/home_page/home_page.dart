@@ -100,10 +100,7 @@ class _HomePageState extends State<HomePage> {
                                           Navigator.of(context).pop(),
                                       child: Text(
                                         "Fechar",
-                                        style: TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary),
+                                        // style: TextStyle(color: color),
                                       ))
                                 ],
                               ));

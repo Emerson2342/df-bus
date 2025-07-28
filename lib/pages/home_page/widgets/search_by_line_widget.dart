@@ -17,6 +17,8 @@ class SearchByLineWidget extends StatefulWidget {
 class _SearchByLineWidgetState extends State<SearchByLineWidget> {
   final TextEditingController _textController = TextEditingController();
   final searchLineController = getIt<SearchLineController>();
+  bool noLinesResult = true;
+  String searchText = "";
 
   bool loadingSearch = false;
   List<SearchLine> linesSearched = [];
@@ -30,7 +32,7 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
 
   void _onSubmit() async {
     loadingSearch = true;
-    final text = _textController.text.trim();
+    searchText = _textController.text.trim();
     linesSearched = [];
     _textController.clear();
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -39,20 +41,22 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
 
     setState(() {});
 
-    var list = await searchLineController.searchLines(text);
+    var list = await searchLineController.searchLines(searchText);
 
     if (list.isEmpty) {
       if (!mounted) return;
-      messageSnackbar(context, "Nenhum resultado encontrado para $text");
-      final newList = await searchLineController.searchLines("");
-      if (!mounted) return;
+      messageSnackbar(context, "Nenhum resultado encontrado para $searchText");
+      //final newList = await searchLineController.searchLines("");
+
       setState(() {
-        linesSearched = newList;
+        //linesSearched = newList;
+        noLinesResult = true;
         loadingSearch = false;
       });
     } else {
       if (!mounted) return;
       setState(() {
+        noLinesResult = false;
         linesSearched = list;
         loadingSearch = false;
       });
@@ -75,7 +79,7 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
                     child: TextField(
                       controller: _textController,
                       decoration: InputDecoration(
-                        labelText: 'Digite a linha',
+                        labelText: 'Digite a linha ou cidade',
                       ),
                       onSubmitted: (_) async => _onSubmit(),
                     ),
@@ -93,15 +97,20 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
             ),
           ),
           // SizedBox(height: 7),
-
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.54,
-            child: loadingSearch
-                ? SkeletonLinesResult()
-                : LinesResultWidget(
-                    linesResult: linesSearched,
-                  ),
-          ),
+          if (noLinesResult)
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.54,
+              child: Text("asdfasdfadf"),
+            ),
+          if (!noLinesResult)
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.54,
+              child: loadingSearch
+                  ? SkeletonLinesResult()
+                  : LinesResultWidget(
+                      linesResult: linesSearched,
+                    ),
+            ),
           AdsBannerWidget()
         ],
       ),
