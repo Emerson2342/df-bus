@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:df_bus/ads/ads_widget.dart';
 import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/controller/storage_controller.dart';
+import 'package:df_bus/helpers/map_style.dart';
 import 'package:df_bus/models/bus_route.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/value_notifiers/line_details_notifier.dart';
@@ -11,9 +12,7 @@ import 'package:df_bus/value_notifiers/theme_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
 import 'package:intl/intl.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class MapsWidget extends StatefulWidget {
   const MapsWidget({super.key});
@@ -46,9 +45,8 @@ class MapsWidgetState extends State<MapsWidget> {
   String? _mapStyle;
   bool loadingBusRoute = true;
   bool loadingBusLocation = true;
-  static bool _isRequestingPermission = false;
+  Color? textColor;
 
-  //Position? _currentPosition;
   final CameraPosition _initialCameraPosition =
       CameraPosition(target: LatLng(-15.793112, -47.884543), zoom: 10);
 
@@ -56,19 +54,13 @@ class MapsWidgetState extends State<MapsWidget> {
   void initState() {
     _clearAll();
     debugPrint(">>>>>>>>Entrou na tela MAPS DETAILS LINE");
-    _requestPerm();
-    // _setMapStyle();
-    showLineDetailsNotifier.addListener(_handleVisibilityChange);
-
-    rootBundle
-        .loadString(themeNotifier.isDarkMode
-            ? 'assets/maps/map_style_dark.json'
-            : 'assets/maps/map_style_light.json')
-        .then((string) {
-      setState(() {
-        _mapStyle = string;
-      });
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      textColor = Theme.of(context).colorScheme.secondary;
     });
+    showLineDetailsNotifier.addListener(_handleVisibilityChange);
+    _handleMapStyleMode();
+    themeNotifier.addListener(_handleMapStyleMode);
+
     _loadCustomIcon();
 
     super.initState();
@@ -78,6 +70,13 @@ class MapsWidgetState extends State<MapsWidget> {
   void dispose() {
     _clearAll();
     super.dispose();
+  }
+
+  void _handleMapStyleMode() async {
+    final style = await getMapstyle();
+    setState(() {
+      _mapStyle = style;
+    });
   }
 
   void _handleVisibilityChange() {
@@ -90,30 +89,28 @@ class MapsWidgetState extends State<MapsWidget> {
           return;
         }
         await _getBusLocation();
-        setState(() {
-          loadingBusLocation = false;
-        });
       });
     } else {
       _clearAll();
     }
-    setState(() {});
-  }
-
-  void _requestPerm() async {
-    await _requestLocationPermission();
   }
 
   void _clearAll() {
-    _busRoute.clear();
-    pointsOnMap.clear();
-    _polylines.clear();
-    markes.clear();
-    _timer?.cancel();
+    if (!mounted) return;
+    setState(() {
+      _busRoute.clear();
+      pointsOnMap.clear();
+      _polylines.clear();
+      markes.clear();
+      _timer?.cancel();
+      loadingBusRoute = true;
+      loadingBusLocation = true;
+    });
   }
 
   Future<void> _init() async {
     await _getBusroute();
+
     setState(() {
       loadingBusLocation = true;
     });
@@ -169,30 +166,6 @@ class MapsWidgetState extends State<MapsWidget> {
     });
   }
 
-  Future<void> _requestLocationPermission() async {
-    if (_isRequestingPermission) return;
-    _isRequestingPermission = true;
-
-    try {
-      var status = await Permission.location.status;
-
-      if (status.isDenied ||
-          status.isRestricted ||
-          status.isPermanentlyDenied) {
-        status = await Permission.location.request();
-        _isRequestingPermission = false;
-      }
-
-      if (mounted && status.isGranted) {
-        setState(() {});
-      } else {
-        // openAppSettings();
-      }
-    } finally {
-      _isRequestingPermission = false;
-    }
-  }
-
   void _initMarkers() {
     final newPolylines = <Polyline>{};
 
@@ -222,17 +195,20 @@ class MapsWidgetState extends State<MapsWidget> {
       );
     }
     if (!mounted) return;
-    // setState(() {
     _polylines = newPolylines;
-    // });
   }
 
   Future<void> _getBusLocation() async {
     final newMarkers = <Marker>{};
-    final geoLocation =
-        await searchLineController.getBusLocation(busLineNotifier.value);
+    final geoLocation = await searchLineController.getBusLocation(
+        busLineNotifier.value, context);
     debugPrint(
         "***************Chamou localização dos ônibus - ${busLineNotifier.value}");
+    if (geoLocation == null) {
+      //showLineDetailsNotifier.value = false;
+      return;
+    }
+
     BitmapDescriptor busIcon;
     for (int index = 0; index < geoLocation.features.length; index++) {
       final item = geoLocation.features[index];
@@ -316,11 +292,9 @@ class MapsWidgetState extends State<MapsWidget> {
   Future<void> _getBusroute() async {
     _busRoute.clear();
     pointsOnMap.clear();
-    if (!mounted) return;
     setState(() {
       loadingBusRoute = true;
     });
-
     final isRouteSaved =
         await storageController.isAlreadySaved(busLineNotifier.value);
 
@@ -343,17 +317,13 @@ class MapsWidgetState extends State<MapsWidget> {
       }).toList();
       pointsOnMap.add(singleRoute);
     }
-    if (!mounted) return;
     setState(() {
       loadingBusRoute = false;
     });
   }
 
-  int _buildCounter = 0;
   @override
   Widget build(BuildContext context) {
-    _buildCounter++;
-    debugPrint('[MapsWidget] build count: $_buildCounter');
     return Scaffold(
       body: Column(
         children: [
@@ -375,30 +345,52 @@ class MapsWidgetState extends State<MapsWidget> {
                   style: _mapStyle,
                 ),
               ),
-              if (loadingBusRoute)
-                Positioned(
-                  top: 10,
-                  left: 10,
-                  right: 0,
-                  child: Text(
-                    "Carregando a rota do ônibus...",
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary,
-                        fontWeight: FontWeight.bold),
-                  ),
+              Positioned(
+                top: 10,
+                left: 10,
+                right: 10,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (loadingBusLocation)
+                      Row(
+                        children: [
+                          SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                                strokeWidth: 3,
+                                color: Theme.of(context).colorScheme.secondary),
+                          ),
+                          SizedBox(width: 7),
+                          Text(
+                            "Carregando a localização dos ônibus...",
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.secondary,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    if (loadingBusRoute)
+                      Row(
+                        children: [
+                          SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                                strokeWidth: 3, color: textColor),
+                          ),
+                          SizedBox(width: 7),
+                          Text(
+                            "Carregando a rota do ônibus...",
+                            style: TextStyle(
+                                color: textColor, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                  ],
                 ),
-              if (loadingBusLocation)
-                Positioned(
-                  top: 30,
-                  left: 10,
-                  right: 0,
-                  child: Text(
-                    "Carregando a localização dos ônibus...",
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
+              ),
             ]),
           ),
           AdsBannerWidget(),

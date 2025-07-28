@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:df_bus/ads/ads_widget.dart';
 import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/controller/storage_controller.dart';
+import 'package:df_bus/helpers/map_style.dart';
 import 'package:df_bus/helpers/position_widget.dart';
 import 'package:df_bus/models/bus_location.dart';
 import 'package:df_bus/models/bus_route.dart';
@@ -73,16 +74,8 @@ class _BusStopPageState extends State<BusStopPage> {
     showBusStopsNotifier.addListener(_onCameraIdle);
     _timer?.cancel();
     _loadCustomIcon();
-
-    rootBundle
-        .loadString(themeNotifier.isDarkMode
-            ? 'assets/maps/map_style_dark.json'
-            : 'assets/maps/map_style_light.json')
-        .then((string) {
-      setState(() {
-        _mapStyle = string;
-      });
-    });
+    _handleMapStyleMode();
+    themeNotifier.addListener(_handleMapStyleMode);
     super.initState();
   }
 
@@ -92,6 +85,13 @@ class _BusStopPageState extends State<BusStopPage> {
     _timer?.cancel();
     super.dispose();
     debugPrint("++++++++++++++Saiu da tela do mapa+++++++++++++");
+  }
+
+  void _handleMapStyleMode() async {
+    final style = await getMapstyle();
+    setState(() {
+      _mapStyle = style;
+    });
   }
 
   void _handleVisibilityChange() {
@@ -156,6 +156,7 @@ class _BusStopPageState extends State<BusStopPage> {
     });
   }
 
+  //TODO componetizar
   Future<void> _loadBusStops() async {
     final String jsonString =
         await rootBundle.loadString('assets/bus_stop/bus_stop.json');
@@ -253,6 +254,7 @@ class _BusStopPageState extends State<BusStopPage> {
     // });
   }
 
+  //TODO componetizar
   void _onCameraIdle() async {
     final controller = await _controller.future;
     final zoom = await controller.getZoomLevel();
@@ -322,7 +324,6 @@ class _BusStopPageState extends State<BusStopPage> {
             position: LatLng(b.lat, b.lng),
             icon: customIcon,
             onTap: () {
-              showLinesNotifier.value = true;
               showModalBottomSheet(
                 backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 context: context,
