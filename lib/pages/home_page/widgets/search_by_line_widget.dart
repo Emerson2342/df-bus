@@ -3,7 +3,6 @@ import 'package:df_bus/controller/search_line_controller.dart';
 import 'package:df_bus/models/bus_model.dart';
 import 'package:df_bus/pages/home_page/widgets/lines_result_widget.dart';
 import 'package:df_bus/services/service_locator.dart';
-import 'package:df_bus/widgets/skeleton_lines_result_widget.dart';
 import 'package:df_bus/widgets/snackbar_message_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +16,7 @@ class SearchByLineWidget extends StatefulWidget {
 class _SearchByLineWidgetState extends State<SearchByLineWidget> {
   final TextEditingController _textController = TextEditingController();
   final searchLineController = getIt<SearchLineController>();
-  bool noLinesResult = true;
+  bool welcomeWidget = true;
   String searchText = "";
 
   bool loadingSearch = false;
@@ -26,7 +25,6 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
 
   @override
   void initState() {
-    _onSubmit();
     super.initState();
   }
 
@@ -39,24 +37,22 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
       FocusScope.of(context).unfocus();
     });
 
-    setState(() {});
+    //setState(() {});
 
     var list = await searchLineController.searchLines(searchText);
 
     if (list.isEmpty) {
       if (!mounted) return;
       messageSnackbar(context, "Nenhum resultado encontrado para $searchText");
-      final newList = await searchLineController.searchLines("");
 
       setState(() {
-        linesSearched = newList;
-        noLinesResult = true;
+        welcomeWidget = true;
         loadingSearch = false;
       });
     } else {
       if (!mounted) return;
       setState(() {
-        noLinesResult = false;
+        welcomeWidget = false;
         linesSearched = list;
         loadingSearch = false;
       });
@@ -81,7 +77,7 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
                       decoration: InputDecoration(
                         labelText: 'Digite a linha ou cidade',
                       ),
-                      onSubmitted: (_) async => _onSubmit(),
+                      //onSubmitted: (_) async => _onSubmit(),
                     ),
                   ),
                 ),
@@ -96,21 +92,21 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
               ],
             ),
           ),
-          // SizedBox(height: 7),
-          // if (noLinesResult)
-          //   SizedBox(
-          //     height: MediaQuery.of(context).size.height * 0.54,
-          //     child: Text("asdfasdfadf"),
-          //   ),
-          // if (!noLinesResult)
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.54,
-            child: loadingSearch
-                ? SkeletonLinesResult()
-                : LinesResultWidget(
-                    linesResult: linesSearched,
-                  ),
-          ),
+          SizedBox(height: 7),
+          if (welcomeWidget)
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.54,
+              child: Text("asdfasdfadf"),
+            ),
+          if (!welcomeWidget)
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.54,
+              child: loadingSearch
+                  ? CircularProgressIndicator()
+                  : LinesResultWidget(
+                      linesResult: linesSearched,
+                    ),
+            ),
           AdsBannerWidget()
         ],
       ),
