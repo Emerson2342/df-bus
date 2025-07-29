@@ -46,10 +46,10 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
     if (list.isEmpty) {
       if (!mounted) return;
       messageSnackbar(context, "Nenhum resultado encontrado para $searchText");
-      //final newList = await searchLineController.searchLines("");
+      final newList = await searchLineController.searchLines("");
 
       setState(() {
-        //linesSearched = newList;
+        linesSearched = newList;
         noLinesResult = true;
         loadingSearch = false;
       });
@@ -97,20 +97,20 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
             ),
           ),
           // SizedBox(height: 7),
-          if (noLinesResult)
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.54,
-              child: Text("asdfasdfadf"),
-            ),
-          if (!noLinesResult)
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.54,
-              child: loadingSearch
-                  ? SkeletonLinesResult()
-                  : LinesResultWidget(
-                      linesResult: linesSearched,
-                    ),
-            ),
+          // if (noLinesResult)
+          //   SizedBox(
+          //     height: MediaQuery.of(context).size.height * 0.54,
+          //     child: Text("asdfasdfadf"),
+          //   ),
+          // if (!noLinesResult)
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.54,
+            child: loadingSearch
+                ? SkeletonLinesResult()
+                : LinesResultWidget(
+                    linesResult: linesSearched,
+                  ),
+          ),
           AdsBannerWidget()
         ],
       ),
