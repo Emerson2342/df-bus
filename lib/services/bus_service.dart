@@ -25,7 +25,9 @@ class BusService {
     adapter.createHttpClient = () => httpClient;
 
     _dio = Dio(
-      BaseOptions(baseUrl: "https://www.sistemas.dftrans.df.gov.br/"),
+      BaseOptions(
+          baseUrl: "https://www.sistemas.dftrans.df.gov.br/",
+          connectTimeout: const Duration(seconds: 20)),
     );
     _dio.httpClientAdapter = adapter;
 

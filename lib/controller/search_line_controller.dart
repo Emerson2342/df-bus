@@ -17,8 +17,12 @@ class SearchLineController {
   final loadingBusDetailsNotifier = getIt<LoadingBusDetailsNotifier>();
 
   Future<List<SearchLine>> searchLines(String linetoSeach) async {
-    final response = await busService.searchLines(linetoSeach);
-    return response;
+    try {
+      final response = await busService.searchLines(linetoSeach);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<void> getBusDetails(String busLine) async {

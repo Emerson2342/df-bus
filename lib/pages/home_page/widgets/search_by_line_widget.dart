@@ -4,6 +4,7 @@ import 'package:df_bus/models/bus_model.dart';
 import 'package:df_bus/pages/home_page/widgets/lines_result_widget.dart';
 import 'package:df_bus/services/service_locator.dart';
 import 'package:df_bus/widgets/snackbar_message_widget.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class SearchByLineWidget extends StatefulWidget {
@@ -30,32 +31,55 @@ class _SearchByLineWidgetState extends State<SearchByLineWidget> {
 
   void _onSubmit() async {
     loadingSearch = true;
+    List<SearchLine> list = [];
     searchText = _textController.text.trim();
     linesSearched = [];
     _textController.clear();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FocusScope.of(context).unfocus();
     });
+    try {
+      list = await searchLineController.searchLines(searchText);
+      if (list.isEmpty) {
+        if (!mounted) return;
+        messageSnackbar(
+            context, "Nenhum resultado encontrado para $searchText");
 
-    //setState(() {});
-
-    var list = await searchLineController.searchLines(searchText);
-
-    if (list.isEmpty) {
-      if (!mounted) return;
-      messageSnackbar(context, "Nenhum resultado encontrado para $searchText");
-
-      setState(() {
-        welcomeWidget = true;
-        loadingSearch = false;
-      });
-    } else {
-      if (!mounted) return;
-      setState(() {
-        welcomeWidget = false;
-        linesSearched = list;
-        loadingSearch = false;
-      });
+        setState(() {
+          welcomeWidget = true;
+          loadingSearch = false;
+        });
+      } else {
+        if (!mounted) return;
+        setState(() {
+          welcomeWidget = false;
+          linesSearched = list;
+          loadingSearch = false;
+        });
+      }
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout) {
+        if (!context.mounted) return;
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text("Ops..."),
+                content: Text(
+                    "O servidor está fora do ar. Tente novamente mais tarde!"),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text("Fechar"),
+                  )
+                ],
+              );
+            });
+        return;
+      }
+    } catch (e) {
+      debugPrint("erro ao buscar a linha $searchText - $e");
+      return;
     }
   }
 
